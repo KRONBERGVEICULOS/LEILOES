@@ -5,6 +5,7 @@
   "description": "Monorepo enxuto da entrega Kron Leilões com frontend Next.js, backend de domínio/persistência e contexto do projeto.",
   "workspaces": [
     "frontend"
+    "backend"
   ],
   "scripts": {
     "dev": "npm run dev --workspace frontend",
