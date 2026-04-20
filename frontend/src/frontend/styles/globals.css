@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f6f2;
+  --foreground: #1e2a35;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand-cream: #f4ede2;
+  --color-brand-paper: #f6f1e8;
+  --color-brand-surface: #ffffff;
+  --color-brand-ink: #1a2430;
+  --color-brand-muted: #66707c;
+  --color-brand-line: #d9d8d1;
+  --color-brand-brass: #f28b1b;
+  --color-brand-sand: #fff0e3;
+  --color-brand-navy: #18324f;
+  --color-brand-navy-deep: #0d2034;
+  --color-brand-success: #2f7d4a;
+  --color-brand-warning: #a35b17;
+  --color-brand-danger: #b42318;
+  --font-sans: var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(242, 139, 27, 0.1), transparent 28%),
+    radial-gradient(circle at top right, rgba(24, 50, 79, 0.08), transparent 24%),
+    linear-gradient(180deg, #fbf8f2 0%, #f6f1e8 42%, #f1ebdf 100%);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  text-rendering: optimizeLegibility;
+}
+
+main {
+  isolation: isolate;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}
+
+::selection {
+  background: rgba(240, 122, 36, 0.18);
+}
+
+a,
+button,
+summary,
+input,
+select,
+textarea {
+  outline-offset: 4px;
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(240, 122, 36, 0.9);
+  box-shadow: 0 0 0 4px rgba(240, 122, 36, 0.15);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.ambient-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82)),
+    linear-gradient(120deg, rgba(242, 139, 27, 0.08), rgba(24, 50, 79, 0.06));
+  backdrop-filter: blur(16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

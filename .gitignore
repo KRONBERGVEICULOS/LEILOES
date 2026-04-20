@@ -15,7 +15,15 @@
 
 # next.js
 /.next/
+/frontend/.next/
 /out/
+/frontend/out/
+
+# workspace dev output
+/workspace/output/
+/output/
+/legacy/qa-artifacts/*
+/legacy/experiments/playwright-cli-state/*
 
 # production
 /build
@@ -32,6 +40,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+!frontend/.env.local.example
 
 # vercel
 .vercel
@@ -39,3 +49,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Segurança
+.env
+.env.local
+.env.*.local

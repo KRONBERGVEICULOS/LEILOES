@@ -1,53 +1,47 @@
 # Kron Leilões Platform
 
-Rebuild completo de uma plataforma web de leilões com foco institucional, visual premium e arquitetura pronta para evolução. O projeto substitui a antiga página única estática por uma base em Next.js com rotas dedicadas, conteúdo tipado e CTAs honestos para uma operação que ainda depende de atendimento assistido.
+Repositório reorganizado para entrega ao cliente com um núcleo enxuto e continuidade mais clara. O fluxo principal agora está concentrado em `backend`, `frontend` e `project-context`. Todo o material antigo, auxiliar ou de referência foi preservado em `legacy`.
 
-## Stack
+## Documentação principal de entrega
 
-- Next.js 16 com App Router
-- React 19
-- TypeScript
-- Tailwind CSS v4
-- Geração estática para páginas institucionais, eventos e lotes
+O arquivo central de handoff para o cliente está em `00-GUIA-DE-ENTREGA-CLIENTE.md`.
 
-## O que foi entregue
+Ele reúne:
 
-- Home institucional com hero forte, credibilidade, categorias, destaques, FAQ resumido e CTA final
-- Página de listagem de eventos
-- Página de evento com breadcrumb, imagem, metadados, destaques, lotes, FAQ e trust layer
-- Página de lote com galeria, contexto, metadados, documentos, FAQ e CTA claro
-- Páginas `como-participar`, `faq`, `sobre`, `contato`, `privacidade`, `cookies` e `termos-de-uso`
-- SEO técnico básico com `metadata`, `sitemap.xml`, `robots.txt` e JSON-LD
-- Conteúdo profissional alinhado ao estágio real do produto, sem simular lances em tempo real
-- Documento de fundação do produto em `docs/foundation.md`
+- estrutura real do projeto;
+- configuração de ambiente;
+- execução local;
+- publicação no GitHub;
+- deploy na Vercel;
+- cenário de uso do Railway;
+- domínio e DNS com Cloudflare;
+- limites de alteração sem apoio técnico.
 
-## Estrutura principal
+## Estrutura final
 
 ```text
-src/
-  app/
-    eventos/
-    lotes/
-    como-participar/
-    faq/
-    sobre/
-    contato/
-    privacidade/
-    cookies/
-    termos-de-uso/
-  components/site/
-  config/
-  features/
-    auctions/
-    content/
-  lib/
-public/
-  media/lots/
-docs/
-  foundation.md
+/backend
+/frontend
+/project-context
+/legacy
+README.md
+.env.example
+package.json
+package-lock.json
 ```
 
-## Rodando localmente
+### O que fica no fluxo principal
+
+- `frontend`: app Next.js 16 com App Router, assets públicos, estilos e componentes visuais.
+- `backend`: domínio de negócio, catálogo, conteúdo, autenticação, persistência e operações administrativas.
+- `project-context`: documentação ativa para continuidade técnica e operacional.
+- arquivos de root: apenas o mínimo para instalação, scripts e configuração de ambiente de entrega.
+
+### O que é `legacy`
+
+`legacy` não faz parte do fluxo principal do sistema. Ela guarda histórico útil, documentação antiga, saídas de QA, instruções de tooling e cópias reaproveitáveis de contexto.
+
+## Como rodar
 
 ```bash
 npm install
@@ -56,38 +50,31 @@ npm run dev
 
 Abra `http://localhost:3000`.
 
-## Scripts
+Use `.env.example` ou `frontend/.env.local.example` como referência e crie o arquivo local em `frontend/.env.local`.
+
+Variáveis mínimas para produção:
+
+```bash
+DATABASE_URL=postgresql://...
+DATABASE_SSL_MODE=require
+NEXT_PUBLIC_SITE_URL=https://seu-dominio.com
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=troque-esta-senha
+```
+
+## Scripts principais
 
 ```bash
 npm run dev
 npm run lint
 npm run build
 npm run start
+npm run smoke:url -- https://seu-deploy.vercel.app
 ```
 
-## Decisões principais
+## Observações de entrega
 
-- O MVP não finge backend de lance em tempo real. Todos os CTAs conduzem para manifestação de interesse, solicitação de edital ou atendimento via WhatsApp.
-- O catálogo foi modelado com dados tipados por evento e lote para facilitar futura migração para CMS, banco de dados ou painel interno.
-- As páginas jurídicas foram escritas para este produto, em vez de texto genérico desconectado da operação.
-- O design system usa uma direção editorial premium com `Manrope` e `Cormorant Garamond`, paleta quente/institucional e hierarquia visual mais próxima de uma operação séria do que de um template barato.
-
-## Validação executada
-
-```bash
-npm run lint
-npm run build
-```
-
-Ambos concluíram com sucesso nesta entrega.
-
-## Preview deploy
-
-Um preview foi gerado na Vercel por fluxo claimable durante esta sessão. A URL de preview foi entregue no fechamento e a URL de claim não foi persistida no repositório.
-
-## Próximos passos recomendados
-
-1. Conectar um backend real para eventos, lotes, documentos e status operacionais.
-2. Criar painel/admin para cadastro, versionamento de editais e publicação.
-3. Integrar analytics, observabilidade e trilha operacional.
-4. Ligar o repositório a um remoto GitHub e formalizar o fluxo de PRs.
+- O frontend continua sendo a aplicação executável principal.
+- O backend permanece dentro do mesmo repositório, mas isolado fisicamente para facilitar manutenção.
+- A documentação ativa foi normalizada em `project-context`.
+- O material preservado em `legacy` deve ser tratado como histórico, referência ou base de reaproveitamento, não como parte do runtime atual.
