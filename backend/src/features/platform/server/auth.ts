@@ -1,4 +1,6 @@
-﻿import {
+﻿import "server-only";
+
+import {
   createHash,
   randomBytes,
   randomUUID,
