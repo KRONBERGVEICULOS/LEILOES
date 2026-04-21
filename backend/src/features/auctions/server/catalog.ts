@@ -3,7 +3,11 @@
 import type { FaqItem, Lot, MediaAsset } from "@/backend/features/auctions/types";
 import { getLotStatusDefinition, isLotPubliclyVisible } from "@/backend/features/auctions/lib/lot-status";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
-import { requireDatabaseUrl } from "@/backend/features/platform/server/mode";
+import {
+  requireDatabaseUrl,
+  shouldUseLocalSeedData,
+} from "@/backend/features/platform/server/mode";
+import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
 import { formatCurrencyBRL } from "@/shared/lib/utils";
 
 type LotRow = {
@@ -110,6 +114,10 @@ function mapRowToLot(row: LotRow): Lot {
 }
 
 async function getDatabaseLots() {
+  if (shouldUseLocalSeedData()) {
+    return seedLots;
+  }
+
   requireDatabaseUrl();
 
   return withPlatformDatabase(async (sql) => {

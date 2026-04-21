@@ -32,9 +32,12 @@ Abra `http://localhost:3000`.
 
 Use `.env.example` ou `frontend/.env.local.example` como referência e crie `frontend/.env.local`.
 
-Variáveis mínimas para produção:
+Sem `DATABASE_URL`, o app roda localmente em modo `local-seed`: a vitrine, catálogo, páginas públicas, SEO e health check funcionam com dados versionados, mas cadastro, login, interesses e pré-lances ficam indisponíveis até configurar Postgres.
+
+Variáveis mínimas para produção com persistência real:
 
 ```bash
+KRON_DATA_MODE=postgres
 DATABASE_URL=postgresql://...
 DATABASE_SSL_MODE=require
 NEXT_PUBLIC_SITE_URL=https://seu-dominio.com
@@ -51,6 +54,10 @@ npm run build
 npm run start
 npm run smoke:url -- https://seu-deploy.vercel.app
 ```
+
+## Deploy
+
+O deploy esperado é a aplicação Next.js em `frontend`. Em provedores com configuração de monorepo, a publicação deve apontar para `frontend` como aplicação principal, ou executar os scripts da raiz, que delegam para esse workspace. Não há app estático legado versionado como alvo de publicação.
 
 ## Observações
 

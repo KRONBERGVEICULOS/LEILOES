@@ -3,7 +3,10 @@
 import postgres, { type Sql } from "postgres";
 
 import { lots } from "@/backend/features/auctions/data/catalog";
-import { requireDatabaseUrl } from "@/backend/features/platform/server/mode";
+import {
+  requireDatabaseUrl,
+  shouldUseLocalSeedData,
+} from "@/backend/features/platform/server/mode";
 
 type PlatformSql = Sql<Record<string, unknown>>;
 
@@ -309,6 +312,13 @@ export async function withPlatformDatabase<T>(
 }
 
 export async function pingPlatformDatabase() {
+  if (shouldUseLocalSeedData()) {
+    return {
+      ok: true as const,
+      driver: "local-seed",
+    };
+  }
+
   return withPlatformDatabase(async (sql) => {
     await sql`select 1`;
 

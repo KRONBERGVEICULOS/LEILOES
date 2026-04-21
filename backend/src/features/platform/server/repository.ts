@@ -5,6 +5,7 @@ import { getLotStatusDefinition } from "@/backend/features/auctions/lib/lot-stat
 import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
 import { getLotBySlug } from "@/backend/features/auctions/server/catalog";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
+import { shouldUseLocalSeedData } from "@/backend/features/platform/server/mode";
 import { formatCurrencyBRL } from "@/shared/lib/utils";
 import type {
   ActivityFeedItem,
@@ -201,6 +202,11 @@ function getLotCurrentState(
 }
 
 async function getTopLotBidAmount(lotSlug: string) {
+  if (shouldUseLocalSeedData()) {
+    void lotSlug;
+    return null;
+  }
+
   return withPlatformDatabase(async (sql) => {
     const [row] = await sql<{ amount_cents: number }[]>`
       select amount_cents
@@ -215,6 +221,11 @@ async function getTopLotBidAmount(lotSlug: string) {
 }
 
 export async function findUserByEmail(email: string) {
+  if (shouldUseLocalSeedData()) {
+    void email;
+    return null;
+  }
+
   return withPlatformDatabase(async (sql) => {
     const [row] = await sql<DatabaseUserRow[]>`
       select
@@ -236,6 +247,11 @@ export async function findUserByEmail(email: string) {
 }
 
 export async function getUserById(userId: string) {
+  if (shouldUseLocalSeedData()) {
+    void userId;
+    return null;
+  }
+
   return withPlatformDatabase(async (sql) => {
     const [row] = await sql<DatabaseUserRow[]>`
       select
@@ -263,6 +279,13 @@ export async function createUserRecord(input: {
   city?: string;
   passwordHash: string;
 }) {
+  if (shouldUseLocalSeedData()) {
+    void input;
+    throw new Error(
+      "Configure DATABASE_URL para criar cadastros e persistir usuários.",
+    );
+  }
+
   const normalizedEmail = input.email.trim().toLowerCase();
 
   try {
@@ -338,6 +361,25 @@ export async function createUserRecord(input: {
 }
 
 export async function listPublicActivity(limit = 6) {
+  if (shouldUseLocalSeedData()) {
+    const rows: DatabaseActivityRow[] = seedLots.slice(0, limit).map((lot, index) => ({
+      id: `seed-lot-available-${lot.slug}`,
+      kind: "lot_available",
+      lot_slug: lot.slug,
+      actor_user_id: null,
+      actor_public_alias: null,
+      amount_cents: null,
+      title: null,
+      description: null,
+      audience: "public",
+      created_at:
+        lot.createdAt ??
+        new Date(Date.UTC(2026, 3, 11, 18, 10, 0) - index * 1000 * 60 * 90).toISOString(),
+    }));
+
+    return Promise.all(rows.map((row) => createActivityItem(row, "public")));
+  }
+
   return withPlatformDatabase(async (sql) => {
     const rows = await sql<DatabaseActivityRow[]>`
       select
@@ -366,6 +408,55 @@ export async function getLotPlatformSnapshot(
   viewerUserId?: string,
 ): Promise<LotPlatformSnapshot> {
   const lot = await requireLot(lotSlug);
+
+  if (shouldUseLocalSeedData()) {
+    const status = getLotStatusDefinition(lot.statusKey);
+    const currentValueCents = Math.max(
+      lot.pricing.currentValueCents,
+      lot.pricing.referenceValueCents,
+    );
+    const nextAllowedAmountCents =
+      currentValueCents + lot.pricing.minimumIncrementCents;
+    const seedActivity = await createActivityItem(
+      {
+        id: `seed-lot-available-${lot.slug}`,
+        kind: "lot_available",
+        lot_slug: lot.slug,
+        actor_user_id: null,
+        actor_public_alias: null,
+        amount_cents: null,
+        title: null,
+        description: null,
+        audience: "public",
+        created_at:
+          lot.createdAt ?? new Date(Date.UTC(2026, 3, 11, 18, 10, 0)).toISOString(),
+      },
+      "public",
+    );
+
+    return {
+      lotSlug,
+      onlineStatusLabel: lot.onlineStatusLabel,
+      teaserLabel: lot.onlineTeaserLabel,
+      supportLabel: lot.pricing.supportLabel,
+      referenceValueCents: lot.pricing.referenceValueCents,
+      referenceValueLabel: lot.pricing.referenceValueLabel,
+      visibleValueCents: lot.pricing.referenceValueCents,
+      visibleValueLabel: lot.pricing.referenceValueLabel,
+      visibleValueKind: "reference",
+      minimumIncrementCents: lot.pricing.minimumIncrementCents,
+      minimumIncrementLabel: lot.pricing.minimumIncrementLabel,
+      nextAllowedAmountCents,
+      nextAllowedAmountLabel: formatCurrencyBRL(nextAllowedAmountCents),
+      viewerIsAuthenticated: false,
+      interestEnabled: status.interestEnabled,
+      viewerHasInterest: false,
+      preBidEnabled: status.preBidEnabled,
+      preBidMessage:
+        "Configure DATABASE_URL para habilitar interesse e pré-lance online.",
+      recentActivity: [seedActivity],
+    };
+  }
 
   return withPlatformDatabase(async (sql) => {
     const [topBidRow, activityRows, viewerInterestRow, viewerPreBidRow] = await Promise.all([
@@ -464,6 +555,14 @@ export async function getLotPlatformSnapshot(
 }
 
 export async function registerInterest(userId: string, lotSlug: string) {
+  if (shouldUseLocalSeedData()) {
+    void userId;
+    void lotSlug;
+    throw new Error(
+      "Configure DATABASE_URL para registrar interesses nesta oportunidade.",
+    );
+  }
+
   const lot = await requireLot(lotSlug);
   const lotStatus = getLotStatusDefinition(lot.statusKey);
 
@@ -546,6 +645,16 @@ export async function submitPreBid(
   amountCents: number,
   note?: string,
 ) {
+  if (shouldUseLocalSeedData()) {
+    void userId;
+    void lotSlug;
+    void amountCents;
+    void note;
+    throw new Error(
+      "Configure DATABASE_URL para registrar pré-lances nesta oportunidade.",
+    );
+  }
+
   const lot = await requireLot(lotSlug);
   const lotStatus = getLotStatusDefinition(lot.statusKey);
 
@@ -683,6 +792,11 @@ export async function submitPreBid(
 }
 
 export async function getUserDashboard(userId: string): Promise<UserDashboard> {
+  if (shouldUseLocalSeedData()) {
+    void userId;
+    throw new Error("Configure DATABASE_URL para acessar a área do usuário.");
+  }
+
   return withPlatformDatabase(async (sql) => {
     const [userRow, interestRows, preBidRows, activityRows] = await Promise.all([
       sql<DatabaseUserRow[]>`

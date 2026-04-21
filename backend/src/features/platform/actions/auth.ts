@@ -16,6 +16,7 @@ import {
   verifyPassword,
 } from "@/backend/features/platform/server/auth";
 import { createUserRecord, findUserByEmail } from "@/backend/features/platform/server/repository";
+import { isDatabaseConfigured } from "@/backend/features/platform/server/mode";
 import {
   consumeRateLimit,
   getRequestFingerprint,
@@ -47,6 +48,14 @@ export async function registerUserAction(
       status: "error",
       message: "Revise os campos destacados para concluir o cadastro.",
       errors: validated.error.flatten().fieldErrors,
+    };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return {
+      status: "error",
+      message:
+        "Cadastros estão indisponíveis neste ambiente. Configure DATABASE_URL para habilitar contas de usuário.",
     };
   }
 
@@ -106,6 +115,14 @@ export async function loginUserAction(
       status: "error",
       message: "Preencha e-mail e senha para continuar.",
       errors: validated.error.flatten().fieldErrors,
+    };
+  }
+
+  if (!isDatabaseConfigured()) {
+    return {
+      status: "error",
+      message:
+        "Login está indisponível neste ambiente. Configure DATABASE_URL para habilitar contas de usuário.",
     };
   }
 
