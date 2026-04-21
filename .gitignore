@@ -15,7 +15,20 @@
 
 # next.js
 /.next/
+/frontend/.next/
 /out/
+/frontend/out/
+
+# workspace dev output
+/workspace/output/
+/output/
+
+# local/private handoff material
+/legacy/
+/project-context/
+/00-GUIA-DE-ENTREGA-CLIENTE.md
+/GUIA-RAPIDO-CLIENTE.md
+/PASSO-A-PASSO-INSTALACAO-E-GITHUB.md
 
 # production
 /build
@@ -32,6 +45,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+!frontend/.env.local.example
 
 # vercel
 .vercel
