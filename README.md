@@ -30,7 +30,7 @@ npm run dev
 
 Abra `http://localhost:3000`.
 
-Use `.env.example` ou `frontend/.env.local.example` como referência e crie `frontend/.env.local`.
+Para desenvolvimento local, use `frontend/.env.local.example` como referência e crie `frontend/.env.local`. O `.env.example` da raiz é referência para preview/produção com persistência real.
 
 Sem `DATABASE_URL`, o app roda localmente em modo `local-seed`: a vitrine, catálogo, páginas públicas, SEO e health check funcionam com dados versionados, mas cadastro, login, interesses e pré-lances ficam indisponíveis até configurar Postgres.
 

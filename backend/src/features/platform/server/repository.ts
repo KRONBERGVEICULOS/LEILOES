@@ -1,4 +1,6 @@
-﻿import { randomUUID } from "node:crypto";
+import "server-only";
+
+import { randomUUID } from "node:crypto";
 
 import { createOfferWhatsAppLink, createWhatsAppLink } from "@/shared/config/site";
 import { getLotStatusDefinition } from "@/backend/features/auctions/lib/lot-status";

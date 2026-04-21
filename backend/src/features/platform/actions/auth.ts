@@ -8,6 +8,7 @@ import {
   signupFormSchema,
   type AuthActionState,
 } from "@/backend/features/platform/forms";
+import { normalizeInternalRedirect } from "@/backend/features/platform/lib/redirect";
 import {
   createSession,
   destroyCurrentSession,
@@ -23,11 +24,9 @@ import {
 } from "@/backend/features/platform/server/rate-limit";
 
 function getSafeRedirectPath(value: FormDataEntryValue | null) {
-  if (typeof value !== "string") {
-    return "/area";
-  }
-
-  return value.startsWith("/") ? value : "/area";
+  return normalizeInternalRedirect(value, "/area", {
+    allowedPrefixes: ["/area", "/eventos", "/lotes"],
+  });
 }
 
 export async function registerUserAction(

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Container } from "@/frontend/components/site/container";
 import { SignupForm } from "@/frontend/components/site/signup-form";
 import { createPageMetadata } from "@/shared/lib/metadata";
+import { normalizeInternalRedirect } from "@/backend/features/platform/lib/redirect";
 import { getCurrentUser } from "@/backend/features/platform/server/auth";
 
 type SignupPageProps = {
@@ -19,13 +20,9 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 function readRedirect(searchParams: Record<string, string | string[] | undefined>) {
-  const value = searchParams.redirect;
-
-  if (Array.isArray(value)) {
-    return value[0] ?? "/area";
-  }
-
-  return value ?? "/area";
+  return normalizeInternalRedirect(searchParams.redirect, "/area", {
+    allowedPrefixes: ["/area", "/eventos", "/lotes"],
+  });
 }
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
