@@ -7,10 +7,10 @@
     "frontend"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace frontend --",
-    "build": "npm run build --workspace frontend --",
-    "start": "npm run start --workspace frontend --",
-    "lint": "npm run lint --workspace frontend --",
-    "smoke:url": "node frontend/scripts/smoke-public.mjs"
+    "dev": "npm run dev --workspace @kron/frontend --",
+    "build": "npm run build --workspace @kron/frontend --",
+    "start": "npm run start --workspace @kron/frontend --",
+    "lint": "npm run lint --workspace @kron/frontend --",
+    "smoke:url": "npm run smoke:url --workspace @kron/frontend --"
   }
 }
