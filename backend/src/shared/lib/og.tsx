@@ -259,7 +259,7 @@ export function createOgImage({
                   color: "rgba(255,255,255,0.74)",
                 }}
               >
-                Pré-lance online responsável, atividade rastreável e CTA forte de WhatsApp.
+                Pré-lance online responsável, atividade rastreável e atendimento humano.
               </div>
             </div>
           </div>

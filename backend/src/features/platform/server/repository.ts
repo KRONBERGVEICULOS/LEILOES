@@ -7,6 +7,11 @@ import { getLotStatusDefinition } from "@/backend/features/auctions/lib/lot-stat
 import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
 import { getLotBySlug } from "@/backend/features/auctions/server/catalog";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
+import {
+  invalidatePublicActivityCache,
+  readPublicCache,
+  writePublicCache,
+} from "@/backend/features/platform/server/public-cache";
 import { shouldUseLocalSeedData } from "@/backend/features/platform/server/mode";
 import { formatCurrencyBRL } from "@/shared/lib/utils";
 import type {
@@ -22,6 +27,7 @@ import type {
 type DatabaseUserRow = {
   id: string;
   public_alias: string;
+  cpf: string | null;
   name: string;
   email: string;
   phone: string;
@@ -178,6 +184,22 @@ function isDatabaseErrorCode(error: unknown, code: string) {
   );
 }
 
+function getDatabaseErrorConstraint(error: unknown) {
+  if (typeof error !== "object" || error === null) {
+    return null;
+  }
+
+  if ("constraint_name" in error && typeof error.constraint_name === "string") {
+    return error.constraint_name;
+  }
+
+  if ("constraint" in error && typeof error.constraint === "string") {
+    return error.constraint;
+  }
+
+  return null;
+}
+
 function getLotCurrentState(
   topBidAmountCents: number | null,
   lot: Awaited<ReturnType<typeof getLotBySlug>>,
@@ -233,6 +255,7 @@ export async function findUserByEmail(email: string) {
       select
         id,
         public_alias,
+        cpf,
         name,
         email,
         phone,
@@ -259,6 +282,7 @@ export async function getUserById(userId: string) {
       select
         id,
         public_alias,
+        cpf,
         name,
         email,
         phone,
@@ -277,6 +301,7 @@ export async function getUserById(userId: string) {
 export async function createUserRecord(input: {
   name: string;
   email: string;
+  cpf: string;
   phone: string;
   city?: string;
   passwordHash: string;
@@ -291,7 +316,7 @@ export async function createUserRecord(input: {
   const normalizedEmail = input.email.trim().toLowerCase();
 
   try {
-    return await withPlatformDatabase((sql) =>
+    const user = await withPlatformDatabase((sql) =>
       sql.begin(async (transaction) => {
         const [sequenceRow] = await transaction<{ alias_number: number }[]>`
           select nextval('platform_public_alias_seq')::int as alias_number
@@ -308,6 +333,7 @@ export async function createUserRecord(input: {
             public_alias,
             name,
             email,
+            cpf,
             phone,
             city,
             password_hash,
@@ -318,6 +344,7 @@ export async function createUserRecord(input: {
             ${publicAlias},
             ${input.name},
             ${normalizedEmail},
+            ${input.cpf},
             ${input.phone},
             ${input.city ?? null},
             ${input.passwordHash},
@@ -353,8 +380,18 @@ export async function createUserRecord(input: {
         };
       }),
     );
+
+    await invalidatePublicActivityCache();
+
+    return user;
   } catch (error) {
     if (isDatabaseErrorCode(error, "23505")) {
+      const constraint = getDatabaseErrorConstraint(error);
+
+      if (constraint?.includes("cpf")) {
+        throw new Error("Já existe uma conta cadastrada com este CPF.");
+      }
+
       throw new Error("Já existe uma conta com este e-mail.");
     }
 
@@ -382,6 +419,15 @@ export async function listPublicActivity(limit = 6) {
     return Promise.all(rows.map((row) => createActivityItem(row, "public")));
   }
 
+  const cachedActivity = await readPublicCache<ActivityFeedItem[]>("activity", [
+    "public",
+    String(limit),
+  ]);
+
+  if (cachedActivity) {
+    return cachedActivity;
+  }
+
   return withPlatformDatabase(async (sql) => {
     const rows = await sql<DatabaseActivityRow[]>`
       select
@@ -401,7 +447,10 @@ export async function listPublicActivity(limit = 6) {
       limit ${limit}
     `;
 
-    return Promise.all(rows.map((row) => createActivityItem(row, "public")));
+    const items = await Promise.all(rows.map((row) => createActivityItem(row, "public")));
+    await writePublicCache("activity", ["public", String(limit)], items, 45);
+
+    return items;
   });
 }
 
@@ -572,7 +621,7 @@ export async function registerInterest(userId: string, lotSlug: string) {
     throw new Error("Este lote não está disponível para acompanhamento no momento.");
   }
 
-  return withPlatformDatabase((sql) =>
+  const result = await withPlatformDatabase((sql) =>
     sql.begin(async (transaction) => {
       const [userRow] = await transaction<{ public_alias: string }[]>`
         select public_alias
@@ -639,6 +688,10 @@ export async function registerInterest(userId: string, lotSlug: string) {
       };
     }),
   );
+
+  await invalidatePublicActivityCache();
+
+  return result;
 }
 
 export async function submitPreBid(
@@ -664,7 +717,7 @@ export async function submitPreBid(
     throw new Error("O pré-lance online não está liberado para este lote agora.");
   }
 
-  return withPlatformDatabase((sql) =>
+  const result = await withPlatformDatabase((sql) =>
     sql.begin(async (transaction) => {
       const [userRow] = await transaction<{ public_alias: string }[]>`
         select public_alias
@@ -791,6 +844,10 @@ export async function submitPreBid(
       };
     }),
   );
+
+  await invalidatePublicActivityCache();
+
+  return result;
 }
 
 export async function getUserDashboard(userId: string): Promise<UserDashboard> {

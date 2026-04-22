@@ -3,6 +3,7 @@ export type PlatformUser = {
   publicAlias: string;
   name: string;
   email: string;
+  cpf: string;
   phone: string;
   city?: string;
   passwordHash: string;
@@ -62,7 +63,7 @@ export type PlatformStore = {
   activities: PlatformActivity[];
 };
 
-export type AuthenticatedUser = Omit<PlatformUser, "passwordHash">;
+export type AuthenticatedUser = Omit<PlatformUser, "cpf" | "passwordHash">;
 
 export type ActivityFeedItem = {
   id: string;

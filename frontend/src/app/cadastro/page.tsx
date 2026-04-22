@@ -45,8 +45,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             Crie seu acesso para acompanhar oportunidades sem sair do foco comercial.
           </h1>
           <p className="max-w-2xl text-base leading-8 text-brand-muted">
-            O cadastro foi desenhado para ser objetivo: nome, contato, senha e
-            consentimento básico. Depois disso, você já entra na área com seus
+            O cadastro foi desenhado para ser objetivo: nome, CPF, contato, senha
+            e consentimento básico. Depois disso, você já entra na área com seus
             interesses e pré-lances organizados.
           </p>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -84,7 +84,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             Cadastro rápido, claro e focado em oportunidade.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
-            Você pode continuar a negociação no WhatsApp quando quiser, mas agora
+            Você continua contando com atendimento humano quando precisar, mas agora
             com uma área restrita para centralizar seus movimentos no site.
           </p>
           <div className="mt-8">

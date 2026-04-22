@@ -117,10 +117,10 @@ export function OpportunityActionsPanel({
             </h2>
             <p className="mt-3 text-sm leading-7 text-brand-muted">
               {snapshot.viewerHasInterest
-                ? "Você já acompanha este lote. Use o botão abaixo se quiser seguir para o atendimento no WhatsApp."
+                ? "Você já acompanha este lote. Use o botão abaixo se quiser seguir para o atendimento com o contexto já registrado."
                 : !snapshot.interestEnabled
                   ? "No momento este lote não aceita novos acompanhamentos pela área logada. Ajuste o contato direto com a operação quando necessário."
-                : "Ao acompanhar, este lote entra na sua área com histórico de atividade e CTA contextual de atendimento."}
+                  : "Ao acompanhar, este lote entra na sua área com histórico de atividade e CTA contextual de atendimento."}
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -146,7 +146,7 @@ export function OpportunityActionsPanel({
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Seguir no WhatsApp
+                  Falar com atendimento
                 </a>
               ) : null}
             </div>
@@ -228,7 +228,7 @@ export function OpportunityActionsPanel({
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      Levar contexto ao WhatsApp
+                      Compartilhar com atendimento
                     </a>
                   ) : null}
                 </div>
@@ -263,12 +263,12 @@ export function OpportunityActionsPanel({
             {lot.onlineTeaserLabel}
           </p>
           <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
-            Cadastre-se para liberar a área de pré-lance.
+            Cadastre-se para acompanhar e registrar seu valor com contexto.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
             Visitantes veem a referência comercial e o status do lote. Usuários
             cadastrados passam a ver o valor atual da área logada, registrar
-            interesse e enviar pré-lances online com contexto para o atendimento.
+            interesse e enviar pré-lances online com histórico centralizado na plataforma.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link

@@ -194,10 +194,10 @@ export default async function LotDetailPage({ params }: LotPageProps) {
           <aside className="space-y-5 lg:sticky lg:top-24 lg:h-fit">
             <div className="rounded-[28px] bg-brand-navy p-6 text-white shadow-[0_28px_70px_-44px_rgba(13,32,52,0.85)]">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-sand">
-                Atendimento comercial
+                Atendimento especializado
               </p>
               <h2 className="mt-3 text-2xl font-semibold leading-tight">
-                Valide contexto, disponibilidade e próximos passos pelo WhatsApp.
+                Valide contexto, disponibilidade e próximos passos com a equipe.
               </h2>
               <p className="mt-3 text-sm leading-7 text-white/74">
                 Esta página organiza a oportunidade. O atendimento oficial confirma
@@ -207,7 +207,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
               <InterestActions
                 className="mt-6"
                 primaryHref={whatsappHref}
-                primaryLabel="Chamar no WhatsApp"
+                primaryLabel="Falar com atendimento"
                 secondaryHref="#pre-lance-online"
                 secondaryLabel="Ir para pré-lance"
               />
@@ -322,7 +322,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
             <p className="mt-3 text-sm leading-7 text-brand-muted">
               O pré-lance online registra interesse e contexto comercial. Ele não
               substitui edital, documentação, validação humana nem fechamento
-              automático da oportunidade.
+              automático da oportunidade no site.
             </p>
           </div>
         </section>

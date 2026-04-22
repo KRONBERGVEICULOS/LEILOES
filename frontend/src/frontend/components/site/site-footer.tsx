@@ -37,7 +37,7 @@ export function SiteFooter() {
             rel="noopener noreferrer"
             target="_blank"
           >
-            Falar no WhatsApp
+            Falar com atendimento
           </a>
         </div>
 
@@ -85,7 +85,7 @@ export function SiteFooter() {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                WhatsApp: {siteConfig.whatsappDisplay}
+                Atendimento rápido: {siteConfig.whatsappDisplay}
               </a>
             </li>
             <li>

@@ -28,11 +28,10 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description:
-    "Encontre veículos, máquinas e equipamentos de leilão com valores abaixo do mercado. Cadastre-se, acompanhe lotes e envie seu pré-lance online com atendimento humano.",
+    "Encontre veículos, máquinas e equipamentos de leilão com valores abaixo do mercado. Cadastre-se, acompanhe lotes e registre seu interesse com atendimento humano.",
   applicationName: siteConfig.name,
   keywords: [
     ...siteConfig.defaultKeywords,
-    "whatsapp",
     "oportunidades",
     "atendimento comercial",
     "cadastro",
@@ -43,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${siteConfig.name} | Oportunidades de leilão com economia real`,
     description:
-      "Veículos e equipamentos selecionados com valores de referência, cadastro gratuito, pré-lance online e atendimento humano pelo WhatsApp.",
+      "Veículos e equipamentos selecionados com valores de referência, cadastro gratuito, pré-lance online e atendimento humano.",
     type: "website",
     locale: "pt_BR",
     url: absoluteUrl(),
@@ -61,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${siteConfig.name} | Oportunidades de leilão com economia real`,
     description:
-      "Consulte oportunidades de leilão, cadastre-se gratuitamente e envie seu pré-lance online com atendimento humano.",
+      "Consulte oportunidades de leilão, cadastre-se gratuitamente e acompanhe tudo com atendimento humano.",
     images: [absoluteUrl("/opengraph-image")],
   },
   alternates: {

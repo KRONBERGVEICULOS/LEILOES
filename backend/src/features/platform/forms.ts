@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { isValidCpf, normalizeCpf } from "@/shared/lib/cpf";
+
 export type FormFieldErrors = Record<string, string[] | undefined>;
 
 export type AuthActionState = {
@@ -26,6 +28,12 @@ export const initialOpportunityActionState: OpportunityActionState = {
 export const signupFormSchema = z.object({
   name: z.string().trim().min(3, "Informe seu nome completo."),
   email: z.string().trim().email("Digite um e-mail válido."),
+  cpf: z
+    .string()
+    .trim()
+    .transform(normalizeCpf)
+    .refine((value) => value.length === 11, "Informe um CPF com 11 dígitos.")
+    .refine(isValidCpf, "Informe um CPF válido."),
   phone: z
     .string()
     .trim()

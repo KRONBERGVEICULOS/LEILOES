@@ -42,7 +42,7 @@ export default async function DashboardPage() {
             primaryHref={createWhatsAppLink(
               `Olá, sou ${dashboard.user.name} (${dashboard.user.publicAlias}) e quero seguir no atendimento da minha área.`,
             )}
-            primaryLabel="Falar no WhatsApp"
+            primaryLabel="Falar com atendimento"
             secondaryHref="/eventos"
             secondaryLabel="Ver oportunidades"
           />

@@ -7,7 +7,7 @@ import { FaqList } from "@/frontend/components/site/faq-list";
 import { InterestActions } from "@/frontend/components/site/interest-actions";
 import { LotCard } from "@/frontend/components/site/lot-card";
 import { StructuredData } from "@/frontend/components/site/structured-data";
-import { absoluteUrl, createWhatsAppLink, siteConfig } from "@/shared/config/site";
+import { absoluteUrl, siteConfig } from "@/shared/config/site";
 import { listFeaturedLots } from "@/backend/features/auctions/server/catalog";
 import type { FaqItem } from "@/backend/features/auctions/types";
 import { getCurrentUser } from "@/backend/features/platform/server/auth";
@@ -20,7 +20,7 @@ export const metadata: Metadata = createPageMetadata({
   title: "Início",
   path: "/",
   description:
-    "Encontre veículos, máquinas e equipamentos de leilão com valores abaixo do mercado. Cadastre-se, acompanhe lotes e envie seu pré-lance online.",
+    "Encontre veículos, máquinas e equipamentos de leilão com valores abaixo do mercado. Cadastre-se, acompanhe lotes e registre seu interesse com apoio humano.",
   keywords: [
     "pré-lance online",
     "leilão de veículos",
@@ -36,7 +36,7 @@ const heroSignals = [
   },
   {
     label: "Atendimento direto",
-    value: "Tire dúvidas e negocie pelo WhatsApp com uma equipe que entende do processo de ponta a ponta.",
+    value: "Tire dúvidas e avance com apoio de uma equipe que conhece o processo de ponta a ponta.",
   },
   {
     label: "Pré-lance online",
@@ -59,9 +59,9 @@ const processSteps = [
   },
   {
     step: "03",
-    title: "Faça seu pré-lance ou fale conosco",
+    title: "Registre interesse e avance com clareza",
     description:
-      "Envie sua proposta online ou chame no WhatsApp para tirar qualquer dúvida antes de dar o próximo passo.",
+      "Use a área logada para acompanhar o lote e, quando fizer sentido, siga com o atendimento humano já contextualizado.",
   },
 ] as const;
 
@@ -92,17 +92,17 @@ const faqPreview: FaqItem[] = [
   {
     question: "O pré-lance garante a compra?",
     answer:
-      "O pré-lance registra sua proposta de forma oficial. A confirmação final é feita pela equipe de atendimento via WhatsApp, com toda a orientação necessária.",
+      "O pré-lance registra sua proposta de forma oficial. A confirmação final é feita pela equipe de atendimento, com toda a orientação necessária.",
   },
   {
     question: "Como funciona o pagamento?",
     answer:
-      "Após a aprovação do lance, nossa equipe orienta todo o processo de pagamento e documentação pelo WhatsApp, de forma segura e personalizada.",
+      "Após a aprovação do lance, nossa equipe orienta todo o processo de pagamento e documentação de forma segura e personalizada.",
   },
   {
     question: "Posso tirar dúvidas antes de dar um lance?",
     answer:
-      "Claro! Use o botão de WhatsApp em qualquer página para falar diretamente com a equipe. Estamos aqui para ajudar.",
+      "Claro. Use os canais de atendimento do site para falar com a equipe antes de tomar qualquer decisão.",
   },
 ];
 
@@ -113,7 +113,7 @@ const homeStructuredData = [
     name: siteConfig.name,
     url: absoluteUrl(),
     description:
-      "Página comercial de divulgação da Kron Leilões com cadastro, área restrita e atendimento via WhatsApp.",
+      "Página institucional da Kron Leilões com catálogo, cadastro, área restrita e atendimento humano.",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: siteConfig.phoneNumber,
@@ -139,6 +139,8 @@ export default async function Home() {
   ]);
   const dashboardHref = currentUser ? "/area" : "/cadastro";
   const dashboardLabel = currentUser ? "Abrir minha área" : "Criar cadastro";
+  const secondaryCtaHref = currentUser ? "/contato" : "/eventos";
+  const secondaryCtaLabel = currentUser ? "Falar com atendimento" : "Ver oportunidades";
 
   return (
     <>
@@ -157,16 +159,14 @@ export default async function Home() {
               </h1>
               <p className="max-w-3xl text-base leading-8 text-white/78 sm:text-lg">
                 Encontre veículos, máquinas e equipamentos com valores abaixo do
-                mercado. Cadastre-se, acompanhe os lotes e envie seu pré-lance
-                online — tudo com o suporte da nossa equipe pelo WhatsApp.
+                mercado. Cadastre-se, acompanhe os lotes e registre seu interesse
+                com histórico centralizado e suporte humano quando necessário.
               </p>
             </div>
 
             <InterestActions
-              primaryHref={createWhatsAppLink(
-                `Olá, quero atendimento comercial da ${siteConfig.name} para analisar uma oportunidade.`,
-              )}
-              primaryLabel="Falar no WhatsApp"
+              primaryHref="/eventos"
+              primaryLabel="Ver oportunidades"
               secondaryHref={dashboardHref}
               secondaryLabel={dashboardLabel}
             />
@@ -217,10 +217,10 @@ export default async function Home() {
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
-                  WhatsApp direto
+                  Atendimento especializado
                 </p>
                 <p className="mt-2 text-sm leading-6 text-brand-muted">
-                  Fale com a equipe em qualquer momento para dúvidas, propostas ou orientação.
+                  Conte com apoio humano para dúvidas, propostas e próximos passos sem perder o contexto da plataforma.
                 </p>
               </div>
             </div>
@@ -239,7 +239,7 @@ export default async function Home() {
             </h2>
             <p className="max-w-3xl text-base leading-8 text-brand-muted">
               Veículos e equipamentos selecionados com valores de referência,
-              localização e status atualizados. Veja os detalhes e entre em contato.
+              localização e status atualizados. Veja os detalhes antes de decidir o próximo passo.
             </p>
           </div>
 
@@ -317,7 +317,7 @@ export default async function Home() {
             </h2>
             <p className="text-base leading-8 text-brand-muted">
               Confira as respostas para as perguntas mais comuns. Se precisar de
-              mais detalhes, é só chamar no WhatsApp.
+              mais detalhes, o atendimento da equipe continua disponível.
             </p>
           </div>
           <FaqList items={faqPreview} />
@@ -330,21 +330,19 @@ export default async function Home() {
                 Pronto para aproveitar?
               </p>
               <h2 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight sm:text-4xl">
-                Cadastre-se agora ou fale direto com a equipe.
+                Cadastre-se agora e avance com mais contexto.
               </h2>
               <p className="mt-3 max-w-3xl text-base leading-8 text-white/72">
                 Não perca tempo. As melhores oportunidades de leilão estão aqui,
-                com atendimento personalizado pelo WhatsApp e pré-lance online.
+                com catálogo atualizado, área restrita e atendimento humano quando necessário.
               </p>
             </div>
 
             <InterestActions
-              primaryHref={createWhatsAppLink(
-                `Olá, quero falar com o atendimento comercial da ${siteConfig.name}.`,
-              )}
-              primaryLabel="Falar no WhatsApp"
-              secondaryHref={dashboardHref}
-              secondaryLabel={dashboardLabel}
+              primaryHref={dashboardHref}
+              primaryLabel={dashboardLabel}
+              secondaryHref={secondaryCtaHref}
+              secondaryLabel={secondaryCtaLabel}
             />
           </div>
         </section>

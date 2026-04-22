@@ -55,12 +55,20 @@ const schemaSql = `
     id text primary key,
     public_alias text not null unique,
     email text not null unique,
+    cpf text not null,
     name text not null,
     phone text not null,
     city text,
     password_hash text not null,
     created_at timestamptz not null default now()
   );
+
+  alter table if exists platform_users
+    add column if not exists cpf text;
+
+  create unique index if not exists platform_users_cpf_idx
+    on platform_users (cpf)
+    where cpf is not null;
 
   create table if not exists platform_sessions (
     id text primary key,

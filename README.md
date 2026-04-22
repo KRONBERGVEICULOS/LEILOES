@@ -19,6 +19,7 @@ package-lock.json
 - React 19
 - TypeScript
 - Postgres
+- Redis opcional para cache público e rate limiting
 - npm workspaces
 
 ## Como rodar
@@ -49,6 +50,7 @@ Local ou produção com persistência real:
 KRON_DATA_MODE=postgres
 DATABASE_URL=postgresql://...
 DATABASE_SSL_MODE=require
+REDIS_URL=redis://...
 NEXT_PUBLIC_SITE_URL=https://seu-dominio.com
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=troque-esta-senha

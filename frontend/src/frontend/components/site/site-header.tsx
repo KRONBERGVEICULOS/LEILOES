@@ -72,17 +72,6 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
               {item.label}
             </Link>
           ))}
-          <Link
-            className={cn(
-              "text-sm font-medium transition hover:text-brand-navy",
-              isActiveLink(pathname, "/area")
-                ? "text-brand-navy"
-                : "text-brand-ink",
-            )}
-            href={currentUser ? "/area" : "/entrar"}
-          >
-            {currentUser ? "Minha área" : "Entrar"}
-          </Link>
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
@@ -120,12 +109,12 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
             </>
           )}
           <a
-            className="inline-flex items-center justify-center rounded-full bg-brand-brass px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-brass/92"
+            className="inline-flex items-center justify-center rounded-full border border-brand-line bg-white px-5 py-3 text-sm font-semibold text-brand-navy transition hover:border-brand-navy"
             href={whatsappHref}
             rel="noopener noreferrer"
             target="_blank"
           >
-            WhatsApp
+            Atendimento
           </a>
         </div>
 
@@ -210,7 +199,7 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
               rel="noopener noreferrer"
               target="_blank"
             >
-              Falar no WhatsApp
+              Falar com atendimento
             </a>
           </div>
         </details>

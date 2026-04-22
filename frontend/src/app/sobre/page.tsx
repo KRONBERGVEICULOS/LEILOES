@@ -3,38 +3,37 @@
 import { Container } from "@/frontend/components/site/container";
 import { InterestActions } from "@/frontend/components/site/interest-actions";
 import { PageHero } from "@/frontend/components/site/page-hero";
-import { createWhatsAppLink } from "@/shared/config/site";
 import { createPageMetadata } from "@/shared/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Atendimento",
   path: "/sobre",
   description:
-    "Entenda como funciona o atendimento comercial da Kron Leilões e o papel desta página na captação via WhatsApp.",
+    "Entenda como funciona o atendimento comercial da Kron Leilões e como o site organiza a jornada até o contato humano.",
 });
 
 const serviceHighlights = [
   {
-    title: "Página comercial de divulgação",
+    title: "Portal comercial com foco em oportunidade",
     description:
-      "O site existe para mostrar oportunidades, gerar confiança e levar o interessado para a conversa no WhatsApp.",
+      "O site existe para mostrar oportunidades, gerar confiança e organizar o caminho até a tomada de decisão.",
   },
   {
     title: "Fluxo simples e humano",
     description:
-      "Nada de parecer um portal oficial completo. Aqui a navegação é leve, clara e focada em conversão.",
+      "A navegação é leve, clara e focada em contexto. O portal mostra o essencial e o atendimento completa o processo.",
   },
   {
-    title: "Proposta organizada na conversa",
+    title: "Próximos passos com apoio da equipe",
     description:
-      "Quando o lote fizer sentido, a oferta é encaminhada pelo WhatsApp, com contexto suficiente para o vendedor dar sequência.",
+      "Quando o lote fizer sentido, a conversa segue com contexto suficiente para a equipe dar sequência com segurança.",
   },
 ] as const;
 
 const expectations = [
-  "Você encontra os lotes com leitura rápida e CTA forte.",
-  "Você fala com atendimento comercial para esclarecer dúvidas.",
-  "Você pode enviar proposta pelo WhatsApp sem simular compra automática no site.",
+  "Você encontra os lotes com leitura rápida e informações objetivas.",
+  "Você fala com atendimento comercial para esclarecer dúvidas e validar próximos passos.",
+  "Você pode registrar interesse ou proposta sem simular compra automática no site.",
 ] as const;
 
 export default function AboutPageRoute() {
@@ -47,14 +46,14 @@ export default function AboutPageRoute() {
               Resumo
             </p>
             <p className="mt-3 text-sm leading-7 text-brand-muted">
-              Esta é uma página comercial da Kron Leilões para captação de interessados
-              e atendimento via WhatsApp.
+              Esta é uma página institucional da Kron Leilões para apresentar o modelo
+              de atendimento e como o site apoia a operação.
             </p>
           </div>
         }
-        description="A proposta aqui não é simular uma leiloeira com dezenas de camadas institucionais. É vender melhor, com clareza e confiança."
+        description="A proposta aqui não é simular uma leiloeira com dezenas de camadas institucionais. É apresentar melhor as oportunidades, com clareza e confiança."
         eyebrow="Atendimento"
-        meta={["Divulgação", "WhatsApp", "Conversão", "Atendimento humano"]}
+        meta={["Divulgação", "Catálogo", "Atendimento humano", "Confiança"]}
         title="Como funciona o atendimento comercial desta página."
       />
 
@@ -63,14 +62,12 @@ export default function AboutPageRoute() {
           <p className="text-base leading-8 text-brand-muted">
             O foco do projeto agora é simples: apresentar oportunidades com boa
             aparência, passar confiança comercial e transformar interesse em
-            conversa direta no WhatsApp.
+            atendimento organizado com apoio humano.
           </p>
 
           <InterestActions
-            primaryHref={createWhatsAppLink(
-              "Olá, quero falar com o atendimento comercial.",
-            )}
-            primaryLabel="Falar no WhatsApp"
+            primaryHref="/contato"
+            primaryLabel="Falar com atendimento"
             secondaryHref="/eventos"
             secondaryLabel="Ver oportunidades"
           />
@@ -97,7 +94,7 @@ export default function AboutPageRoute() {
             O que esperar
           </p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-            O site foi simplificado para ajudar a vender.
+            O site foi simplificado para ajudar a decidir com mais segurança.
           </h2>
         </div>
 

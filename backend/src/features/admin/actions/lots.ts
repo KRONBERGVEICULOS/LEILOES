@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 import type { MediaAsset } from "@/backend/features/auctions/types";
 import { adminLotSchema, initialAdminActionState, type AdminActionState } from "@/backend/features/admin/forms";
@@ -189,6 +190,10 @@ export async function saveAdminLotAction(
       `/admin/lotes/${result.id}/editar?saved=${readString(formData, "id") ? "updated" : "created"}`,
     );
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
     return {
       status: "error",
       message:

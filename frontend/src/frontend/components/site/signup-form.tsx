@@ -5,6 +5,7 @@ import { useActionState } from "react";
 
 import { FormSubmitButton } from "@/frontend/components/site/form-submit-button";
 import { initialAuthActionState } from "@/backend/features/platform/forms";
+import { formatCpf } from "@/shared/lib/cpf";
 import {
   registerUserAction,
 } from "@/backend/features/platform/actions/auth";
@@ -62,7 +63,7 @@ export function SignupForm({ redirectTo }: SignupFormProps) {
 
         <div className="grid gap-2">
           <label className="text-sm font-semibold text-brand-ink" htmlFor="signup-phone">
-            WhatsApp
+            Telefone / WhatsApp
           </label>
           <input
             autoComplete="tel"
@@ -79,7 +80,33 @@ export function SignupForm({ redirectTo }: SignupFormProps) {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-2">
+          <label className="text-sm font-semibold text-brand-ink" htmlFor="signup-cpf">
+            CPF
+          </label>
+          <input
+            autoComplete="off"
+            className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
+            id="signup-cpf"
+            inputMode="numeric"
+            maxLength={14}
+            minLength={14}
+            name="cpf"
+            onInput={(event) => {
+              event.currentTarget.value = formatCpf(event.currentTarget.value);
+            }}
+            pattern="[0-9]{3}[.][0-9]{3}[.][0-9]{3}-[0-9]{2}"
+            placeholder="000.000.000-00"
+            required
+            title="Informe um CPF válido no formato 000.000.000-00."
+            type="text"
+          />
+          {state.errors?.cpf?.[0] ? (
+            <p className="text-sm text-brand-danger">{state.errors.cpf[0]}</p>
+          ) : null}
+        </div>
+
         <div className="grid gap-2">
           <label className="text-sm font-semibold text-brand-ink" htmlFor="signup-city">
             Cidade
@@ -96,7 +123,9 @@ export function SignupForm({ redirectTo }: SignupFormProps) {
             <p className="text-sm text-brand-danger">{state.errors.city[0]}</p>
           ) : null}
         </div>
+      </div>
 
+      <div className="grid gap-4">
         <div className="grid gap-2">
           <div className="flex items-center justify-between gap-3">
             <label

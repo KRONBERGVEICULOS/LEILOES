@@ -36,6 +36,7 @@ export async function registerUserAction(
   const validated = signupFormSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
+    cpf: formData.get("cpf"),
     phone: formData.get("phone"),
     city: formData.get("city") || undefined,
     password: formData.get("password"),
@@ -90,6 +91,7 @@ export async function registerUserAction(
   const user = await createUserRecord({
     name: validated.data.name,
     email: validated.data.email,
+    cpf: validated.data.cpf,
     phone: validated.data.phone,
     city: validated.data.city,
     passwordHash,

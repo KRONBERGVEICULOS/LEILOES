@@ -7,7 +7,7 @@ import { InterestActions } from "@/frontend/components/site/interest-actions";
 import { LotCard } from "@/frontend/components/site/lot-card";
 import { PageHero } from "@/frontend/components/site/page-hero";
 import { StructuredData } from "@/frontend/components/site/structured-data";
-import { absoluteUrl, createWhatsAppLink } from "@/shared/config/site";
+import { absoluteUrl } from "@/shared/config/site";
 import { listLots } from "@/backend/features/auctions/server/catalog";
 import {
   filterLots,
@@ -22,8 +22,8 @@ export const metadata: Metadata = createPageMetadata({
   title: "Oportunidades",
   path: "/eventos",
   description:
-    "Lista comercial de oportunidades e lotes com referência online, cadastro simples e contato direto via WhatsApp.",
-  keywords: ["oportunidades", "lotes", "veículos", "whatsapp", "cadastro", "pré-lance"],
+    "Lista comercial de oportunidades e lotes com referência online, cadastro simples e atendimento humano.",
+  keywords: ["oportunidades", "lotes", "veículos", "cadastro", "pré-lance"],
 });
 
 type OpportunitiesPageProps = {
@@ -50,7 +50,7 @@ export default async function OpportunitiesPage({
           name: "Oportunidades",
           url: absoluteUrl("/eventos"),
           description:
-            "Página comercial com oportunidades e lotes publicados para contato via WhatsApp.",
+            "Página comercial com oportunidades e lotes publicados para consulta e atendimento.",
           numberOfItems: filteredLots.length,
         }}
       />
@@ -64,18 +64,16 @@ export default async function OpportunitiesPage({
             <p className="mt-3 text-sm leading-7 text-brand-muted">
               Procure por nome, código ou cidade. Quando encontrar o lote certo,
               abra o detalhe para ver referência online, atividade recente e o
-              caminho de cadastro ou WhatsApp.
+              caminho de cadastro ou atendimento.
             </p>
             <InterestActions
               className="mt-5"
-              primaryHref={createWhatsAppLink(
-                "Olá, preciso de ajuda para encontrar uma oportunidade.",
-              )}
-              primaryLabel="Pedir ajuda no WhatsApp"
+              primaryHref="/contato"
+              primaryLabel="Falar com atendimento"
             />
           </div>
         }
-        description="A vitrine continua comercial e direta, mas agora já sinaliza referência online, área restrita e o melhor caminho para converter em atendimento."
+        description="A vitrine continua comercial e direta, mas agora já sinaliza referência online, área restrita e o melhor caminho para seguir com atendimento."
         eyebrow="Oportunidades"
         meta={["Lotes", "Referência online", "Cadastro simples", "Atendimento direto"]}
         title="Escolha uma oportunidade e avance para cadastro ou atendimento."
@@ -107,13 +105,11 @@ export default async function OpportunitiesPage({
           </div>
         ) : (
           <EmptyState
-            description="A busca atual não encontrou nenhuma oportunidade. Limpe os filtros ou chame no WhatsApp para receber ajuda."
+            description="A busca atual não encontrou nenhuma oportunidade. Limpe os filtros ou fale com o atendimento para receber ajuda."
             primaryHref="/eventos"
             primaryLabel="Limpar busca"
-            secondaryHref={createWhatsAppLink(
-              "Olá, preciso de ajuda para localizar um lote ou oportunidade.",
-            )}
-            secondaryLabel="Falar no WhatsApp"
+            secondaryHref="/contato"
+            secondaryLabel="Falar com atendimento"
             title="Nenhuma oportunidade corresponde aos filtros atuais."
           />
         )}
@@ -126,16 +122,14 @@ export default async function OpportunitiesPage({
             Quer ajuda para comparar lotes ou organizar sua proposta?
           </h2>
           <p className="mt-4 max-w-3xl text-base leading-8 text-brand-muted">
-            Use o WhatsApp para tratar um lote específico ou vários ativos na mesma
+            Use o atendimento para tratar um lote específico ou vários ativos na mesma
             conversa, e aproveite o cadastro quando quiser acompanhar atividade e
             pré-lances na área restrita.
           </p>
           <InterestActions
             className="mt-8"
-            primaryHref={createWhatsAppLink(
-              "Olá, quero ajuda para comparar oportunidades e falar sobre proposta.",
-            )}
-            primaryLabel="Falar no WhatsApp"
+            primaryHref="/contato"
+            primaryLabel="Falar com atendimento"
             secondaryHref="/contato"
             secondaryLabel="Ver contato"
           />
