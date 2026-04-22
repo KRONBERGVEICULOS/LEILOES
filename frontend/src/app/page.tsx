@@ -35,7 +35,7 @@ const heroSignals = [
     value: "Veículos, máquinas e equipamentos com valores abaixo do mercado, vindos de leilões oficiais.",
   },
   {
-    label: "Atendimento direto",
+    label: "Suporte especializado",
     value: "Tire dúvidas e avance com apoio de uma equipe que conhece o processo de ponta a ponta.",
   },
   {
@@ -140,7 +140,7 @@ export default async function Home() {
   const dashboardHref = currentUser ? "/area" : "/cadastro";
   const dashboardLabel = currentUser ? "Abrir minha área" : "Criar cadastro";
   const secondaryCtaHref = currentUser ? "/contato" : "/eventos";
-  const secondaryCtaLabel = currentUser ? "Falar com atendimento" : "Ver oportunidades";
+  const secondaryCtaLabel = currentUser ? "Falar com especialista" : "Ver oportunidades";
 
   return (
     <>
@@ -155,12 +155,12 @@ export default async function Home() {
                 Kron Leilões
               </p>
               <h1 className="max-w-4xl text-4xl font-semibold leading-tight text-balance sm:text-5xl lg:text-6xl">
-                Oportunidades de leilão com economia real e atendimento humano.
+                Oportunidades de leilão com economia real, contexto e segurança.
               </h1>
               <p className="max-w-3xl text-base leading-8 text-white/78 sm:text-lg">
                 Encontre veículos, máquinas e equipamentos com valores abaixo do
                 mercado. Cadastre-se, acompanhe os lotes e registre seu interesse
-                com histórico centralizado e suporte humano quando necessário.
+                em uma jornada mais organizada, com apoio especializado quando necessário.
               </p>
             </div>
 
@@ -217,7 +217,7 @@ export default async function Home() {
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
-                  Atendimento especializado
+                  Suporte especializado
                 </p>
                 <p className="mt-2 text-sm leading-6 text-brand-muted">
                   Conte com apoio humano para dúvidas, propostas e próximos passos sem perder o contexto da plataforma.
@@ -297,7 +297,7 @@ export default async function Home() {
               className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_20px_52px_-44px_rgba(26,36,48,0.3)]"
             >
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
-                Pilar comercial
+                Diferencial da plataforma
               </p>
               <h3 className="mt-3 text-2xl font-semibold text-brand-ink">{item.title}</h3>
               <p className="mt-3 text-sm leading-7 text-brand-muted">
@@ -327,14 +327,14 @@ export default async function Home() {
           <div className="grid gap-6 px-6 py-8 sm:px-8 sm:py-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-sand">
-                Pronto para aproveitar?
+                Pronto para acompanhar?
               </p>
               <h2 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight sm:text-4xl">
-                Cadastre-se agora e avance com mais contexto.
+                Crie seu cadastro e acompanhe com mais contexto.
               </h2>
               <p className="mt-3 max-w-3xl text-base leading-8 text-white/72">
-                Não perca tempo. As melhores oportunidades de leilão estão aqui,
-                com catálogo atualizado, área restrita e atendimento humano quando necessário.
+                As melhores oportunidades de leilão estão aqui, com catálogo
+                atualizado, área restrita e suporte especializado quando necessário.
               </p>
             </div>
 

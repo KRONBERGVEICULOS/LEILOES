@@ -5,7 +5,7 @@ import { useActionState } from "react";
 
 import { FormSubmitButton } from "@/frontend/components/site/form-submit-button";
 import { initialAuthActionState } from "@/backend/features/platform/forms";
-import { formatCpf } from "@/shared/lib/cpf";
+import { formatCpf, isValidCpf } from "@/shared/lib/cpf";
 import {
   registerUserAction,
 } from "@/backend/features/platform/actions/auth";
@@ -13,6 +13,27 @@ import {
 type SignupFormProps = {
   redirectTo: string;
 };
+
+function syncCpfFieldState(input: HTMLInputElement) {
+  const digits = input.value.replace(/\D/g, "");
+
+  if (digits.length === 0) {
+    input.setCustomValidity("Informe seu CPF.");
+    return;
+  }
+
+  if (digits.length !== 11) {
+    input.setCustomValidity("Informe um CPF com 11 dígitos.");
+    return;
+  }
+
+  if (!isValidCpf(digits)) {
+    input.setCustomValidity("Informe um CPF válido.");
+    return;
+  }
+
+  input.setCustomValidity("");
+}
 
 export function SignupForm({ redirectTo }: SignupFormProps) {
   const [state, formAction] = useActionState(
@@ -95,6 +116,10 @@ export function SignupForm({ redirectTo }: SignupFormProps) {
             name="cpf"
             onInput={(event) => {
               event.currentTarget.value = formatCpf(event.currentTarget.value);
+              syncCpfFieldState(event.currentTarget);
+            }}
+            onBlur={(event) => {
+              syncCpfFieldState(event.currentTarget);
             }}
             pattern="[0-9]{3}[.][0-9]{3}[.][0-9]{3}-[0-9]{2}"
             placeholder="000.000.000-00"
@@ -168,12 +193,24 @@ export function SignupForm({ redirectTo }: SignupFormProps) {
       ) : null}
 
       {state.message ? (
-        <p
+        <div
           aria-live="polite"
-          className="rounded-2xl border border-brand-danger/20 bg-brand-danger/8 px-4 py-3 text-sm text-brand-danger"
+          className={`rounded-2xl border px-4 py-3 text-sm ${
+            state.status === "success"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border-brand-danger/20 bg-brand-danger/8 text-brand-danger"
+          }`}
         >
-          {state.message}
-        </p>
+          <p>{state.message}</p>
+          {state.status === "success" ? (
+            <Link
+              className="mt-3 inline-flex font-semibold text-emerald-800 underline underline-offset-4"
+              href={`/entrar?redirect=${encodeURIComponent(redirectTo)}`}
+            >
+              Ir para o login
+            </Link>
+          ) : null}
+        </div>
       ) : null}
 
       <FormSubmitButton idleLabel="Criar cadastro" pendingLabel="Criando conta..." />

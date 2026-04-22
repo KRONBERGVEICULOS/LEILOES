@@ -3,9 +3,15 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 
 import { createOfferWhatsAppLink, createWhatsAppLink } from "@/shared/config/site";
+import { isValidCpf, normalizeCpf } from "@/shared/lib/cpf";
 import { getLotStatusDefinition } from "@/backend/features/auctions/lib/lot-status";
 import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
 import { getLotBySlug } from "@/backend/features/auctions/server/catalog";
+import {
+  isValidPhone,
+  normalizeEmail,
+  normalizeSignupInput,
+} from "@/backend/features/platform/lib/user-normalization";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
 import {
   invalidatePublicActivityCache,
@@ -27,7 +33,6 @@ import type {
 type DatabaseUserRow = {
   id: string;
   public_alias: string;
-  cpf: string | null;
   name: string;
   email: string;
   phone: string;
@@ -61,6 +66,16 @@ type DatabasePreBidRow = {
   amount_cents: number;
   created_at: string | Date;
 };
+
+export class UserRegistrationConflictError extends Error {
+  constructor(
+    readonly field: "email" | "cpf",
+    message: string,
+  ) {
+    super(message);
+    this.name = "UserRegistrationConflictError";
+  }
+}
 
 async function requireLot(lotSlug: string) {
   const lot = await getLotBySlug(lotSlug, { includeHidden: true });
@@ -255,7 +270,6 @@ export async function findUserByEmail(email: string) {
       select
         id,
         public_alias,
-        cpf,
         name,
         email,
         phone,
@@ -263,11 +277,31 @@ export async function findUserByEmail(email: string) {
         password_hash,
         created_at
       from platform_users
-      where email = ${email.trim().toLowerCase()}
+      where email = ${normalizeEmail(email)}
       limit 1
     `;
 
     return row ? mapUserRowWithPassword(row) : null;
+  });
+}
+
+export async function findUserByCpf(cpf: string) {
+  if (shouldUseLocalSeedData()) {
+    void cpf;
+    return null;
+  }
+
+  const normalizedCpf = normalizeCpf(cpf);
+
+  return withPlatformDatabase(async (sql) => {
+    const [row] = await sql<{ id: string }[]>`
+      select id
+      from platform_users
+      where cpf = ${normalizedCpf}
+      limit 1
+    `;
+
+    return row ?? null;
   });
 }
 
@@ -282,7 +316,6 @@ export async function getUserById(userId: string) {
       select
         id,
         public_alias,
-        cpf,
         name,
         email,
         phone,
@@ -313,7 +346,23 @@ export async function createUserRecord(input: {
     );
   }
 
-  const normalizedEmail = input.email.trim().toLowerCase();
+  const normalizedInput = normalizeSignupInput(input);
+
+  if (normalizedInput.name.length < 3) {
+    throw new Error("Nome de cadastro inválido.");
+  }
+
+  if (!isValidCpf(normalizedInput.cpf)) {
+    throw new Error("CPF de cadastro inválido.");
+  }
+
+  if (!isValidPhone(normalizedInput.phone)) {
+    throw new Error("Telefone de cadastro inválido.");
+  }
+
+  if (normalizedInput.city && normalizedInput.city.length > 60) {
+    throw new Error("Cidade de cadastro inválida.");
+  }
 
   try {
     const user = await withPlatformDatabase((sql) =>
@@ -342,11 +391,11 @@ export async function createUserRecord(input: {
           values (
             ${userId},
             ${publicAlias},
-            ${input.name},
-            ${normalizedEmail},
-            ${input.cpf},
-            ${input.phone},
-            ${input.city ?? null},
+            ${normalizedInput.name},
+            ${normalizedInput.email},
+            ${normalizedInput.cpf},
+            ${normalizedInput.phone},
+            ${normalizedInput.city ?? null},
             ${input.passwordHash},
             ${createdAt}
           )
@@ -372,10 +421,10 @@ export async function createUserRecord(input: {
         return {
           id: userId,
           publicAlias,
-          name: input.name,
-          email: normalizedEmail,
-          phone: input.phone,
-          ...(input.city ? { city: input.city } : {}),
+          name: normalizedInput.name,
+          email: normalizedInput.email,
+          phone: normalizedInput.phone,
+          ...(normalizedInput.city ? { city: normalizedInput.city } : {}),
           createdAt,
         };
       }),
@@ -389,10 +438,24 @@ export async function createUserRecord(input: {
       const constraint = getDatabaseErrorConstraint(error);
 
       if (constraint?.includes("cpf")) {
-        throw new Error("Já existe uma conta cadastrada com este CPF.");
+        throw new UserRegistrationConflictError(
+          "cpf",
+          "Já existe uma conta cadastrada com este CPF.",
+        );
       }
 
-      throw new Error("Já existe uma conta com este e-mail.");
+      throw new UserRegistrationConflictError(
+        "email",
+        "Já existe uma conta com este e-mail.",
+      );
+    }
+
+    if (isDatabaseErrorCode(error, "23514")) {
+      const constraint = getDatabaseErrorConstraint(error);
+
+      if (constraint?.includes("cpf")) {
+        throw new Error("O CPF informado não passou na validação do banco.");
+      }
     }
 
     throw error;

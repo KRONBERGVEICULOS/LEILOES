@@ -9,6 +9,7 @@ import { adminLotSchema, initialAdminActionState, type AdminActionState } from "
 import { requireAdminSession } from "@/backend/features/admin/server/auth";
 import {
   duplicateAdminLot,
+  getAdminReferenceData,
   saveAdminLot,
   setAdminLotFeatured,
   setAdminLotVisibility,
@@ -36,13 +37,15 @@ function splitLines(value: string) {
 function parseGalleryLines(value: string) {
   const items = splitLines(value);
   const gallery: MediaAsset[] = [];
+  const invalidLineNumbers: number[] = [];
 
   for (const [index, item] of items.entries()) {
     const [src, ...altParts] = item.split("|");
     const normalizedSrc = src?.trim();
 
     if (!normalizedSrc) {
-      return null;
+      invalidLineNumbers.push(index + 1);
+      continue;
     }
 
     gallery.push({
@@ -51,7 +54,10 @@ function parseGalleryLines(value: string) {
     });
   }
 
-  return gallery;
+  return {
+    gallery,
+    invalidLineNumbers,
+  };
 }
 
 function collectLotFormValues(formData: FormData) {
@@ -115,10 +121,25 @@ export async function saveAdminLotAction(
     };
   }
 
+  const allowedEventSlugs = new Set(
+    getAdminReferenceData().events.map((event) => event.slug),
+  );
+
+  if (!allowedEventSlugs.has(validated.data.eventSlug)) {
+    return {
+      status: "error",
+      message: "Selecione um evento válido antes de salvar o lote.",
+      errors: {
+        eventSlug: ["Escolha um evento existente na operação."],
+      },
+      values: rawValues,
+    };
+  }
+
   const referenceValueCents = parseCurrencyInput(validated.data.referencePrice);
   const currentValueCents = parseCurrencyInput(validated.data.currentPrice);
   const minimumIncrementCents = parseCurrencyInput(validated.data.minimumIncrement);
-  const gallery = parseGalleryLines(validated.data.gallery ?? "");
+  const parsedGallery = parseGalleryLines(validated.data.gallery ?? "");
   const details = splitLines(validated.data.details);
   const highlights = splitLines(validated.data.highlights);
   const facts = splitLines(validated.data.facts ?? "");
@@ -140,7 +161,26 @@ export async function saveAdminLotAction(
     };
   }
 
-  if (!details.length || !highlights.length || !gallery?.length) {
+  if (parsedGallery.invalidLineNumbers.length) {
+    const invalidLinesLabel = parsedGallery.invalidLineNumbers.join(", ");
+    const lineLabel =
+      parsedGallery.invalidLineNumbers.length === 1 ? "A linha" : "As linhas";
+    const verbLabel =
+      parsedGallery.invalidLineNumbers.length === 1 ? "está" : "estão";
+
+    return {
+      status: "error",
+      message: "Revise a galeria antes de salvar o lote.",
+      errors: {
+        gallery: [
+          `${lineLabel} ${invalidLinesLabel} ${verbLabel} sem URL da imagem. Use o formato "URL | texto alternativo".`,
+        ],
+      },
+      values: rawValues,
+    };
+  }
+
+  if (!details.length || !highlights.length || !parsedGallery.gallery.length) {
     return {
       status: "error",
       message: "Preencha descrição detalhada, destaques e galeria antes de salvar.",
@@ -149,7 +189,7 @@ export async function saveAdminLotAction(
         ...(!highlights.length
           ? { highlights: ["Adicione ao menos um destaque para o lote."] }
           : {}),
-        ...(!gallery?.length
+        ...(!parsedGallery.gallery.length
           ? { gallery: ["Cadastre ao menos uma imagem com URL e texto alternativo."] }
           : {}),
       },
@@ -172,7 +212,7 @@ export async function saveAdminLotAction(
       sourceNote: validated.data.sourceNote ?? "",
       highlights,
       facts,
-      gallery,
+      gallery: parsedGallery.gallery,
       year: validated.data.year || undefined,
       mileage: validated.data.mileage || undefined,
       fuel: validated.data.fuel || undefined,

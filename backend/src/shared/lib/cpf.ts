@@ -1,11 +1,15 @@
 const CPF_LENGTH = 11;
 
+function extractCpfDigits(value: string) {
+  return value.replace(/\D/g, "");
+}
+
 export function normalizeCpf(value: string) {
-  return value.replace(/\D/g, "").slice(0, CPF_LENGTH);
+  return extractCpfDigits(value);
 }
 
 export function formatCpf(value: string) {
-  const digits = normalizeCpf(value);
+  const digits = extractCpfDigits(value).slice(0, CPF_LENGTH);
 
   if (digits.length <= 3) {
     return digits;
@@ -32,7 +36,7 @@ function calculateCpfCheckDigit(baseDigits: string) {
 }
 
 export function isValidCpf(value: string) {
-  const cpf = normalizeCpf(value);
+  const cpf = extractCpfDigits(value);
 
   if (cpf.length !== CPF_LENGTH) {
     return false;

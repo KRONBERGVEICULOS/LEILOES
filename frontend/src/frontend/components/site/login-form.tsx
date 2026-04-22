@@ -67,7 +67,11 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       {state.message ? (
         <p
           aria-live="polite"
-          className="rounded-2xl border border-brand-danger/20 bg-brand-danger/8 px-4 py-3 text-sm text-brand-danger"
+          className={`rounded-2xl border px-4 py-3 text-sm ${
+            state.status === "success"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border-brand-danger/20 bg-brand-danger/8 text-brand-danger"
+          }`}
         >
           {state.message}
         </p>

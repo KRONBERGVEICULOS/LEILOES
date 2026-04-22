@@ -68,6 +68,9 @@ export function AdminLotForm({
   successMessage,
 }: AdminLotFormProps) {
   const [state, formAction] = useActionState(saveAdminLotAction, initialAdminActionState);
+  const readValue = (key: string, fallback = "") => state.values?.[key] ?? fallback;
+  const readCheckboxValue = (key: string, fallback: boolean) =>
+    state.values ? state.values[key] === "on" : fallback;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -103,7 +106,7 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.title ?? ""}
+                defaultValue={readValue("title", lot?.title ?? "")}
                 id="lot-title"
                 name="title"
                 placeholder="Ex.: Toyota Hilux SRX 2022"
@@ -119,7 +122,7 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.slug ?? ""}
+                defaultValue={readValue("slug", lot?.slug ?? "")}
                 id="lot-slug"
                 name="slug"
                 placeholder="Se vazio, será gerado pelo título"
@@ -137,7 +140,7 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.lotCode ?? ""}
+                defaultValue={readValue("lotCode", lot?.lotCode ?? "")}
                 id="lot-code"
                 name="lotCode"
                 placeholder="Ex.: Lote #1042"
@@ -153,7 +156,7 @@ export function AdminLotForm({
               </label>
               <select
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.eventSlug ?? events[0]?.slug ?? ""}
+                defaultValue={readValue("eventSlug", lot?.eventSlug ?? events[0]?.slug ?? "")}
                 id="lot-event"
                 name="eventSlug"
                 required
@@ -173,7 +176,7 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.category ?? ""}
+                defaultValue={readValue("category", lot?.category ?? "")}
                 id="lot-category"
                 list="admin-category-options"
                 name="category"
@@ -195,7 +198,7 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.location ?? ""}
+                defaultValue={readValue("location", lot?.location ?? "")}
                 id="lot-location"
                 name="location"
                 placeholder="Ex.: Campinas/SP"
@@ -224,7 +227,7 @@ export function AdminLotForm({
               </label>
               <textarea
                 className="min-h-28 rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.overview ?? ""}
+                defaultValue={readValue("overview", lot?.overview ?? "")}
                 id="lot-overview"
                 name="overview"
                 placeholder="Texto curto para cards e topo da página."
@@ -239,7 +242,7 @@ export function AdminLotForm({
               </label>
               <textarea
                 className="min-h-44 rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.details.join("\n") ?? ""}
+                defaultValue={readValue("details", lot?.details.join("\n") ?? "")}
                 id="lot-details"
                 name="details"
                 placeholder="Use uma linha por parágrafo."
@@ -257,7 +260,10 @@ export function AdminLotForm({
               </label>
               <textarea
                 className="min-h-28 rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.operationalDisclaimer ?? ""}
+                defaultValue={readValue(
+                  "observations",
+                  lot?.operationalDisclaimer ?? "",
+                )}
                 id="lot-observations"
                 name="observations"
                 placeholder="Texto de apoio para observações importantes do lote."
@@ -272,7 +278,7 @@ export function AdminLotForm({
               </label>
               <textarea
                 className="min-h-24 rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.sourceNote ?? ""}
+                defaultValue={readValue("sourceNote", lot?.sourceNote ?? "")}
                 id="lot-source-note"
                 name="sourceNote"
                 placeholder="Observação interna sobre a origem dos dados."
@@ -287,7 +293,10 @@ export function AdminLotForm({
                 </label>
                 <textarea
                   className="min-h-36 rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none transition focus:border-brand-brass"
-                  defaultValue={lot?.highlights.join("\n") ?? ""}
+                  defaultValue={readValue(
+                    "highlights",
+                    lot?.highlights.join("\n") ?? "",
+                  )}
                   id="lot-highlights"
                   name="highlights"
                   placeholder="Uma linha por destaque comercial."
@@ -302,7 +311,7 @@ export function AdminLotForm({
                 </label>
                 <textarea
                   className="min-h-36 rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none transition focus:border-brand-brass"
-                  defaultValue={lot?.facts.join("\n") ?? ""}
+                  defaultValue={readValue("facts", lot?.facts.join("\n") ?? "")}
                   id="lot-facts"
                   name="facts"
                   placeholder="Uma linha por informação operacional."
@@ -330,7 +339,10 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.pricing.referenceValueLabel ?? ""}
+                defaultValue={readValue(
+                  "referencePrice",
+                  lot?.pricing.referenceValueLabel ?? "",
+                )}
                 id="lot-reference-price"
                 name="referencePrice"
                 placeholder="R$ 0"
@@ -346,7 +358,10 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.pricing.currentValueLabel ?? lot?.pricing.referenceValueLabel ?? ""}
+                defaultValue={readValue(
+                  "currentPrice",
+                  lot?.pricing.currentValueLabel ?? lot?.pricing.referenceValueLabel ?? "",
+                )}
                 id="lot-current-price"
                 name="currentPrice"
                 placeholder="R$ 0"
@@ -362,7 +377,10 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.pricing.minimumIncrementLabel ?? ""}
+                defaultValue={readValue(
+                  "minimumIncrement",
+                  lot?.pricing.minimumIncrementLabel ?? "",
+                )}
                 id="lot-minimum-increment"
                 name="minimumIncrement"
                 placeholder="R$ 0"
@@ -378,7 +396,10 @@ export function AdminLotForm({
               </label>
               <select
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.statusKey ?? statusOptions[0]?.value ?? ""}
+                defaultValue={readValue(
+                  "statusKey",
+                  lot?.statusKey ?? statusOptions[0]?.value ?? "",
+                )}
                 id="lot-status"
                 name="statusKey"
                 required
@@ -396,7 +417,7 @@ export function AdminLotForm({
               <label className="flex items-center gap-3 text-sm font-semibold text-brand-ink">
                 <input
                   className="h-4 w-4 accent-brand-navy"
-                  defaultChecked={lot?.isFeatured ?? false}
+                  defaultChecked={readCheckboxValue("isFeatured", lot?.isFeatured ?? false)}
                   name="isFeatured"
                   type="checkbox"
                 />
@@ -405,7 +426,7 @@ export function AdminLotForm({
               <label className="flex items-center gap-3 text-sm font-semibold text-brand-ink">
                 <input
                   className="h-4 w-4 accent-brand-navy"
-                  defaultChecked={lot?.isVisible ?? true}
+                  defaultChecked={readCheckboxValue("isVisible", lot?.isVisible ?? true)}
                   name="isVisible"
                   type="checkbox"
                 />
@@ -432,7 +453,7 @@ export function AdminLotForm({
               </label>
               <textarea
                 className="min-h-40 rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={formatGalleryValue(lot?.media)}
+                defaultValue={readValue("gallery", formatGalleryValue(lot?.media))}
                 id="lot-gallery"
                 name="gallery"
                 placeholder="/media/lotes/exemplo.jpg | Fachada do lote"
@@ -450,7 +471,7 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.year ?? ""}
+                defaultValue={readValue("year", lot?.year ?? "")}
                 id="lot-year"
                 name="year"
                 placeholder="2022/2022"
@@ -465,7 +486,7 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.mileage ?? ""}
+                defaultValue={readValue("mileage", lot?.mileage ?? "")}
                 id="lot-mileage"
                 name="mileage"
                 placeholder="63.000 km"
@@ -480,7 +501,7 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.fuel ?? ""}
+                defaultValue={readValue("fuel", lot?.fuel ?? "")}
                 id="lot-fuel"
                 name="fuel"
                 placeholder="Diesel"
@@ -495,7 +516,7 @@ export function AdminLotForm({
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={lot?.transmission ?? ""}
+                defaultValue={readValue("transmission", lot?.transmission ?? "")}
                 id="lot-transmission"
                 name="transmission"
                 placeholder="Automática"

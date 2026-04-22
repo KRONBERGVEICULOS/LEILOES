@@ -194,20 +194,20 @@ export default async function LotDetailPage({ params }: LotPageProps) {
           <aside className="space-y-5 lg:sticky lg:top-24 lg:h-fit">
             <div className="rounded-[28px] bg-brand-navy p-6 text-white shadow-[0_28px_70px_-44px_rgba(13,32,52,0.85)]">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-sand">
-                Atendimento especializado
+                Suporte especializado
               </p>
               <h2 className="mt-3 text-2xl font-semibold leading-tight">
                 Valide contexto, disponibilidade e próximos passos com a equipe.
               </h2>
               <p className="mt-3 text-sm leading-7 text-white/74">
-                Esta página organiza a oportunidade. O atendimento oficial confirma
+                Esta página organiza a oportunidade. A equipe oficial confirma
                 disponibilidade, documentação, pré-lance e o que ainda precisa ser
                 alinhado fora do site.
               </p>
               <InterestActions
                 className="mt-6"
                 primaryHref={whatsappHref}
-                primaryLabel="Falar com atendimento"
+                primaryLabel="Falar com especialista"
                 secondaryHref="#pre-lance-online"
                 secondaryLabel="Ir para pré-lance"
               />

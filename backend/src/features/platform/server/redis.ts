@@ -2,19 +2,99 @@ import "server-only";
 
 import { createClient } from "redis";
 
+const REDIS_FAILURE_COOLDOWN_MS = 30_000;
+const DEFAULT_REDIS_PORT = "6379";
+
+type RedisConnectionConfig = {
+  url: string;
+};
+
+const globalForPlatformRedis = globalThis as typeof globalThis & {
+  __kronRedisClient?: PlatformRedisClient | null;
+  __kronRedisReady?: Promise<PlatformRedisClient | null>;
+  __kronRedisUnavailableUntil?: number;
+};
+
+function readEnv(...keys: string[]) {
+  for (const key of keys) {
+    const value = process.env[key]?.trim();
+
+    if (value) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
 function getRedisUrl() {
-  return process.env.REDIS_URL?.trim() || null;
+  return readEnv("REDIS_URL");
+}
+
+function buildRedisUrlFromParts() {
+  const host = readEnv("REDISHOST", "REDIS_HOST");
+
+  if (!host) {
+    return null;
+  }
+
+  const port = readEnv("REDISPORT", "REDIS_PORT") ?? DEFAULT_REDIS_PORT;
+  const user = readEnv("REDISUSER", "REDIS_USER");
+  const password = readEnv(
+    "REDISPASSWORD",
+    "REDIS_PASSWORD",
+    "REDIS_PASS",
+  );
+  const shouldUseTls = ["true", "1", "yes"].includes(
+    process.env.REDIS_TLS?.trim().toLowerCase() ?? "",
+  );
+  const protocol = shouldUseTls ? "rediss" : "redis";
+  const auth = password
+    ? `${encodeURIComponent(user ?? "")}:${encodeURIComponent(password)}@`
+    : user
+      ? `${encodeURIComponent(user)}@`
+      : "";
+
+  return `${protocol}://${auth}${host}:${port}`;
+}
+
+function getRedisConnectionConfig(): RedisConnectionConfig | null {
+  const redisUrl = getRedisUrl();
+
+  if (redisUrl) {
+    return {
+      url: redisUrl,
+    };
+  }
+
+  const redisPublicUrl = readEnv("REDIS_PUBLIC_URL");
+
+  if (redisPublicUrl) {
+    return {
+      url: redisPublicUrl,
+    };
+  }
+
+  const partsUrl = buildRedisUrlFromParts();
+
+  if (!partsUrl) {
+    return null;
+  }
+
+  return {
+    url: partsUrl,
+  };
 }
 
 function createPlatformRedisClient() {
-  const url = getRedisUrl();
+  const config = getRedisConnectionConfig();
 
-  if (!url) {
+  if (!config) {
     return null;
   }
 
   const client = createClient({
-    url,
+    url: config.url,
     socket: {
       reconnectStrategy: false,
       connectTimeout: 4_000,
@@ -22,7 +102,7 @@ function createPlatformRedisClient() {
   });
 
   client.on("error", () => {
-    // Redis is optional. Consumers fall back to Postgres or no-cache mode.
+    markRedisUnavailable();
   });
 
   return client;
@@ -30,13 +110,19 @@ function createPlatformRedisClient() {
 
 type PlatformRedisClient = NonNullable<ReturnType<typeof createPlatformRedisClient>>;
 
-const globalForPlatformRedis = globalThis as typeof globalThis & {
-  __kronRedisClient?: PlatformRedisClient | null;
-  __kronRedisReady?: Promise<PlatformRedisClient | null>;
-};
+function markRedisUnavailable() {
+  globalForPlatformRedis.__kronRedisClient = null;
+  globalForPlatformRedis.__kronRedisReady = undefined;
+  globalForPlatformRedis.__kronRedisUnavailableUntil =
+    Date.now() + REDIS_FAILURE_COOLDOWN_MS;
+}
+
+function isRedisTemporarilyUnavailable() {
+  return Date.now() < (globalForPlatformRedis.__kronRedisUnavailableUntil ?? 0);
+}
 
 export function isRedisConfigured() {
-  return Boolean(getRedisUrl());
+  return Boolean(getRedisConnectionConfig());
 }
 
 export async function getRedisClient() {
@@ -44,7 +130,14 @@ export async function getRedisClient() {
     return null;
   }
 
-  if (globalForPlatformRedis.__kronRedisClient?.isOpen) {
+  if (isRedisTemporarilyUnavailable()) {
+    return null;
+  }
+
+  if (
+    globalForPlatformRedis.__kronRedisClient?.isOpen &&
+    globalForPlatformRedis.__kronRedisClient.isReady
+  ) {
     return globalForPlatformRedis.__kronRedisClient;
   }
 
@@ -64,8 +157,7 @@ export async function getRedisClient() {
         globalForPlatformRedis.__kronRedisClient = client;
         return client;
       } catch {
-        globalForPlatformRedis.__kronRedisClient = null;
-        globalForPlatformRedis.__kronRedisReady = undefined;
+        markRedisUnavailable();
         return null;
       }
     })();
@@ -75,19 +167,28 @@ export async function getRedisClient() {
 }
 
 export async function pingPlatformRedis() {
-  const client = await getRedisClient();
+  try {
+    const client = await getRedisClient();
 
-  if (!client) {
+    if (!client) {
+      return {
+        ok: false as const,
+        driver: isRedisConfigured() ? "unavailable" : "disabled",
+      };
+    }
+
+    await client.ping();
+
+    return {
+      ok: true as const,
+      driver: "redis",
+    };
+  } catch {
+    markRedisUnavailable();
+
     return {
       ok: false as const,
-      driver: isRedisConfigured() ? "unavailable" : "disabled",
+      driver: "unavailable",
     };
   }
-
-  await client.ping();
-
-  return {
-    ok: true as const,
-    driver: "redis",
-  };
 }

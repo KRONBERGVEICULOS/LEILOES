@@ -41,7 +41,7 @@ export const siteConfig = {
 export const mainNavigation = [
   { href: "/", label: "Início" },
   { href: "/eventos", label: "Oportunidades" },
-  { href: "/sobre", label: "Atendimento" },
+  { href: "/sobre", label: "Como funciona" },
   { href: "/contato", label: "Contato" },
 ] as const;
 

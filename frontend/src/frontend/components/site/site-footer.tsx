@@ -22,22 +22,22 @@ export function SiteFooter() {
             width={182}
           />
           <p className="max-w-xl text-3xl font-semibold leading-tight">
-            Plataforma comercial enxuta para atrair, cadastrar e acompanhar interessados.
+            Plataforma digital para acompanhar oportunidades com mais contexto e segurança.
           </p>
           <p className="max-w-2xl text-sm leading-7 text-white/74">
-            O site continua focado em conversão e atendimento, agora com cadastro,
-            área restrita e pré-lance online responsável. A validação final de
-            disponibilidade, regras e próximos passos continua no atendimento.
+            Catálogo público, cadastro, área restrita e pré-lance online organizados
+            em uma experiência mais clara para analisar cada lote com segurança.
+            Quando necessário, a equipe segue disponível para orientar o próximo passo.
           </p>
           <a
             className="inline-flex items-center justify-center rounded-full bg-brand-brass px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-brass/92"
             href={createWhatsAppLink(
-              `Olá, quero atendimento comercial da ${siteConfig.name}.`,
+              `Olá, quero falar com um especialista da ${siteConfig.name} sobre uma oportunidade.`,
             )}
             rel="noopener noreferrer"
             target="_blank"
           >
-            Falar com atendimento
+            Falar com especialista
           </a>
         </div>
 
@@ -73,19 +73,19 @@ export function SiteFooter() {
 
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white">
-            Contato e confiança
+            Contato institucional
           </p>
           <ul className="mt-4 grid gap-3 text-sm leading-6 text-white/74">
             <li>
               <a
                 className="transition hover:text-white"
                 href={createWhatsAppLink(
-                  `Olá, quero falar com o atendimento comercial da ${siteConfig.name}.`,
+                  `Olá, quero falar com um especialista da ${siteConfig.name}.`,
                 )}
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                Atendimento rápido: {siteConfig.whatsappDisplay}
+                WhatsApp institucional: {siteConfig.whatsappDisplay}
               </a>
             </li>
             <li>

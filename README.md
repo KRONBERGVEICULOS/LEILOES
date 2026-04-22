@@ -64,6 +64,39 @@ BING_SITE_VERIFICATION=
 SMOKE_BASE_URL=https://seu-deploy.vercel.app
 ```
 
+## Redis opcional
+
+Redis é usado como acelerador, não como dependência crítica. Sem Redis ou com Redis indisponível, a aplicação continua atendendo: listagens públicas passam direto pelo Postgres e o rate limiting usa a tabela `platform_rate_limit_events`.
+
+Pontos implementados:
+
+- `backend/src/features/platform/server/redis.ts`: cliente Redis centralizado, leitura de configuração e circuito de fallback temporário após falha de conexão.
+- `backend/src/features/platform/server/public-cache.ts`: cache versionado para catálogo público e atividade pública.
+- `backend/src/features/auctions/server/catalog.ts`: cache da listagem pública de lotes, incluindo destaques usados na home.
+- `backend/src/features/platform/server/repository.ts`: cache da atividade pública exibida na home.
+- `backend/src/features/admin/server/repository.ts`: invalidação do cache público ao criar, editar, duplicar, publicar, ocultar ou destacar lote.
+- `backend/src/features/platform/server/rate-limit.ts`: rate limiting em cadastro, login, interesse e pré-lance via Redis, com fallback em Postgres.
+
+Configuração aceita:
+
+```bash
+# Preferencial em produção quando disponível.
+REDIS_URL=redis://default:senha@host:6379
+
+# Fallback quando o provedor só expõe uma URL pública para o runtime.
+REDIS_PUBLIC_URL=
+
+# Fallback quando o provedor entrega partes separadas.
+REDISHOST=
+REDISPORT=6379
+REDISUSER=default
+REDISPASSWORD=
+REDIS_PASSWORD=
+REDIS_TLS=false
+```
+
+Quando Redis falha, o cliente entra em cooldown curto antes de tentar reconectar, evitando atrasos repetidos em páginas públicas. O health check retorna `cache: "disabled"` ou `cache: "unavailable"` sem derrubar o status principal quando o Postgres está saudável.
+
 ## Scripts principais
 
 ```bash

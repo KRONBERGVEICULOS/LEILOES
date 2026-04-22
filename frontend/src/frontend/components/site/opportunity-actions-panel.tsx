@@ -117,10 +117,10 @@ export function OpportunityActionsPanel({
             </h2>
             <p className="mt-3 text-sm leading-7 text-brand-muted">
               {snapshot.viewerHasInterest
-                ? "Você já acompanha este lote. Use o botão abaixo se quiser seguir para o atendimento com o contexto já registrado."
+                ? "Você já acompanha este lote. Use o botão abaixo se quiser seguir com a equipe usando o contexto já registrado."
                 : !snapshot.interestEnabled
                   ? "No momento este lote não aceita novos acompanhamentos pela área logada. Ajuste o contato direto com a operação quando necessário."
-                  : "Ao acompanhar, este lote entra na sua área com histórico de atividade e CTA contextual de atendimento."}
+                  : "Ao acompanhar, este lote entra na sua área com histórico de atividade e CTA contextual para falar com a equipe."}
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -146,7 +146,7 @@ export function OpportunityActionsPanel({
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Falar com atendimento
+                  Falar com especialista
                 </a>
               ) : null}
             </div>
@@ -175,7 +175,7 @@ export function OpportunityActionsPanel({
               </h2>
               <p className="mt-3 text-sm leading-7 text-brand-muted">
                 {snapshot.preBidEnabled
-                  ? "O site registra sua manifestação comercial, mas a validação final continua no atendimento humano. Não existe arrematação automática aqui."
+                  ? "O site registra sua manifestação comercial, mas a validação final continua com a equipe. Não existe arrematação automática aqui."
                   : snapshot.preBidMessage}
               </p>
             </div>
@@ -228,7 +228,7 @@ export function OpportunityActionsPanel({
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      Compartilhar com atendimento
+                      Compartilhar com a equipe
                     </a>
                   ) : null}
                 </div>
