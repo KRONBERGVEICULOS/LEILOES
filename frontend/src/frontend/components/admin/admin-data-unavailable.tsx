@@ -15,8 +15,8 @@ export function AdminDataUnavailable({ message }: AdminDataUnavailableProps) {
         {message}
       </p>
       <p className="mt-4 text-sm leading-7 text-brand-muted">
-        Defina <code>DATABASE_URL</code> com a mesma base usada pelo site público para liberar
-        cadastro, edição de lotes, interesses, pré-lances e atividade operacional.
+        Conecte o banco de dados do ambiente para liberar cadastro, edição de lotes,
+        interesses, pré-lances e atividade operacional.
       </p>
     </section>
   );

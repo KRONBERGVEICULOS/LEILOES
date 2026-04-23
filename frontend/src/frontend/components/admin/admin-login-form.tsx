@@ -25,7 +25,7 @@ export function AdminLoginForm({
 
       {!credentialsConfigured ? (
         <p className="rounded-2xl border border-brand-warning/20 bg-brand-brass/8 px-4 py-3 text-sm text-brand-warning">
-          Defina <code>ADMIN_USERNAME</code> e <code>ADMIN_PASSWORD</code> no ambiente antes de usar o admin.
+          Credenciais administrativas ainda não configuradas neste ambiente.
         </p>
       ) : null}
 

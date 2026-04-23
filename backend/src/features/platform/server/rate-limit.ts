@@ -5,6 +5,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { headers } from "next/headers";
 
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
+import { getRedisClient } from "@/backend/features/platform/server/redis";
 
 type RateLimitConfig = {
   scope: string;
@@ -36,6 +37,34 @@ export async function getRequestFingerprint(additionalParts: string[] = []) {
 }
 
 export async function consumeRateLimit(config: RateLimitConfig) {
+  const redis = await getRedisClient();
+
+  if (redis) {
+    try {
+      const now = Date.now();
+      const windowStart = now - config.windowMs;
+      const keyHash = hashKey(config.key);
+      const key = `kron:rate-limit:${config.scope}:${keyHash}`;
+      const entryId = `${now}:${randomUUID()}`;
+
+      const multi = redis.multi();
+      multi.zRemRangeByScore(key, 0, windowStart);
+      multi.zAdd(key, [{ score: now, value: entryId }]);
+      multi.zCard(key);
+      multi.pExpire(key, config.windowMs);
+      const [, , attemptsResult] = await multi.exec();
+      const attempts = Number(attemptsResult ?? 0);
+
+      return {
+        allowed: attempts <= config.maxAttempts,
+        attempts,
+        remaining: Math.max(config.maxAttempts - attempts, 0),
+      };
+    } catch {
+      // Redis is optional; Postgres remains the safe fallback.
+    }
+  }
+
   const windowSeconds = Math.max(1, Math.ceil(config.windowMs / 1000));
   const keyHash = hashKey(config.key);
 

@@ -22,8 +22,23 @@
 # workspace dev output
 /workspace/output/
 /output/
-/legacy/qa-artifacts/*
-/legacy/experiments/playwright-cli-state/*
+
+# local/private handoff material
+/legacy/
+/project-context/
+/00-GUIA-DE-ENTREGA-CLIENTE.md
+/GUIA-RAPIDO-CLIENTE.md
+/PASSO-A-PASSO-INSTALACAO-E-GITHUB.md
+/AGENTS.md
+/CLAUDE.md
+/*GUIA*CLIENTE*.md
+/*ENTREGA*.md
+/*HANDOFF*.md
+/*handoff*.md
+/docs/*handoff*
+/docs/*entrega*
+/docs/*release-playbook*
+/docs/*environment-variables*
 
 # production
 /build
@@ -46,11 +61,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# provider local state
+.railway/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# Segurança
-.env
-.env.local
-.env.*.local

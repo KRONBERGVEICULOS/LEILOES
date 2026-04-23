@@ -14,7 +14,7 @@ export const metadata: Metadata = createPageMetadata({
   title: "Contato",
   path: "/contato",
   description:
-    "Fale com o atendimento comercial da Kron Leilões e abra sua conversa no WhatsApp com o contexto certo.",
+    "Fale com o atendimento comercial da Kron Leilões e escolha o melhor canal para seguir com contexto.",
   keywords: ["contato", "whatsapp", "atendimento comercial"],
 });
 
@@ -59,7 +59,7 @@ const faqPreview: FaqItem[] = [
   {
     question: "Posso abrir contato só para entender o processo?",
     answer:
-      "Sim. O WhatsApp serve tanto para quem já quer propor quanto para quem ainda está entendendo o melhor caminho.",
+      "Sim. O atendimento serve tanto para quem já quer propor quanto para quem ainda está entendendo o melhor caminho.",
   },
 ];
 
@@ -108,11 +108,11 @@ export default function ContactPage() {
               primaryHref={createWhatsAppLink(
                 `Olá, quero falar com o atendimento comercial da ${siteConfig.name}.`,
               )}
-              primaryLabel="Abrir WhatsApp"
+              primaryLabel="Abrir atendimento"
             />
           </div>
         }
-        description="Escolha o canal que preferir, mas o caminho mais rápido continua sendo o WhatsApp com sua mensagem já preparada."
+        description="Escolha o canal que preferir. O caminho mais rápido continua sendo o atendimento com sua mensagem já preparada."
         eyebrow="Contato"
         meta={["WhatsApp", "Telefone", "E-mail", "Atendimento humano"]}
         title="Contato direto para dúvidas, orientação e propostas."

@@ -30,19 +30,19 @@ export default async function DashboardPage() {
               Minha área
             </p>
             <h1 className="mt-3 text-4xl font-semibold leading-tight text-brand-ink sm:text-5xl">
-              {dashboard.user.name}, seu acompanhamento comercial está aqui.
+              {dashboard.user.name}, seu acompanhamento na plataforma está aqui.
             </h1>
             <p className="mt-3 max-w-3xl text-base leading-8 text-brand-muted">
               Você está logado como {dashboard.user.publicAlias}. Use esta área
-              para revisar interesses, pré-lances e seguir o atendimento com mais contexto.
+              para revisar interesses, pré-lances e seguir com a equipe com mais contexto.
             </p>
           </div>
 
           <InterestActions
             primaryHref={createWhatsAppLink(
-              `Olá, sou ${dashboard.user.name} (${dashboard.user.publicAlias}) e quero seguir no atendimento da minha área.`,
+              `Olá, sou ${dashboard.user.name} (${dashboard.user.publicAlias}) e quero seguir com a equipe a partir da minha área.`,
             )}
-            primaryLabel="Falar no WhatsApp"
+            primaryLabel="Falar com especialista"
             secondaryHref="/eventos"
             secondaryLabel="Ver oportunidades"
           />

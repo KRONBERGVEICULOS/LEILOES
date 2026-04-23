@@ -43,8 +43,7 @@ export async function loginAdminAction(
   if (!areAdminCredentialsConfigured()) {
     return {
       status: "error",
-      message:
-        "Defina ADMIN_USERNAME e ADMIN_PASSWORD nas variáveis de ambiente antes de usar o admin.",
+      message: "Credenciais administrativas não configuradas neste ambiente.",
       values: {
         username: validated.data.username,
       },

@@ -120,9 +120,7 @@ export async function createAdminSession() {
   const credentials = getAdminCredentials();
 
   if (!credentials.configured) {
-    throw new Error(
-      "Configure ADMIN_USERNAME e ADMIN_PASSWORD antes de usar o painel administrativo.",
-    );
+    throw new Error("Credenciais administrativas não configuradas.");
   }
 
   const expiresAt = new Date(Date.now() + adminSessionDurationInSeconds * 1000).toISOString();
@@ -196,4 +194,3 @@ export async function redirectAuthenticatedAdmin(redirectTo = "/admin") {
     redirect(redirectTo);
   }
 }
-

@@ -8,6 +8,7 @@ import {
   signupFormSchema,
   type AuthActionState,
 } from "@/backend/features/platform/forms";
+import { normalizeInternalRedirect } from "@/backend/features/platform/lib/redirect";
 import {
   createSession,
   destroyCurrentSession,
@@ -15,18 +16,35 @@ import {
   hashPassword,
   verifyPassword,
 } from "@/backend/features/platform/server/auth";
-import { createUserRecord, findUserByEmail } from "@/backend/features/platform/server/repository";
+import {
+  createUserRecord,
+  findUserByCpf,
+  findUserByEmail,
+  UserRegistrationConflictError,
+} from "@/backend/features/platform/server/repository";
+import { isDatabaseConfigured } from "@/backend/features/platform/server/mode";
 import {
   consumeRateLimit,
   getRequestFingerprint,
 } from "@/backend/features/platform/server/rate-limit";
 
 function getSafeRedirectPath(value: FormDataEntryValue | null) {
-  if (typeof value !== "string") {
-    return "/area";
-  }
+  return normalizeInternalRedirect(value, "/area", {
+    allowedPrefixes: ["/area", "/eventos", "/lotes"],
+  });
+}
 
-  return value.startsWith("/") ? value : "/area";
+function buildAuthFieldErrorState(
+  field: string,
+  message: string,
+): AuthActionState {
+  return {
+    status: "error",
+    message: "Revise os campos destacados para concluir o cadastro.",
+    errors: {
+      [field]: [message],
+    },
+  };
 }
 
 export async function registerUserAction(
@@ -36,8 +54,9 @@ export async function registerUserAction(
   const validated = signupFormSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
+    cpf: formData.get("cpf"),
     phone: formData.get("phone"),
-    city: formData.get("city") || undefined,
+    city: formData.get("city"),
     password: formData.get("password"),
     privacyConsent: formData.get("privacyConsent"),
   });
@@ -50,10 +69,17 @@ export async function registerUserAction(
     };
   }
 
+  if (!isDatabaseConfigured()) {
+    return {
+      status: "error",
+      message: "Cadastros estão indisponíveis neste ambiente.",
+    };
+  }
+
   const redirectTo = getSafeRedirectPath(formData.get("redirectTo"));
   const signupKey = await getRequestFingerprint([
     "signup",
-    validated.data.email.trim().toLowerCase(),
+    validated.data.email,
   ]);
   const signupRateLimit = await consumeRateLimit({
     scope: "auth:signup",
@@ -69,25 +95,58 @@ export async function registerUserAction(
     };
   }
 
-  const existingUser = await findUserByEmail(validated.data.email);
+  const [existingUser, existingCpfOwner] = await Promise.all([
+    findUserByEmail(validated.data.email),
+    findUserByCpf(validated.data.cpf),
+  ]);
 
   if (existingUser) {
+    return buildAuthFieldErrorState(
+      "email",
+      "Já existe uma conta com este e-mail. Faça login para continuar.",
+    );
+  }
+
+  if (existingCpfOwner) {
+    return buildAuthFieldErrorState(
+      "cpf",
+      "Já existe uma conta cadastrada com este CPF.",
+    );
+  }
+
+  let user: Awaited<ReturnType<typeof createUserRecord>>;
+
+  try {
+    const passwordHash = await hashPassword(validated.data.password);
+    user = await createUserRecord({
+      name: validated.data.name,
+      email: validated.data.email,
+      cpf: validated.data.cpf,
+      phone: validated.data.phone,
+      city: validated.data.city,
+      passwordHash,
+    });
+  } catch (error) {
+    if (error instanceof UserRegistrationConflictError) {
+      return buildAuthFieldErrorState(error.field, error.message);
+    }
+
     return {
       status: "error",
-      message: "Já existe uma conta com este e-mail. Faça login para continuar.",
+      message: "Não foi possível concluir o cadastro agora. Tente novamente em instantes.",
     };
   }
 
-  const passwordHash = await hashPassword(validated.data.password);
-  const user = await createUserRecord({
-    name: validated.data.name,
-    email: validated.data.email,
-    phone: validated.data.phone,
-    city: validated.data.city,
-    passwordHash,
-  });
+  try {
+    await createSession(user.id);
+  } catch {
+    return {
+      status: "success",
+      message:
+        "Cadastro concluído, mas não foi possível iniciar sua sessão automaticamente. Entre com seu e-mail e senha para continuar.",
+    };
+  }
 
-  await createSession(user.id);
   revalidatePath("/");
   redirect(redirectTo);
 }
@@ -109,10 +168,17 @@ export async function loginUserAction(
     };
   }
 
+  if (!isDatabaseConfigured()) {
+    return {
+      status: "error",
+      message: "Login está indisponível neste ambiente.",
+    };
+  }
+
   const redirectTo = getSafeRedirectPath(formData.get("redirectTo"));
   const loginKey = await getRequestFingerprint([
     "login",
-    validated.data.email.trim().toLowerCase(),
+    validated.data.email,
   ]);
   const loginRateLimit = await consumeRateLimit({
     scope: "auth:login",

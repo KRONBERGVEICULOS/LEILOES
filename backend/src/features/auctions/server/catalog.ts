@@ -3,7 +3,12 @@
 import type { FaqItem, Lot, MediaAsset } from "@/backend/features/auctions/types";
 import { getLotStatusDefinition, isLotPubliclyVisible } from "@/backend/features/auctions/lib/lot-status";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
-import { requireDatabaseUrl } from "@/backend/features/platform/server/mode";
+import { readPublicCache, writePublicCache } from "@/backend/features/platform/server/public-cache";
+import {
+  requireDatabaseUrl,
+  shouldUseLocalSeedData,
+} from "@/backend/features/platform/server/mode";
+import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
 import { formatCurrencyBRL } from "@/shared/lib/utils";
 
 type LotRow = {
@@ -110,6 +115,10 @@ function mapRowToLot(row: LotRow): Lot {
 }
 
 async function getDatabaseLots() {
+  if (shouldUseLocalSeedData()) {
+    return seedLots;
+  }
+
   requireDatabaseUrl();
 
   return withPlatformDatabase(async (sql) => {
@@ -153,9 +162,22 @@ async function getDatabaseLots() {
 }
 
 export async function listLots(options: ListLotsOptions = {}) {
-  const lotsFromDatabase = await getDatabaseLots();
+  const usePublicCache = !options.includeHidden && !shouldUseLocalSeedData();
 
-  return lotsFromDatabase.filter((lot) => {
+  if (usePublicCache) {
+    const cacheKey = [
+      options.onlyFeatured ? "featured" : "all",
+      options.eventSlug ?? "all-events",
+    ];
+    const cachedLots = await readPublicCache<Lot[]>("catalog", cacheKey);
+
+    if (cachedLots) {
+      return cachedLots;
+    }
+  }
+
+  const lotsFromDatabase = await getDatabaseLots();
+  const filteredLots = lotsFromDatabase.filter((lot) => {
     if (options.onlyFeatured && !lot.isFeatured) {
       return false;
     }
@@ -170,10 +192,23 @@ export async function listLots(options: ListLotsOptions = {}) {
 
     return true;
   });
+
+  if (usePublicCache) {
+    await writePublicCache(
+      "catalog",
+      [options.onlyFeatured ? "featured" : "all", options.eventSlug ?? "all-events"],
+      filteredLots,
+      90,
+    );
+  }
+
+  return filteredLots;
 }
 
 export async function getLotBySlug(slug: string, options: { includeHidden?: boolean } = {}) {
-  const allLots = await listLots({ includeHidden: true });
+  const allLots = await listLots({
+    includeHidden: options.includeHidden,
+  });
   const lot = allLots.find((candidate) => candidate.slug === slug);
 
   if (!lot) {

@@ -1,15 +1,20 @@
 import { NextResponse } from "next/server";
 
 import { pingPlatformDatabase } from "@/backend/features/platform/server/database";
+import { pingPlatformRedis } from "@/backend/features/platform/server/redis";
 
 export async function GET() {
   try {
-    const health = await pingPlatformDatabase();
+    const [databaseHealth, redisHealth] = await Promise.all([
+      pingPlatformDatabase(),
+      pingPlatformRedis(),
+    ]);
 
     return NextResponse.json(
       {
-        status: health.ok ? "ok" : "error",
-        persistence: health.driver,
+        status: databaseHealth.ok ? "ok" : "error",
+        persistence: databaseHealth.driver,
+        cache: redisHealth.driver,
       },
       {
         headers: {

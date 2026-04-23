@@ -27,11 +27,11 @@ export function LotOfferForm({
           Enviar proposta
         </p>
         <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
-          Mande sua oferta pelo WhatsApp.
+          Envie sua oferta com contexto organizado.
         </h2>
         <p className="mt-3 text-sm leading-7 text-brand-muted">
           Este formulário não fecha compra automática. Ele apenas abre a conversa
-          com o vendedor com sua proposta já organizada.
+          com o atendimento com sua proposta já organizada.
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export function LotOfferForm({
         className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-brand-brass px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-brass/90"
         type="submit"
       >
-        Enviar proposta no WhatsApp
+        Enviar proposta para atendimento
       </button>
     </form>
   );

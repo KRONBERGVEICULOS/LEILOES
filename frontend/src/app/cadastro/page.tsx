@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Container } from "@/frontend/components/site/container";
 import { SignupForm } from "@/frontend/components/site/signup-form";
 import { createPageMetadata } from "@/shared/lib/metadata";
+import { normalizeInternalRedirect } from "@/backend/features/platform/lib/redirect";
 import { getCurrentUser } from "@/backend/features/platform/server/auth";
 
 type SignupPageProps = {
@@ -19,13 +20,9 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 function readRedirect(searchParams: Record<string, string | string[] | undefined>) {
-  const value = searchParams.redirect;
-
-  if (Array.isArray(value)) {
-    return value[0] ?? "/area";
-  }
-
-  return value ?? "/area";
+  return normalizeInternalRedirect(searchParams.redirect, "/area", {
+    allowedPrefixes: ["/area", "/eventos", "/lotes"],
+  });
 }
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
@@ -48,8 +45,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             Crie seu acesso para acompanhar oportunidades sem sair do foco comercial.
           </h1>
           <p className="max-w-2xl text-base leading-8 text-brand-muted">
-            O cadastro foi desenhado para ser objetivo: nome, contato, senha e
-            consentimento básico. Depois disso, você já entra na área com seus
+            O cadastro foi desenhado para ser objetivo: nome, CPF, contato, senha
+            e consentimento básico. Depois disso, você já entra na área com seus
             interesses e pré-lances organizados.
           </p>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -87,7 +84,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             Cadastro rápido, claro e focado em oportunidade.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
-            Você pode continuar a negociação no WhatsApp quando quiser, mas agora
+            Você continua contando com atendimento humano quando precisar, mas agora
             com uma área restrita para centralizar seus movimentos no site.
           </p>
           <div className="mt-8">

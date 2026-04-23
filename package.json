@@ -2,16 +2,15 @@
   "name": "kron-leiloes-platform",
   "version": "0.1.0",
   "private": true,
-  "description": "Monorepo enxuto da entrega Kron Leilões com frontend Next.js, backend de domínio/persistência e contexto do projeto.",
+  "description": "Plataforma Kron Leiloes com frontend Next.js e backend de dominio/persistencia.",
   "workspaces": [
     "frontend"
-    "backend"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace frontend",
-    "build": "npm run build --workspace frontend",
-    "start": "npm run start --workspace frontend",
-    "lint": "npm run lint --workspace frontend",
-    "smoke:url": "node frontend/scripts/smoke-public.mjs"
+    "dev": "npm run dev --workspace @kron/frontend --",
+    "build": "npm run build --workspace @kron/frontend --",
+    "start": "npm run start --workspace @kron/frontend --",
+    "lint": "npm run lint --workspace @kron/frontend --",
+    "smoke:url": "npm run smoke:url --workspace @kron/frontend --"
   }
 }

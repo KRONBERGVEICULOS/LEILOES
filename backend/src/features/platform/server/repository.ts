@@ -1,10 +1,24 @@
-﻿import { randomUUID } from "node:crypto";
+import "server-only";
+
+import { randomUUID } from "node:crypto";
 
 import { createOfferWhatsAppLink, createWhatsAppLink } from "@/shared/config/site";
+import { isValidCpf, normalizeCpf } from "@/shared/lib/cpf";
 import { getLotStatusDefinition } from "@/backend/features/auctions/lib/lot-status";
 import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
 import { getLotBySlug } from "@/backend/features/auctions/server/catalog";
+import {
+  isValidPhone,
+  normalizeEmail,
+  normalizeSignupInput,
+} from "@/backend/features/platform/lib/user-normalization";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
+import {
+  invalidatePublicActivityCache,
+  readPublicCache,
+  writePublicCache,
+} from "@/backend/features/platform/server/public-cache";
+import { shouldUseLocalSeedData } from "@/backend/features/platform/server/mode";
 import { formatCurrencyBRL } from "@/shared/lib/utils";
 import type {
   ActivityFeedItem,
@@ -52,6 +66,16 @@ type DatabasePreBidRow = {
   amount_cents: number;
   created_at: string | Date;
 };
+
+export class UserRegistrationConflictError extends Error {
+  constructor(
+    readonly field: "email" | "cpf",
+    message: string,
+  ) {
+    super(message);
+    this.name = "UserRegistrationConflictError";
+  }
+}
 
 async function requireLot(lotSlug: string) {
   const lot = await getLotBySlug(lotSlug, { includeHidden: true });
@@ -175,6 +199,22 @@ function isDatabaseErrorCode(error: unknown, code: string) {
   );
 }
 
+function getDatabaseErrorConstraint(error: unknown) {
+  if (typeof error !== "object" || error === null) {
+    return null;
+  }
+
+  if ("constraint_name" in error && typeof error.constraint_name === "string") {
+    return error.constraint_name;
+  }
+
+  if ("constraint" in error && typeof error.constraint === "string") {
+    return error.constraint;
+  }
+
+  return null;
+}
+
 function getLotCurrentState(
   topBidAmountCents: number | null,
   lot: Awaited<ReturnType<typeof getLotBySlug>>,
@@ -201,6 +241,11 @@ function getLotCurrentState(
 }
 
 async function getTopLotBidAmount(lotSlug: string) {
+  if (shouldUseLocalSeedData()) {
+    void lotSlug;
+    return null;
+  }
+
   return withPlatformDatabase(async (sql) => {
     const [row] = await sql<{ amount_cents: number }[]>`
       select amount_cents
@@ -215,6 +260,11 @@ async function getTopLotBidAmount(lotSlug: string) {
 }
 
 export async function findUserByEmail(email: string) {
+  if (shouldUseLocalSeedData()) {
+    void email;
+    return null;
+  }
+
   return withPlatformDatabase(async (sql) => {
     const [row] = await sql<DatabaseUserRow[]>`
       select
@@ -227,7 +277,7 @@ export async function findUserByEmail(email: string) {
         password_hash,
         created_at
       from platform_users
-      where email = ${email.trim().toLowerCase()}
+      where email = ${normalizeEmail(email)}
       limit 1
     `;
 
@@ -235,7 +285,32 @@ export async function findUserByEmail(email: string) {
   });
 }
 
+export async function findUserByCpf(cpf: string) {
+  if (shouldUseLocalSeedData()) {
+    void cpf;
+    return null;
+  }
+
+  const normalizedCpf = normalizeCpf(cpf);
+
+  return withPlatformDatabase(async (sql) => {
+    const [row] = await sql<{ id: string }[]>`
+      select id
+      from platform_users
+      where cpf = ${normalizedCpf}
+      limit 1
+    `;
+
+    return row ?? null;
+  });
+}
+
 export async function getUserById(userId: string) {
+  if (shouldUseLocalSeedData()) {
+    void userId;
+    return null;
+  }
+
   return withPlatformDatabase(async (sql) => {
     const [row] = await sql<DatabaseUserRow[]>`
       select
@@ -259,14 +334,38 @@ export async function getUserById(userId: string) {
 export async function createUserRecord(input: {
   name: string;
   email: string;
+  cpf: string;
   phone: string;
   city?: string;
   passwordHash: string;
 }) {
-  const normalizedEmail = input.email.trim().toLowerCase();
+  if (shouldUseLocalSeedData()) {
+    void input;
+    throw new Error(
+      "Banco de dados não configurado para criar cadastros e persistir usuários.",
+    );
+  }
+
+  const normalizedInput = normalizeSignupInput(input);
+
+  if (normalizedInput.name.length < 3) {
+    throw new Error("Nome de cadastro inválido.");
+  }
+
+  if (!isValidCpf(normalizedInput.cpf)) {
+    throw new Error("CPF de cadastro inválido.");
+  }
+
+  if (!isValidPhone(normalizedInput.phone)) {
+    throw new Error("Telefone de cadastro inválido.");
+  }
+
+  if (normalizedInput.city && normalizedInput.city.length > 60) {
+    throw new Error("Cidade de cadastro inválida.");
+  }
 
   try {
-    return await withPlatformDatabase((sql) =>
+    const user = await withPlatformDatabase((sql) =>
       sql.begin(async (transaction) => {
         const [sequenceRow] = await transaction<{ alias_number: number }[]>`
           select nextval('platform_public_alias_seq')::int as alias_number
@@ -283,6 +382,7 @@ export async function createUserRecord(input: {
             public_alias,
             name,
             email,
+            cpf,
             phone,
             city,
             password_hash,
@@ -291,10 +391,11 @@ export async function createUserRecord(input: {
           values (
             ${userId},
             ${publicAlias},
-            ${input.name},
-            ${normalizedEmail},
-            ${input.phone},
-            ${input.city ?? null},
+            ${normalizedInput.name},
+            ${normalizedInput.email},
+            ${normalizedInput.cpf},
+            ${normalizedInput.phone},
+            ${normalizedInput.city ?? null},
             ${input.passwordHash},
             ${createdAt}
           )
@@ -320,17 +421,41 @@ export async function createUserRecord(input: {
         return {
           id: userId,
           publicAlias,
-          name: input.name,
-          email: normalizedEmail,
-          phone: input.phone,
-          ...(input.city ? { city: input.city } : {}),
+          name: normalizedInput.name,
+          email: normalizedInput.email,
+          phone: normalizedInput.phone,
+          ...(normalizedInput.city ? { city: normalizedInput.city } : {}),
           createdAt,
         };
       }),
     );
+
+    await invalidatePublicActivityCache();
+
+    return user;
   } catch (error) {
     if (isDatabaseErrorCode(error, "23505")) {
-      throw new Error("Já existe uma conta com este e-mail.");
+      const constraint = getDatabaseErrorConstraint(error);
+
+      if (constraint?.includes("cpf")) {
+        throw new UserRegistrationConflictError(
+          "cpf",
+          "Já existe uma conta cadastrada com este CPF.",
+        );
+      }
+
+      throw new UserRegistrationConflictError(
+        "email",
+        "Já existe uma conta com este e-mail.",
+      );
+    }
+
+    if (isDatabaseErrorCode(error, "23514")) {
+      const constraint = getDatabaseErrorConstraint(error);
+
+      if (constraint?.includes("cpf")) {
+        throw new Error("O CPF informado não passou na validação do banco.");
+      }
     }
 
     throw error;
@@ -338,6 +463,34 @@ export async function createUserRecord(input: {
 }
 
 export async function listPublicActivity(limit = 6) {
+  if (shouldUseLocalSeedData()) {
+    const rows: DatabaseActivityRow[] = seedLots.slice(0, limit).map((lot, index) => ({
+      id: `seed-lot-available-${lot.slug}`,
+      kind: "lot_available",
+      lot_slug: lot.slug,
+      actor_user_id: null,
+      actor_public_alias: null,
+      amount_cents: null,
+      title: null,
+      description: null,
+      audience: "public",
+      created_at:
+        lot.createdAt ??
+        new Date(Date.UTC(2026, 3, 11, 18, 10, 0) - index * 1000 * 60 * 90).toISOString(),
+    }));
+
+    return Promise.all(rows.map((row) => createActivityItem(row, "public")));
+  }
+
+  const cachedActivity = await readPublicCache<ActivityFeedItem[]>("activity", [
+    "public",
+    String(limit),
+  ]);
+
+  if (cachedActivity) {
+    return cachedActivity;
+  }
+
   return withPlatformDatabase(async (sql) => {
     const rows = await sql<DatabaseActivityRow[]>`
       select
@@ -357,7 +510,10 @@ export async function listPublicActivity(limit = 6) {
       limit ${limit}
     `;
 
-    return Promise.all(rows.map((row) => createActivityItem(row, "public")));
+    const items = await Promise.all(rows.map((row) => createActivityItem(row, "public")));
+    await writePublicCache("activity", ["public", String(limit)], items, 45);
+
+    return items;
   });
 }
 
@@ -366,6 +522,55 @@ export async function getLotPlatformSnapshot(
   viewerUserId?: string,
 ): Promise<LotPlatformSnapshot> {
   const lot = await requireLot(lotSlug);
+
+  if (shouldUseLocalSeedData()) {
+    const status = getLotStatusDefinition(lot.statusKey);
+    const currentValueCents = Math.max(
+      lot.pricing.currentValueCents,
+      lot.pricing.referenceValueCents,
+    );
+    const nextAllowedAmountCents =
+      currentValueCents + lot.pricing.minimumIncrementCents;
+    const seedActivity = await createActivityItem(
+      {
+        id: `seed-lot-available-${lot.slug}`,
+        kind: "lot_available",
+        lot_slug: lot.slug,
+        actor_user_id: null,
+        actor_public_alias: null,
+        amount_cents: null,
+        title: null,
+        description: null,
+        audience: "public",
+        created_at:
+          lot.createdAt ?? new Date(Date.UTC(2026, 3, 11, 18, 10, 0)).toISOString(),
+      },
+      "public",
+    );
+
+    return {
+      lotSlug,
+      onlineStatusLabel: lot.onlineStatusLabel,
+      teaserLabel: lot.onlineTeaserLabel,
+      supportLabel: lot.pricing.supportLabel,
+      referenceValueCents: lot.pricing.referenceValueCents,
+      referenceValueLabel: lot.pricing.referenceValueLabel,
+      visibleValueCents: lot.pricing.referenceValueCents,
+      visibleValueLabel: lot.pricing.referenceValueLabel,
+      visibleValueKind: "reference",
+      minimumIncrementCents: lot.pricing.minimumIncrementCents,
+      minimumIncrementLabel: lot.pricing.minimumIncrementLabel,
+      nextAllowedAmountCents,
+      nextAllowedAmountLabel: formatCurrencyBRL(nextAllowedAmountCents),
+      viewerIsAuthenticated: false,
+      interestEnabled: status.interestEnabled,
+      viewerHasInterest: false,
+      preBidEnabled: status.preBidEnabled,
+      preBidMessage:
+        "Banco de dados não configurado para habilitar interesse e pré-lance online.",
+      recentActivity: [seedActivity],
+    };
+  }
 
   return withPlatformDatabase(async (sql) => {
     const [topBidRow, activityRows, viewerInterestRow, viewerPreBidRow] = await Promise.all([
@@ -464,6 +669,14 @@ export async function getLotPlatformSnapshot(
 }
 
 export async function registerInterest(userId: string, lotSlug: string) {
+  if (shouldUseLocalSeedData()) {
+    void userId;
+    void lotSlug;
+    throw new Error(
+      "Banco de dados não configurado para registrar interesses nesta oportunidade.",
+    );
+  }
+
   const lot = await requireLot(lotSlug);
   const lotStatus = getLotStatusDefinition(lot.statusKey);
 
@@ -471,7 +684,7 @@ export async function registerInterest(userId: string, lotSlug: string) {
     throw new Error("Este lote não está disponível para acompanhamento no momento.");
   }
 
-  return withPlatformDatabase((sql) =>
+  const result = await withPlatformDatabase((sql) =>
     sql.begin(async (transaction) => {
       const [userRow] = await transaction<{ public_alias: string }[]>`
         select public_alias
@@ -538,6 +751,10 @@ export async function registerInterest(userId: string, lotSlug: string) {
       };
     }),
   );
+
+  await invalidatePublicActivityCache();
+
+  return result;
 }
 
 export async function submitPreBid(
@@ -546,6 +763,16 @@ export async function submitPreBid(
   amountCents: number,
   note?: string,
 ) {
+  if (shouldUseLocalSeedData()) {
+    void userId;
+    void lotSlug;
+    void amountCents;
+    void note;
+    throw new Error(
+      "Banco de dados não configurado para registrar pré-lances nesta oportunidade.",
+    );
+  }
+
   const lot = await requireLot(lotSlug);
   const lotStatus = getLotStatusDefinition(lot.statusKey);
 
@@ -553,7 +780,7 @@ export async function submitPreBid(
     throw new Error("O pré-lance online não está liberado para este lote agora.");
   }
 
-  return withPlatformDatabase((sql) =>
+  const result = await withPlatformDatabase((sql) =>
     sql.begin(async (transaction) => {
       const [userRow] = await transaction<{ public_alias: string }[]>`
         select public_alias
@@ -680,9 +907,18 @@ export async function submitPreBid(
       };
     }),
   );
+
+  await invalidatePublicActivityCache();
+
+  return result;
 }
 
 export async function getUserDashboard(userId: string): Promise<UserDashboard> {
+  if (shouldUseLocalSeedData()) {
+    void userId;
+    throw new Error("Banco de dados não configurado para acessar a área do usuário.");
+  }
+
   return withPlatformDatabase(async (sql) => {
     const [userRow, interestRows, preBidRows, activityRows] = await Promise.all([
       sql<DatabaseUserRow[]>`

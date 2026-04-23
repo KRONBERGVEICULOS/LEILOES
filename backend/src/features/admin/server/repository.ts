@@ -12,6 +12,7 @@ import {
 import { auctionEvents, categories } from "@/backend/features/auctions/data/catalog";
 import { getLotById, listLots } from "@/backend/features/auctions/server/catalog";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
+import { invalidatePublicExperienceCache } from "@/backend/features/platform/server/public-cache";
 import { isDatabaseConfigured } from "@/backend/features/platform/server/mode";
 import { formatCurrencyBRL, formatDateTimeBR, slugify } from "@/shared/lib/utils";
 
@@ -164,9 +165,7 @@ export type AdminLotMutationResult = {
 
 function assertDatabaseConfigured() {
   if (!isDatabaseConfigured()) {
-    throw new Error(
-      "Configure DATABASE_URL para usar a persistência real do painel administrativo.",
-    );
+    throw new Error("Banco de dados do painel administrativo não configurado.");
   }
 }
 
@@ -458,7 +457,7 @@ export async function saveAdminLot(input: StoredLotUpdatePayload) {
   const previousLot = input.id ? await getLotById(input.id) : null;
   const nextSlug = await ensureUniqueSlug(input.slug || input.title, input.id);
 
-  return withPlatformDatabase((sql) =>
+  const result = await withPlatformDatabase((sql) =>
     sql.begin(async (transaction) => {
       const now = new Date().toISOString();
       const wasPubliclyVisible = previousLot
@@ -616,6 +615,13 @@ export async function saveAdminLot(input: StoredLotUpdatePayload) {
       } satisfies AdminLotMutationResult;
     }),
   );
+
+  await invalidatePublicExperienceCache({
+    activity: true,
+    catalog: true,
+  });
+
+  return result;
 }
 
 export async function duplicateAdminLot(id: string) {
@@ -662,7 +668,7 @@ export async function setAdminLotVisibility(id: string, isVisible: boolean) {
     throw new Error("Lote não encontrado.");
   }
 
-  return withPlatformDatabase((sql) =>
+  const result = await withPlatformDatabase((sql) =>
     sql.begin(async (transaction) => {
       await transaction`
         update platform_lots
@@ -700,6 +706,13 @@ export async function setAdminLotVisibility(id: string, isVisible: boolean) {
       } satisfies AdminLotMutationResult;
     }),
   );
+
+  await invalidatePublicExperienceCache({
+    activity: true,
+    catalog: true,
+  });
+
+  return result;
 }
 
 export async function setAdminLotFeatured(id: string, isFeatured: boolean) {
@@ -710,7 +723,7 @@ export async function setAdminLotFeatured(id: string, isFeatured: boolean) {
     throw new Error("Lote não encontrado.");
   }
 
-  return withPlatformDatabase((sql) =>
+  const result = await withPlatformDatabase((sql) =>
     sql.begin(async (transaction) => {
       await transaction`
         update platform_lots
@@ -738,6 +751,13 @@ export async function setAdminLotFeatured(id: string, isFeatured: boolean) {
       } satisfies AdminLotMutationResult;
     }),
   );
+
+  await invalidatePublicExperienceCache({
+    activity: false,
+    catalog: true,
+  });
+
+  return result;
 }
 
 export async function listAdminInterests(filters: AdminRecordFilters) {

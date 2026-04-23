@@ -13,7 +13,7 @@ export function ContactForm() {
           Atendimento comercial
         </p>
         <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-ink">
-          Abra o WhatsApp com sua mensagem pronta.
+          Abra o atendimento com sua mensagem pronta.
         </h2>
         <p className="mt-3 text-sm leading-7 text-brand-muted">
           Preencha o básico abaixo. Ao enviar, a conversa abre organizada para
@@ -80,14 +80,14 @@ export function ContactForm() {
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm leading-6 text-brand-muted">
-          O envio abre o WhatsApp do atendimento comercial. Não envie dados
+          O envio abre o canal principal do atendimento comercial. Não envie dados
           bancários ou documentos além do que for solicitado na conversa.
         </p>
         <button
           className="inline-flex items-center justify-center rounded-full bg-brand-brass px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-brass/90"
           type="submit"
         >
-          Abrir WhatsApp
+          Abrir atendimento
         </button>
       </div>
     </form>

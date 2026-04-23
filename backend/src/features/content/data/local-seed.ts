@@ -150,7 +150,7 @@ const rawSeed = {
     legalName: "Kron Leilões Ltda.",
     taxId: null,
     shortDescription:
-      "Plataforma comercial enxuta para divulgar oportunidades de leilão, captar interessados e conduzir atendimento via WhatsApp.",
+      "Plataforma comercial enxuta para divulgar oportunidades de leilão, captar interessados e conduzir atendimento humano com contexto.",
     longDescription:
       "A Kron Leilões usa este site como vitrine comercial para apresentar oportunidades, organizar cadastro, acompanhamento e pré-lance online com suporte humano antes da validação final pelo atendimento.",
     addressLines: ["Rua André de Barros, 226", "15º andar - Centro", "Curitiba/PR"],
@@ -172,7 +172,7 @@ const rawSeed = {
     seo: makeSeo({
       title: "Kron Leilões | Oportunidades com atendimento humano",
       description:
-        "Oportunidades de leilão com cadastro, acompanhamento, pré-lance online e atendimento comercial forte pelo WhatsApp.",
+        "Oportunidades de leilão com cadastro, acompanhamento, pré-lance online e atendimento comercial humano.",
       canonicalPath: "/",
       ogImage: "/media/brand/kron-banner.svg",
       keywords: [
@@ -180,7 +180,7 @@ const rawSeed = {
         "oportunidades de leilão",
         "pré-lance online",
         "cadastro de interessados",
-        "whatsapp comercial",
+        "atendimento comercial",
         "lotes",
       ],
     }),
@@ -227,7 +227,7 @@ const rawSeed = {
       slug: "falar-whatsapp",
       actionType: "contact",
       title: "Atendimento comercial e documental",
-      label: "Falar no WhatsApp",
+      label: "Falar com atendimento",
       description:
         "Fale com a equipe para pedir edital, confirmar lote, comissão, visitação, pagamento ou retirada.",
       href: buildWhatsAppLink(

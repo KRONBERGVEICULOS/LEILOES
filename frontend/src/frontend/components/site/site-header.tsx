@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 
 import { Container } from "@/frontend/components/site/container";
 import { LogoutButton } from "@/frontend/components/site/logout-button";
-import { createWhatsAppLink, mainNavigation, siteConfig } from "@/shared/config/site";
+import { mainNavigation } from "@/shared/config/site";
 import type { AuthenticatedUser } from "@/backend/features/platform/types";
 import { cn } from "@/shared/lib/utils";
 
@@ -26,10 +26,8 @@ function isActiveLink(pathname: string, href: string) {
 export function SiteHeader({ currentUser }: SiteHeaderProps) {
   const pathname = usePathname();
   const mobileMenuRef = useRef<HTMLDetailsElement>(null);
-
-  const whatsappHref = createWhatsAppLink(
-    `Olá, quero atendimento comercial da ${siteConfig.name} para analisar uma oportunidade.`,
-  );
+  const isLoginPage = isActiveLink(pathname, "/entrar");
+  const isSignupPage = isActiveLink(pathname, "/cadastro");
 
   useEffect(() => {
     mobileMenuRef.current?.removeAttribute("open");
@@ -52,7 +50,7 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
             width={168}
           />
           <span className="hidden text-xs leading-5 text-brand-muted xl:block">
-            Comercial, confiável e com área restrita para acompanhar oportunidades.
+            Catálogo público e área restrita para acompanhar oportunidades com clareza.
           </span>
         </Link>
 
@@ -72,17 +70,6 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
               {item.label}
             </Link>
           ))}
-          <Link
-            className={cn(
-              "text-sm font-medium transition hover:text-brand-navy",
-              isActiveLink(pathname, "/area")
-                ? "text-brand-navy"
-                : "text-brand-ink",
-            )}
-            href={currentUser ? "/area" : "/entrar"}
-          >
-            {currentUser ? "Minha área" : "Entrar"}
-          </Link>
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
@@ -105,28 +92,24 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
             </>
           ) : (
             <>
-              <Link
-                className="inline-flex items-center justify-center rounded-full border border-brand-line px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-brand-navy hover:text-brand-navy"
-                href="/entrar"
-              >
-                Entrar
-              </Link>
-              <Link
-                className="inline-flex items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-semibold text-brand-navy shadow-[0_18px_38px_-26px_rgba(24,50,79,0.36)] transition hover:bg-brand-paper"
-                href="/cadastro"
-              >
-                Criar cadastro
-              </Link>
+              {!isLoginPage ? (
+                <Link
+                  className="inline-flex items-center justify-center rounded-full border border-brand-line px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-brand-navy hover:text-brand-navy"
+                  href="/entrar"
+                >
+                  Entrar
+                </Link>
+              ) : null}
+              {!isSignupPage ? (
+                <Link
+                  className="inline-flex items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-semibold text-brand-navy shadow-[0_18px_38px_-26px_rgba(24,50,79,0.36)] transition hover:bg-brand-paper"
+                  href="/cadastro"
+                >
+                  Criar cadastro
+                </Link>
+              ) : null}
             </>
           )}
-          <a
-            className="inline-flex items-center justify-center rounded-full bg-brand-brass px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-brass/92"
-            href={whatsappHref}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            WhatsApp
-          </a>
         </div>
 
         <details ref={mobileMenuRef} className="relative lg:hidden">
@@ -149,11 +132,9 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-semibold text-brand-ink">
-                    Área restrita para pré-lance online
-                  </p>
+                  <p className="text-sm font-semibold text-brand-ink">Área da plataforma</p>
                   <p className="text-xs text-brand-muted">
-                    Cadastro simples para acompanhar lotes e interações.
+                    Acompanhe lotes, interesses e interações em um ambiente seguro.
                   </p>
                 </>
               )}
@@ -175,26 +156,42 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
                   {item.label}
                 </Link>
               ))}
-              <Link
-                className={cn(
-                  "rounded-2xl px-4 py-3 text-sm font-medium transition",
-                  isActiveLink(pathname, "/area") || isActiveLink(pathname, "/entrar")
-                    ? "bg-brand-paper text-brand-navy"
-                    : "text-brand-ink hover:bg-brand-paper hover:text-brand-navy",
-                )}
-                href={currentUser ? "/area" : "/entrar"}
-              >
-                {currentUser ? "Minha área" : "Entrar"}
-              </Link>
+              {currentUser ? (
+                <Link
+                  className={cn(
+                    "rounded-2xl px-4 py-3 text-sm font-medium transition",
+                    isActiveLink(pathname, "/area")
+                      ? "bg-brand-paper text-brand-navy"
+                      : "text-brand-ink hover:bg-brand-paper hover:text-brand-navy",
+                  )}
+                  href="/area"
+                >
+                  Minha área
+                </Link>
+              ) : !isLoginPage ? (
+                <Link
+                  className={cn(
+                    "rounded-2xl px-4 py-3 text-sm font-medium transition",
+                    isActiveLink(pathname, "/entrar")
+                      ? "bg-brand-paper text-brand-navy"
+                      : "text-brand-ink hover:bg-brand-paper hover:text-brand-navy",
+                  )}
+                  href="/entrar"
+                >
+                  Entrar
+                </Link>
+              ) : null}
             </nav>
 
             {!currentUser ? (
-              <Link
-                className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-semibold text-brand-navy shadow-[0_18px_38px_-26px_rgba(24,50,79,0.36)]"
-                href="/cadastro"
-              >
-                Criar cadastro
-              </Link>
+              !isSignupPage ? (
+                <Link
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-semibold text-brand-navy shadow-[0_18px_38px_-26px_rgba(24,50,79,0.36)]"
+                  href="/cadastro"
+                >
+                  Criar cadastro
+                </Link>
+              ) : null
             ) : (
               <div className="mt-4">
                 <LogoutButton
@@ -203,15 +200,6 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
                 />
               </div>
             )}
-
-            <a
-              className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-brand-brass px-4 py-3 text-sm font-semibold text-white"
-              href={whatsappHref}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Falar no WhatsApp
-            </a>
           </div>
         </details>
       </Container>

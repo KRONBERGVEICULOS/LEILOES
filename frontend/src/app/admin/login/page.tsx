@@ -101,8 +101,7 @@ export default async function AdminLoginPage({
             Entre para administrar a operação.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
-            Use apenas as credenciais definidas em <code>ADMIN_USERNAME</code> e{" "}
-            <code>ADMIN_PASSWORD</code>.
+            Use apenas as credenciais administrativas configuradas para este ambiente.
           </p>
           <div className="mt-8">
             <AdminLoginForm

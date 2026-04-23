@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 import { initialAdminActionState, manualActivitySchema, type AdminActionState } from "@/backend/features/admin/forms";
 import { requireAdminSession } from "@/backend/features/admin/server/auth";
@@ -71,6 +72,10 @@ export async function createManualActivityAction(
 
     redirect(`${readSafeAdminPath(formData, "returnTo", "/admin/atividade")}?saved=activity`);
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
     return {
       status: "error",
       message:

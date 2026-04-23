@@ -10,11 +10,11 @@ export default function Image() {
     eyebrow: siteConfig.name,
     title: "Oportunidades, cadastro e pré-lance online",
     description:
-      "Branding institucional forte, área restrita simples e atendimento humano no WhatsApp para levar a negociação adiante.",
+      "Branding institucional forte, área restrita simples e atendimento humano para levar a negociação adiante.",
     meta: [
       "Cadastro simples",
       "Área restrita",
-      "WhatsApp forte",
+      "Atendimento humano",
     ],
   });
 }
