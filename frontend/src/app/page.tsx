@@ -194,7 +194,8 @@ export default async function Home() {
                 height={760}
                 priority
                 sizes="(max-width: 1024px) 100vw, 54vw"
-                src="/media/brand/kron-banner.svg"
+                src="/media/brand/banner-kronberg.png"
+                style={{ objectFit: "cover", objectPosition: "center" }}
                 width={1600}
               />
             </div>
