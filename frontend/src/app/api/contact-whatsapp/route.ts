@@ -1,10 +1,37 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
+import {
+  ContactLeadPersistenceUnavailableError,
+  ContactLeadValidationError,
+  persistContactLead,
+} from "@/backend/features/platform/server/contact-leads";
 import { siteConfig } from "@/shared/config/site";
 import { buildWhatsAppLink } from "@/shared/lib/contact-links";
 
 function getTrimmedField(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
+}
+
+function collectFormPayload(formData: FormData) {
+  const payload: Record<string, string> = {};
+
+  for (const [key, value] of formData.entries()) {
+    payload[key] = String(value ?? "").trim();
+  }
+
+  return payload;
+}
+
+function buildLeadOrigin(formData: FormData) {
+  const tipo = getTrimmedField(formData, "tipo").toLowerCase();
+  const codigoLote = getTrimmedField(formData, "codigo_lote");
+  const referencia = getTrimmedField(formData, "referencia");
+
+  if (tipo === "oferta") {
+    return codigoLote ? `oferta:${codigoLote}` : "oferta:site";
+  }
+
+  return referencia ? `atendimento:${referencia}` : "atendimento:site";
 }
 
 function buildPrefilledMessage(formData: FormData) {
@@ -49,10 +76,56 @@ function buildPrefilledMessage(formData: FormData) {
 
 export async function POST(request: Request) {
   const formData = await request.formData();
-  const targetUrl = buildWhatsAppLink(
-    siteConfig.whatsappNumber,
-    buildPrefilledMessage(formData),
-  );
 
-  return NextResponse.redirect(targetUrl, 303);
+  try {
+    const payload = collectFormPayload(formData);
+    const nome = getTrimmedField(formData, "nome");
+    const telefone = getTrimmedField(formData, "telefone");
+    const email = getTrimmedField(formData, "email");
+    const referencia =
+      getTrimmedField(formData, "referencia") ||
+      getTrimmedField(formData, "codigo_lote") ||
+      getTrimmedField(formData, "titulo_lote");
+    const mensagem =
+      getTrimmedField(formData, "mensagem") ||
+      getTrimmedField(formData, "valor_oferta");
+
+    await persistContactLead({
+      origin: buildLeadOrigin(formData),
+      name: nome,
+      phone: telefone,
+      email,
+      reference: referencia,
+      message: mensagem,
+      payload,
+    });
+
+    const targetUrl = buildWhatsAppLink(
+      siteConfig.whatsappNumber,
+      buildPrefilledMessage(formData),
+    );
+
+    return NextResponse.redirect(targetUrl, 303);
+  } catch (error) {
+    if (
+      error instanceof ContactLeadValidationError ||
+      error instanceof ContactLeadPersistenceUnavailableError
+    ) {
+      return NextResponse.json(
+        {
+          status: "error",
+          message: error.message,
+        },
+        { status: error instanceof ContactLeadValidationError ? 400 : 503 },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        status: "error",
+        message: "Não foi possível registrar seu contato agora.",
+      },
+      { status: 500 },
+    );
+  }
 }

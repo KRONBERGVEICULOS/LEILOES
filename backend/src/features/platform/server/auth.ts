@@ -13,7 +13,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
-import { isDatabaseConfigured } from "@/backend/features/platform/server/mode";
+import {
+  isDatabaseConfigured,
+  shouldUseLocalSeedData,
+} from "@/backend/features/platform/server/mode";
 import type { AuthenticatedUser } from "@/backend/features/platform/types";
 
 const scrypt = promisify(scryptCallback);
@@ -89,7 +92,7 @@ export async function clearSessionCookie() {
 }
 
 export async function createSession(userId: string) {
-  if (!isDatabaseConfigured()) {
+  if (!isDatabaseConfigured() || shouldUseLocalSeedData()) {
     throw new Error("Banco de dados não configurado para criar sessões de usuário.");
   }
 
@@ -140,7 +143,7 @@ export async function destroyCurrentSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get(sessionCookieName)?.value;
 
-  if (token && isDatabaseConfigured()) {
+  if (token && isDatabaseConfigured() && !shouldUseLocalSeedData()) {
     await withPlatformDatabase(async (sql) => {
       await sql`
         delete from platform_sessions
@@ -156,7 +159,7 @@ export async function getCurrentUser() {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get(sessionCookieName)?.value;
 
-  if (!sessionToken || !isDatabaseConfigured()) {
+  if (!sessionToken || !isDatabaseConfigured() || shouldUseLocalSeedData()) {
     return null;
   }
 

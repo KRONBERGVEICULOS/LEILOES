@@ -8,12 +8,14 @@ import { initialAdminActionState } from "@/backend/features/admin/forms";
 
 type AdminLoginFormProps = {
   credentialsConfigured: boolean;
+  credentialsIssue?: string;
   loggedOut?: boolean;
   redirectTo: string;
 };
 
 export function AdminLoginForm({
   credentialsConfigured,
+  credentialsIssue,
   loggedOut = false,
   redirectTo,
 }: AdminLoginFormProps) {
@@ -25,7 +27,7 @@ export function AdminLoginForm({
 
       {!credentialsConfigured ? (
         <p className="rounded-2xl border border-brand-warning/20 bg-brand-brass/8 px-4 py-3 text-sm text-brand-warning">
-          Credenciais administrativas ainda não configuradas neste ambiente.
+          {credentialsIssue ?? "Credenciais administrativas ainda não configuradas neste ambiente."}
         </p>
       ) : null}
 

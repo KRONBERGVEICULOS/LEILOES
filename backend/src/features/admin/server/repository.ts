@@ -13,7 +13,10 @@ import { auctionEvents, categories } from "@/backend/features/auctions/data/cata
 import { getLotById, listLots } from "@/backend/features/auctions/server/catalog";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
 import { invalidatePublicExperienceCache } from "@/backend/features/platform/server/public-cache";
-import { isDatabaseConfigured } from "@/backend/features/platform/server/mode";
+import {
+  isDatabaseConfigured,
+  shouldUseLocalSeedData,
+} from "@/backend/features/platform/server/mode";
 import { formatCurrencyBRL, formatDateTimeBR, slugify } from "@/shared/lib/utils";
 
 type InterestRow = {
@@ -164,7 +167,7 @@ export type AdminLotMutationResult = {
 };
 
 function assertDatabaseConfigured() {
-  if (!isDatabaseConfigured()) {
+  if (!isDatabaseConfigured() || shouldUseLocalSeedData()) {
     throw new Error("Banco de dados do painel administrativo não configurado.");
   }
 }

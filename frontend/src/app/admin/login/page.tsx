@@ -5,6 +5,7 @@ import { AdminLoginForm } from "@/frontend/components/admin/admin-login-form";
 import { Container } from "@/frontend/components/site/container";
 import {
   areAdminCredentialsConfigured,
+  getAdminCredentialsIssue,
   redirectAuthenticatedAdmin,
 } from "@/backend/features/admin/server/auth";
 
@@ -35,6 +36,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
+
+export const revalidate = 0;
+
 export default async function AdminLoginPage({
   searchParams,
 }: AdminLoginPageProps) {
@@ -44,6 +49,7 @@ export default async function AdminLoginPage({
   const redirectTo = readRedirect(params);
   const loggedOut = readSearchParam(params, "logout") === "1";
   const credentialsConfigured = areAdminCredentialsConfigured();
+  const credentialsIssue = getAdminCredentialsIssue() ?? undefined;
 
   return (
     <section className="min-h-screen bg-brand-paper">
@@ -81,8 +87,9 @@ export default async function AdminLoginPage({
               Segurança mínima
             </p>
             <p className="mt-3 text-sm leading-7 text-white/76">
-              O admin usa credenciais fixas vindas do ambiente e sessão simples por cookie.
-              Nada de ACL, perfis múltiplos ou burocracia desnecessária nesta fase.
+              O admin continua simples, mas agora com credenciais fortes vindas do ambiente,
+              sessão por cookie e bloqueio básico de tentativas de login. Nada de ACL ou
+              múltiplos perfis nesta rodada.
             </p>
             <Link
               className="mt-5 inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-brand-navy transition hover:bg-brand-paper"
@@ -106,6 +113,7 @@ export default async function AdminLoginPage({
           <div className="mt-8">
             <AdminLoginForm
               credentialsConfigured={credentialsConfigured}
+              credentialsIssue={credentialsIssue}
               loggedOut={loggedOut}
               redirectTo={redirectTo}
             />

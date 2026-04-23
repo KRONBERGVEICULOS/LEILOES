@@ -12,6 +12,7 @@ import {
   normalizeEmail,
   normalizeSignupInput,
 } from "@/backend/features/platform/lib/user-normalization";
+import { ensurePlatformCatalogSeed } from "@/backend/features/platform/server/catalog-seed";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
 import {
   invalidatePublicActivityCache,
@@ -481,6 +482,8 @@ export async function listPublicActivity(limit = 6) {
 
     return Promise.all(rows.map((row) => createActivityItem(row, "public")));
   }
+
+  await ensurePlatformCatalogSeed();
 
   const cachedActivity = await readPublicCache<ActivityFeedItem[]>("activity", [
     "public",

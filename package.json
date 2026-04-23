@@ -11,6 +11,7 @@
     "build": "npm run build --workspace @kron/frontend --",
     "start": "npm run start --workspace @kron/frontend --",
     "lint": "npm run lint --workspace @kron/frontend --",
+    "migrate": "node scripts/migrate.mjs",
     "smoke:url": "npm run smoke:url --workspace @kron/frontend --"
   }
 }

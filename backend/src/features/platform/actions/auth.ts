@@ -22,7 +22,10 @@ import {
   findUserByEmail,
   UserRegistrationConflictError,
 } from "@/backend/features/platform/server/repository";
-import { isDatabaseConfigured } from "@/backend/features/platform/server/mode";
+import {
+  isDatabaseConfigured,
+  shouldUseLocalSeedData,
+} from "@/backend/features/platform/server/mode";
 import {
   consumeRateLimit,
   getRequestFingerprint,
@@ -69,7 +72,7 @@ export async function registerUserAction(
     };
   }
 
-  if (!isDatabaseConfigured()) {
+  if (!isDatabaseConfigured() || shouldUseLocalSeedData()) {
     return {
       status: "error",
       message: "Cadastros estão indisponíveis neste ambiente.",
@@ -168,7 +171,7 @@ export async function loginUserAction(
     };
   }
 
-  if (!isDatabaseConfigured()) {
+  if (!isDatabaseConfigured() || shouldUseLocalSeedData()) {
     return {
       status: "error",
       message: "Login está indisponível neste ambiente.",

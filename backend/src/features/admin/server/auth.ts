@@ -10,6 +10,8 @@ import {
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { getAdminCredentialsValidationIssue } from "@/shared/config/env";
+
 export const adminSessionCookieName = "kron_admin_session";
 
 const adminSessionDurationInSeconds = 60 * 60 * 12;
@@ -29,12 +31,14 @@ function safeCompare(left: string, right: string) {
 
 function getAdminCredentials() {
   const username = process.env.ADMIN_USERNAME?.trim();
-  const password = process.env.ADMIN_PASSWORD;
+  const password = process.env.ADMIN_PASSWORD ?? "";
+  const issue = getAdminCredentialsValidationIssue();
 
   return {
     username,
     password,
-    configured: Boolean(username && password),
+    issue,
+    configured: issue === null,
   };
 }
 
@@ -103,6 +107,10 @@ export function areAdminCredentialsConfigured() {
   return getAdminCredentials().configured;
 }
 
+export function getAdminCredentialsIssue() {
+  return getAdminCredentials().issue;
+}
+
 export function validateAdminCredentials(username: string, password: string) {
   const credentials = getAdminCredentials();
 
@@ -120,7 +128,9 @@ export async function createAdminSession() {
   const credentials = getAdminCredentials();
 
   if (!credentials.configured) {
-    throw new Error("Credenciais administrativas não configuradas.");
+    throw new Error(
+      credentials.issue ?? "Credenciais administrativas não configuradas.",
+    );
   }
 
   const expiresAt = new Date(Date.now() + adminSessionDurationInSeconds * 1000).toISOString();

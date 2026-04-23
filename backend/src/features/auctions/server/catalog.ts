@@ -2,12 +2,10 @@
 
 import type { FaqItem, Lot, MediaAsset } from "@/backend/features/auctions/types";
 import { getLotStatusDefinition, isLotPubliclyVisible } from "@/backend/features/auctions/lib/lot-status";
+import { ensurePlatformCatalogSeed } from "@/backend/features/platform/server/catalog-seed";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
 import { readPublicCache, writePublicCache } from "@/backend/features/platform/server/public-cache";
-import {
-  requireDatabaseUrl,
-  shouldUseLocalSeedData,
-} from "@/backend/features/platform/server/mode";
+import { shouldUseLocalSeedData } from "@/backend/features/platform/server/mode";
 import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
 import { formatCurrencyBRL } from "@/shared/lib/utils";
 
@@ -119,7 +117,7 @@ async function getDatabaseLots() {
     return seedLots;
   }
 
-  requireDatabaseUrl();
+  await ensurePlatformCatalogSeed();
 
   return withPlatformDatabase(async (sql) => {
     const rows = await sql<LotRow[]>`

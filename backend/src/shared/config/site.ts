@@ -1,5 +1,9 @@
-﻿import { buildWhatsAppLink } from "@/shared/lib/contact-links";
 import { contentRepository } from "@/backend/features/content/data/repository";
+import {
+  readTrimmedEnv,
+  shouldEnforceProductionEnvironment,
+} from "@/shared/config/env";
+import { buildWhatsAppLink } from "@/shared/lib/contact-links";
 
 const company = contentRepository.getCompanyInfo();
 const contactChannels = contentRepository.listContactChannels();
@@ -45,9 +49,7 @@ export const mainNavigation = [
   { href: "/contato", label: "Contato" },
 ] as const;
 
-export const legalNavigation = [
-  { href: "/privacidade", label: "Privacidade" },
-] as const;
+export const legalNavigation = [{ href: "/privacidade", label: "Privacidade" }] as const;
 
 function normalizeSiteUrl(value: string) {
   return value.replace(/\/$/, "");
@@ -61,7 +63,13 @@ function getVercelDeploymentUrl() {
 }
 
 export function getSiteUrl() {
-  const explicitSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  const explicitSiteUrl = readTrimmedEnv("NEXT_PUBLIC_SITE_URL");
+
+  if (shouldEnforceProductionEnvironment() && !explicitSiteUrl) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL é obrigatório em produção para metadata, canonical e sitemap.",
+    );
+  }
 
   return normalizeSiteUrl(
     explicitSiteUrl || getVercelDeploymentUrl() || "http://localhost:3000",

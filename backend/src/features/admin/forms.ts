@@ -1,7 +1,9 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 import { lotStatusDefinitions } from "@/backend/features/auctions/lib/lot-status";
 import type { FormFieldErrors } from "@/backend/features/platform/forms";
+
+const minimumAdminPasswordLength = 12;
 
 export type AdminActionState = {
   status: "idle" | "error";
@@ -16,7 +18,10 @@ export const initialAdminActionState: AdminActionState = {
 
 export const adminLoginSchema = z.object({
   username: z.string().trim().min(1, "Informe o usuário administrador."),
-  password: z.string().min(1, "Informe a senha do administrador."),
+  password: z.string().min(
+    minimumAdminPasswordLength,
+    `A senha administrativa deve ter pelo menos ${minimumAdminPasswordLength} caracteres.`,
+  ),
 });
 
 export const adminLotSchema = z.object({

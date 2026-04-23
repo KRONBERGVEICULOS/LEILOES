@@ -7,8 +7,17 @@ import {
   areAdminCredentialsConfigured,
   createAdminSession,
   destroyAdminSession,
+  getAdminCredentialsIssue,
   validateAdminCredentials,
 } from "@/backend/features/admin/server/auth";
+import {
+  consumeRateLimit,
+  getRequestFingerprint,
+} from "@/backend/features/platform/server/rate-limit";
+import {
+  isDatabaseConfigured,
+  shouldUseLocalSeedData,
+} from "@/backend/features/platform/server/mode";
 
 function getSafeRedirectPath(value: FormDataEntryValue | null) {
   if (typeof value !== "string") {
@@ -43,7 +52,55 @@ export async function loginAdminAction(
   if (!areAdminCredentialsConfigured()) {
     return {
       status: "error",
-      message: "Credenciais administrativas não configuradas neste ambiente.",
+      message:
+        getAdminCredentialsIssue() ??
+        "Credenciais administrativas não configuradas neste ambiente.",
+      values: {
+        username: validated.data.username,
+      },
+    };
+  }
+
+  if (!isDatabaseConfigured() || shouldUseLocalSeedData()) {
+    return {
+      status: "error",
+      message:
+        "O painel administrativo exige PostgreSQL configurado. O modo local-seed não habilita a operação do admin.",
+      values: {
+        username: validated.data.username,
+      },
+    };
+  }
+
+  try {
+    const loginKey = await getRequestFingerprint([
+      "admin-login",
+      validated.data.username,
+    ]);
+    const loginRateLimit = await consumeRateLimit({
+      scope: "admin:login",
+      key: loginKey,
+      maxAttempts: 5,
+      windowMs: 15 * 60 * 1000,
+    });
+
+    if (!loginRateLimit.allowed) {
+      return {
+        status: "error",
+        message:
+          "Muitas tentativas de login administrativo. Aguarde alguns minutos antes de tentar novamente.",
+        values: {
+          username: validated.data.username,
+        },
+      };
+    }
+  } catch (error) {
+    return {
+      status: "error",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível validar o acesso administrativo agora.",
       values: {
         username: validated.data.username,
       },
