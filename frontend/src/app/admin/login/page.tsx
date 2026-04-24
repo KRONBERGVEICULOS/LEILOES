@@ -8,6 +8,7 @@ import {
   getAdminCredentialsIssue,
   redirectAuthenticatedAdmin,
 } from "@/backend/features/admin/server/auth";
+import { absoluteUrl, siteConfig } from "@/shared/config/site";
 
 type AdminLoginPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -30,6 +31,32 @@ function readRedirect(
 
 export const metadata: Metadata = {
   title: "Admin",
+  description: "Acesso administrativo da operação Kron Leilões.",
+  alternates: {
+    canonical: absoluteUrl("/admin/login"),
+  },
+  openGraph: {
+    title: `Admin | ${siteConfig.name}`,
+    description: "Acesso administrativo da operação Kron Leilões.",
+    url: absoluteUrl("/admin/login"),
+    siteName: siteConfig.name,
+    locale: "pt_BR",
+    type: "website",
+    images: [
+      {
+        url: absoluteUrl("/opengraph-image"),
+        width: 1200,
+        height: 630,
+        alt: `Admin | ${siteConfig.name}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Admin | ${siteConfig.name}`,
+    description: "Acesso administrativo da operação Kron Leilões.",
+    images: [absoluteUrl("/opengraph-image")],
+  },
   robots: {
     index: false,
     follow: false,

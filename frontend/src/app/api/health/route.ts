@@ -3,9 +3,21 @@ import { NextResponse } from "next/server";
 import { pingPlatformDatabase } from "@/backend/features/platform/server/database";
 import { pingPlatformRedis } from "@/backend/features/platform/server/redis";
 import { getProductionEnvironmentIssues } from "@/shared/config/env";
+import { getSiteUrlDiagnostics } from "@/shared/config/site";
 
 export async function GET() {
   const environmentIssues = getProductionEnvironmentIssues();
+  const siteDiagnostics = getSiteUrlDiagnostics();
+  const site = {
+    source: siteDiagnostics.source,
+    resolvedUrl: siteDiagnostics.resolvedUrl,
+    resolvedHost: siteDiagnostics.resolvedHost,
+    configuredUrl: siteDiagnostics.configuredUrl,
+    railwayPublicDomain: siteDiagnostics.railwayPublicDomain,
+    matchesRailwayPublicDomain: siteDiagnostics.railwayPublicDomain
+      ? siteDiagnostics.resolvedHost === siteDiagnostics.railwayPublicDomain
+      : null,
+  };
 
   try {
     const [databaseHealth, redisHealth] = await Promise.all([
@@ -26,6 +38,7 @@ export async function GET() {
         environment: {
           ok: environmentIssues.length === 0,
           issues: environmentIssues,
+          site,
         },
         database: databaseHealth,
         cache: redisHealth,
@@ -44,6 +57,7 @@ export async function GET() {
         environment: {
           ok: environmentIssues.length === 0,
           issues: environmentIssues,
+          site,
         },
         database: {
           ok: false,

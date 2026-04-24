@@ -50,6 +50,16 @@ function buildAuthFieldErrorState(
   };
 }
 
+function buildAuthenticationUnavailableState(kind: "login" | "signup"): AuthActionState {
+  return {
+    status: "error",
+    message:
+      kind === "signup"
+        ? "Cadastro temporariamente indisponível. Tente novamente em instantes."
+        : "Login temporariamente indisponível. Tente novamente em instantes.",
+  };
+}
+
 export async function registerUserAction(
   _prevState: AuthActionState,
   formData: FormData,
@@ -80,28 +90,35 @@ export async function registerUserAction(
   }
 
   const redirectTo = getSafeRedirectPath(formData.get("redirectTo"));
-  const signupKey = await getRequestFingerprint([
-    "signup",
-    validated.data.email,
-  ]);
-  const signupRateLimit = await consumeRateLimit({
-    scope: "auth:signup",
-    key: signupKey,
-    maxAttempts: 5,
-    windowMs: 15 * 60 * 1000,
-  });
+  let existingUser: Awaited<ReturnType<typeof findUserByEmail>> = null;
+  let existingCpfOwner: Awaited<ReturnType<typeof findUserByCpf>> = null;
 
-  if (!signupRateLimit.allowed) {
-    return {
-      status: "error",
-      message: "Muitas tentativas de cadastro neste momento. Aguarde alguns minutos e tente de novo.",
-    };
+  try {
+    const signupKey = await getRequestFingerprint([
+      "signup",
+      validated.data.email,
+    ]);
+    const signupRateLimit = await consumeRateLimit({
+      scope: "auth:signup",
+      key: signupKey,
+      maxAttempts: 5,
+      windowMs: 15 * 60 * 1000,
+    });
+
+    if (!signupRateLimit.allowed) {
+      return {
+        status: "error",
+        message: "Muitas tentativas de cadastro neste momento. Aguarde alguns minutos e tente de novo.",
+      };
+    }
+
+    [existingUser, existingCpfOwner] = await Promise.all([
+      findUserByEmail(validated.data.email),
+      findUserByCpf(validated.data.cpf),
+    ]);
+  } catch {
+    return buildAuthenticationUnavailableState("signup");
   }
-
-  const [existingUser, existingCpfOwner] = await Promise.all([
-    findUserByEmail(validated.data.email),
-    findUserByCpf(validated.data.cpf),
-  ]);
 
   if (existingUser) {
     return buildAuthFieldErrorState(
@@ -179,25 +196,31 @@ export async function loginUserAction(
   }
 
   const redirectTo = getSafeRedirectPath(formData.get("redirectTo"));
-  const loginKey = await getRequestFingerprint([
-    "login",
-    validated.data.email,
-  ]);
-  const loginRateLimit = await consumeRateLimit({
-    scope: "auth:login",
-    key: loginKey,
-    maxAttempts: 8,
-    windowMs: 15 * 60 * 1000,
-  });
+  let user: Awaited<ReturnType<typeof findUserByEmail>> = null;
 
-  if (!loginRateLimit.allowed) {
-    return {
-      status: "error",
-      message: "Muitas tentativas de login neste momento. Aguarde alguns minutos e tente novamente.",
-    };
+  try {
+    const loginKey = await getRequestFingerprint([
+      "login",
+      validated.data.email,
+    ]);
+    const loginRateLimit = await consumeRateLimit({
+      scope: "auth:login",
+      key: loginKey,
+      maxAttempts: 8,
+      windowMs: 15 * 60 * 1000,
+    });
+
+    if (!loginRateLimit.allowed) {
+      return {
+        status: "error",
+        message: "Muitas tentativas de login neste momento. Aguarde alguns minutos e tente novamente.",
+      };
+    }
+
+    user = await findUserByEmail(validated.data.email);
+  } catch {
+    return buildAuthenticationUnavailableState("login");
   }
-
-  const user = await findUserByEmail(validated.data.email);
 
   if (!user) {
     return {
@@ -218,7 +241,15 @@ export async function loginUserAction(
     };
   }
 
-  await createSession(user.id);
+  try {
+    await createSession(user.id);
+  } catch {
+    return {
+      status: "error",
+      message: "Login validado, mas não foi possível iniciar sua sessão agora. Tente novamente em instantes.",
+    };
+  }
+
   revalidatePath("/");
   redirect(redirectTo);
 }

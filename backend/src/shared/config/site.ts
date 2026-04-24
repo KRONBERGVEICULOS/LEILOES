@@ -52,36 +52,91 @@ export const mainNavigation = [
 export const legalNavigation = [{ href: "/privacidade", label: "Privacidade" }] as const;
 
 function normalizeSiteUrl(value: string) {
-  return value.replace(/\/$/, "");
+  const trimmed = value.trim();
+  const withProtocol = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
+
+  return withProtocol.replace(/\/$/, "");
+}
+
+function getRailwayDeploymentUrl() {
+  const publicDomain = readTrimmedEnv("RAILWAY_PUBLIC_DOMAIN");
+  return publicDomain ? normalizeSiteUrl(publicDomain) : undefined;
 }
 
 function getVercelDeploymentUrl() {
   const deploymentHost =
     process.env.NEXT_PUBLIC_VERCEL_URL ?? process.env.VERCEL_URL;
 
-  return deploymentHost ? `https://${deploymentHost}` : undefined;
+  return deploymentHost ? normalizeSiteUrl(deploymentHost) : undefined;
+}
+
+export type SiteUrlDiagnostics = {
+  configuredUrl: string | null;
+  railwayPublicDomain: string | null;
+  resolvedUrl: string;
+  resolvedHost: string;
+  source: "NEXT_PUBLIC_SITE_URL" | "RAILWAY_PUBLIC_DOMAIN" | "VERCEL_URL" | "localhost";
+};
+
+export function getSiteUrlDiagnostics(): SiteUrlDiagnostics {
+  const explicitSiteUrl = readTrimmedEnv("NEXT_PUBLIC_SITE_URL");
+  const railwayPublicDomain = readTrimmedEnv("RAILWAY_PUBLIC_DOMAIN");
+
+  let resolvedUrl: string;
+  let source: SiteUrlDiagnostics["source"];
+
+  if (explicitSiteUrl) {
+    resolvedUrl = normalizeSiteUrl(explicitSiteUrl);
+    source = "NEXT_PUBLIC_SITE_URL";
+  } else {
+    const railwayDeploymentUrl = getRailwayDeploymentUrl();
+
+    if (railwayDeploymentUrl) {
+      resolvedUrl = railwayDeploymentUrl;
+      source = "RAILWAY_PUBLIC_DOMAIN";
+    } else {
+      const vercelDeploymentUrl = getVercelDeploymentUrl();
+
+      if (vercelDeploymentUrl) {
+        resolvedUrl = vercelDeploymentUrl;
+        source = "VERCEL_URL";
+      } else {
+        resolvedUrl = "http://localhost:3000";
+        source = "localhost";
+      }
+    }
+  }
+
+  return {
+    configuredUrl: explicitSiteUrl ? normalizeSiteUrl(explicitSiteUrl) : null,
+    railwayPublicDomain: railwayPublicDomain ?? null,
+    resolvedUrl,
+    resolvedHost: new URL(resolvedUrl).host,
+    source,
+  };
 }
 
 export function getSiteUrl() {
-  const explicitSiteUrl = readTrimmedEnv("NEXT_PUBLIC_SITE_URL");
+  const diagnostics = getSiteUrlDiagnostics();
 
-  if (shouldEnforceProductionEnvironment() && !explicitSiteUrl) {
+  if (shouldEnforceProductionEnvironment() && diagnostics.source === "localhost") {
     throw new Error(
-      "NEXT_PUBLIC_SITE_URL é obrigatório em produção para metadata, canonical e sitemap.",
+      "NEXT_PUBLIC_SITE_URL ou RAILWAY_PUBLIC_DOMAIN é obrigatório em produção para metadata, canonical e sitemap.",
     );
   }
 
-  return normalizeSiteUrl(
-    explicitSiteUrl || getVercelDeploymentUrl() || "http://localhost:3000",
-  );
+  return diagnostics.resolvedUrl;
 }
 
 export function absoluteUrl(path = "/") {
-  return `${getSiteUrl()}${path}`;
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${getSiteUrl()}${normalizedPath}`;
 }
 
 export function getSiteHost() {
-  return new URL(getSiteUrl()).host;
+  return getSiteUrlDiagnostics().resolvedHost;
 }
 
 export function isPreviewDeployment() {

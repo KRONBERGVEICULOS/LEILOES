@@ -1,7 +1,7 @@
 const baseUrlInput = process.argv[2] ?? process.env.SMOKE_BASE_URL;
 
 if (!baseUrlInput) {
-  console.error("Uso: npm run smoke:url -- https://seu-deploy.vercel.app");
+  console.error("Uso: npm run smoke:url -- https://kronbergveiculos.up.railway.app");
   process.exit(1);
 }
 
@@ -15,7 +15,8 @@ async function expectJson(path, assertion) {
   });
 
   if (!response.ok) {
-    throw new Error(`${path} respondeu ${response.status}.`);
+    const payload = await response.text();
+    throw new Error(`${path} respondeu ${response.status}: ${payload}`);
   }
 
   const payload = await response.json();
@@ -31,7 +32,8 @@ async function expectHtml(path, marker) {
   });
 
   if (!response.ok) {
-    throw new Error(`${path} respondeu ${response.status}.`);
+    const html = await response.text();
+    throw new Error(`${path} respondeu ${response.status}: ${html}`);
   }
 
   const html = await response.text();

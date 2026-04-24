@@ -45,6 +45,7 @@ Regras importantes:
 - `ADMIN_PASSWORD` precisa ter pelo menos 12 caracteres.
 - Em produção, o fallback para `local-seed` é bloqueado.
 - Se `KRON_DATA_MODE=postgres`, o app exige `DATABASE_URL`.
+- Em Railway, `NEXT_PUBLIC_SITE_URL` pode apontar para a URL completa (`https://kronbergveiculos.up.railway.app`) ou usar a Reference Variable `${{ RAILWAY_PUBLIC_DOMAIN }}`.
 
 ## Desenvolvimento Local
 
@@ -143,6 +144,12 @@ Checklist mínimo:
 3. Configurar variáveis de ambiente com base em `.env.example`
 4. Rodar migrações antes de liberar tráfego
 
+O repositório já inclui `railway.toml` com:
+
+- `preDeployCommand = "npm run migrate"`
+- `healthcheckPath = "/api/health"`
+- `startCommand = "npm run start"`
+
 Fluxo recomendado:
 
 ```bash
@@ -158,7 +165,15 @@ Configurações importantes:
 - `DATABASE_URL` apontando para o serviço Railway Postgres
 - `DATABASE_SSL_MODE=require`
 - `NEXT_PUBLIC_SITE_URL` com a URL pública final
+  Exemplo atual: `https://kronbergveiculos.up.railway.app`
+  Em Railway, pode ser uma Reference Variable para `${{ RAILWAY_PUBLIC_DOMAIN }}`
 - `ADMIN_USERNAME` e `ADMIN_PASSWORD` fortes
+
+Validação recomendada após o deploy:
+
+```bash
+npm run smoke:url -- https://kronbergveiculos.up.railway.app
+```
 
 ## Segurança e Operação
 

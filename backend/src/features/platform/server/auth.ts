@@ -143,16 +143,18 @@ export async function destroyCurrentSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get(sessionCookieName)?.value;
 
-  if (token && isDatabaseConfigured() && !shouldUseLocalSeedData()) {
-    await withPlatformDatabase(async (sql) => {
-      await sql`
-        delete from platform_sessions
-        where token_hash = ${createSessionTokenHash(token)}
-      `;
-    });
+  try {
+    if (token && isDatabaseConfigured() && !shouldUseLocalSeedData()) {
+      await withPlatformDatabase(async (sql) => {
+        await sql`
+          delete from platform_sessions
+          where token_hash = ${createSessionTokenHash(token)}
+        `;
+      });
+    }
+  } finally {
+    await clearSessionCookie();
   }
-
-  await clearSessionCookie();
 }
 
 export async function getCurrentUser() {

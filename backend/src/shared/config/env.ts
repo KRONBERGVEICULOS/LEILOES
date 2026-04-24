@@ -9,6 +9,28 @@ function isHttpUrl(value: string) {
   }
 }
 
+function normalizePublicSiteUrlCandidate(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const withProtocol = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
+
+  return withProtocol.replace(/\/$/, "");
+}
+
+function getProductionSiteUrlCandidate() {
+  return normalizePublicSiteUrlCandidate(
+    readTrimmedEnv("NEXT_PUBLIC_SITE_URL") ??
+      readTrimmedEnv("RAILWAY_PUBLIC_DOMAIN") ??
+      "",
+  );
+}
+
 export function shouldEnforceProductionEnvironment() {
   return (
     process.env.NODE_ENV === "production" &&
@@ -51,10 +73,10 @@ export function getProductionEnvironmentIssues() {
     issues.push("DATABASE_URL ausente");
   }
 
-  const siteUrl = readTrimmedEnv("NEXT_PUBLIC_SITE_URL");
+  const siteUrl = getProductionSiteUrlCandidate();
 
   if (!siteUrl) {
-    issues.push("NEXT_PUBLIC_SITE_URL ausente");
+    issues.push("NEXT_PUBLIC_SITE_URL ausente e RAILWAY_PUBLIC_DOMAIN indisponível");
   } else if (!isHttpUrl(siteUrl)) {
     issues.push("NEXT_PUBLIC_SITE_URL inválida");
   }
