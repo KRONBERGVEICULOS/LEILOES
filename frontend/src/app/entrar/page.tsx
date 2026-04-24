@@ -46,7 +46,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </h1>
           <p className="max-w-2xl text-base leading-8 text-brand-muted">
             O acesso libera histórico recente da plataforma, registro de interesse,
-            valor atual da área logada e um caminho mais organizado até o atendimento humano.
+            maior pré-lance válido do lote e um caminho mais organizado até o atendimento humano.
           </p>
           <div className="overflow-hidden rounded-[30px] border border-brand-line bg-brand-navy shadow-[0_30px_90px_-54px_rgba(13,32,52,0.58)]">
             <Image

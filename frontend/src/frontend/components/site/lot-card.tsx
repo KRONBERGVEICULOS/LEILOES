@@ -54,7 +54,7 @@ export function LotCard({ lot }: LotCardProps) {
   const lotMeta = [lot.lotCode, lot.category, lot.location].join(" • ");
   const lotCardSummaryLabel = getLotCardSummaryLabel(lot.statusKey);
   const secondaryAction = getLotSecondaryAction(lot);
-  const hasPublicPreBidValue =
+  const hasSeparatedCurrentValue =
     lot.pricing.currentValueCents > lot.pricing.referenceValueCents;
 
   return (
@@ -103,16 +103,22 @@ export function LotCard({ lot }: LotCardProps) {
                 Referência do lote
               </p>
               <p className="mt-2 text-3xl font-semibold text-brand-ink">
-                {hasPublicPreBidValue
-                  ? lot.pricing.currentValueLabel
-                  : lot.pricing.referenceValueLabel}
+                {lot.pricing.referenceValueLabel}
               </p>
               <p className="mt-1 text-xs leading-5 text-brand-muted">
-                {hasPublicPreBidValue
-                  ? `Referência: ${lot.pricing.referenceValueLabel}`
-                  : lot.pricing.supportLabel}
+                {lot.pricing.supportLabel}
               </p>
             </div>
+            {hasSeparatedCurrentValue ? (
+              <div className="rounded-2xl border border-brand-line bg-brand-paper px-3 py-3">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-brand-muted">
+                  Valor atual separado
+                </p>
+                <p className="mt-1 text-sm font-semibold text-brand-ink">
+                  {lot.pricing.currentValueLabel}
+                </p>
+              </div>
+            ) : null}
             <span className="inline-flex w-fit max-w-full rounded-full bg-brand-paper px-3 py-2 text-left text-xs font-semibold uppercase leading-4 tracking-[0.12em] text-brand-navy">
               {lotCardSummaryLabel}
             </span>

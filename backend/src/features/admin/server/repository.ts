@@ -18,6 +18,7 @@ import {
   shouldUseLocalSeedData,
 } from "@/backend/features/platform/server/mode";
 import { formatCpf } from "@/shared/lib/cpf";
+import { resolveMaximumPreBidAmountCents } from "@/shared/lib/pre-bid-policy";
 import { formatCurrencyBRL, formatDateTimeBR, formatPhoneBR, slugify } from "@/shared/lib/utils";
 
 type InterestRow = {
@@ -147,6 +148,8 @@ export type AdminPreBidItem = {
   userPhone: string;
   userEmail: string;
   amountLabel: string;
+  maximumAllowedAmountLabel: string;
+  isAboveOperationalLimit: boolean;
   note?: string;
   lotPreBidCount: number;
   createdAt: string;
@@ -921,6 +924,11 @@ export async function listAdminPreBids(filters: AdminRecordFilters) {
           return null;
         }
 
+        const maximumAllowedAmountCents = resolveMaximumPreBidAmountCents({
+          referenceValueCents: lot.pricing.referenceValueCents,
+          maximumPreBidAmountCents: lot.pricing.maximumPreBidAmountCents,
+        });
+
         return {
           id: row.id,
           lotSlug: lot.slug,
@@ -934,6 +942,8 @@ export async function listAdminPreBids(filters: AdminRecordFilters) {
           userPhone: formatPhoneBR(row.user_phone),
           userEmail: row.user_email,
           amountLabel: formatCurrencyBRL(row.amount_cents),
+          maximumAllowedAmountLabel: formatCurrencyBRL(maximumAllowedAmountCents),
+          isAboveOperationalLimit: row.amount_cents > maximumAllowedAmountCents,
           ...(row.note ? { note: row.note } : {}),
           lotPreBidCount: row.lot_pre_bid_count,
           createdAt: toIsoString(row.created_at),

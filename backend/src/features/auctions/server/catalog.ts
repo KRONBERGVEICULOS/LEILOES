@@ -7,6 +7,7 @@ import { withPlatformDatabase } from "@/backend/features/platform/server/databas
 import { readPublicCache, writePublicCache } from "@/backend/features/platform/server/public-cache";
 import { shouldUseLocalSeedData } from "@/backend/features/platform/server/mode";
 import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
+import { resolveMaximumPreBidAmountCents } from "@/shared/lib/pre-bid-policy";
 import { formatCurrencyBRL } from "@/shared/lib/utils";
 
 type LotRow = {
@@ -48,6 +49,8 @@ type ListLotsOptions = {
   onlyFeatured?: boolean;
 };
 
+const CATALOG_CACHE_VERSION = "reference-price-v2";
+
 function toIsoString(value: string | Date) {
   return value instanceof Date ? value.toISOString() : value;
 }
@@ -69,8 +72,24 @@ function parseJsonArray<T>(value: unknown): T[] {
   return [];
 }
 
+function getSanitizedCurrentValueCents(row: LotRow) {
+  const minimumCurrentValueCents = Math.max(
+    row.current_value_cents,
+    row.reference_value_cents,
+  );
+  const maximumAllowedPreBidAmountCents = resolveMaximumPreBidAmountCents({
+    referenceValueCents: row.reference_value_cents,
+    maximumPreBidAmountCents: row.maximum_pre_bid_amount_cents,
+  });
+
+  return minimumCurrentValueCents > maximumAllowedPreBidAmountCents
+    ? row.reference_value_cents
+    : minimumCurrentValueCents;
+}
+
 function mapRowToLot(row: LotRow): Lot {
   const status = getLotStatusDefinition(row.status_key);
+  const currentValueCents = getSanitizedCurrentValueCents(row);
 
   return {
     id: row.id,
@@ -96,8 +115,8 @@ function mapRowToLot(row: LotRow): Lot {
     pricing: {
       referenceValueCents: row.reference_value_cents,
       referenceValueLabel: formatCurrencyBRL(row.reference_value_cents),
-      currentValueCents: row.current_value_cents,
-      currentValueLabel: formatCurrencyBRL(row.current_value_cents),
+      currentValueCents,
+      currentValueLabel: formatCurrencyBRL(currentValueCents),
       minimumIncrementCents: row.minimum_increment_cents,
       minimumIncrementLabel: formatCurrencyBRL(row.minimum_increment_cents),
       ...(row.maximum_pre_bid_amount_cents
@@ -153,11 +172,7 @@ async function getDatabaseLots() {
         lots.transmission,
         lots.status_key,
         lots.reference_value_cents,
-        greatest(
-          lots.reference_value_cents,
-          lots.current_value_cents,
-          coalesce(top_pre_bid.amount_cents, 0)
-        )::int as current_value_cents,
+        lots.current_value_cents,
         lots.minimum_increment_cents,
         lots.maximum_pre_bid_amount_cents,
         lots.is_featured,
@@ -166,13 +181,6 @@ async function getDatabaseLots() {
         lots.created_at,
         lots.updated_at
       from platform_lots as lots
-      left join lateral (
-        select amount_cents
-        from platform_pre_bids
-        where lot_slug = lots.slug
-        order by amount_cents desc, created_at desc
-        limit 1
-      ) as top_pre_bid on true
       order by lots.is_featured desc, lots.sort_order asc, lots.updated_at desc, lots.created_at desc
     `;
 
@@ -185,6 +193,7 @@ export async function listLots(options: ListLotsOptions = {}) {
 
   if (usePublicCache) {
     const cacheKey = [
+      CATALOG_CACHE_VERSION,
       options.onlyFeatured ? "featured" : "all",
       options.eventSlug ?? "all-events",
     ];
@@ -215,7 +224,11 @@ export async function listLots(options: ListLotsOptions = {}) {
   if (usePublicCache) {
     await writePublicCache(
       "catalog",
-      [options.onlyFeatured ? "featured" : "all", options.eventSlug ?? "all-events"],
+      [
+        CATALOG_CACHE_VERSION,
+        options.onlyFeatured ? "featured" : "all",
+        options.eventSlug ?? "all-events",
+      ],
       filteredLots,
       90,
     );

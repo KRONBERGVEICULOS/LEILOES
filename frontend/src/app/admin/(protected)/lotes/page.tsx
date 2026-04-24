@@ -209,7 +209,7 @@ export default async function AdminLotsPage({
                       Referência: <strong className="text-brand-ink">{lot.referenceValueLabel}</strong>
                     </p>
                     <p>
-                      Atual: <strong className="text-brand-ink">{lot.currentValueLabel}</strong>
+                      Valor separado: <strong className="text-brand-ink">{lot.currentValueLabel}</strong>
                     </p>
                     <p>
                       Pré-lances: <strong className="text-brand-ink">{lot.preBidCount}</strong>

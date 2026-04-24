@@ -127,15 +127,15 @@ export function OpportunityActionsPanel({
           </div>
           <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
-              Valor visível
+              Maior pré-lance válido
             </p>
             <p className="mt-2 text-2xl font-semibold text-brand-ink">
               {snapshot.visibleValueLabel}
             </p>
             <p className="mt-1 text-xs leading-5 text-brand-muted">
               {snapshot.visibleValueKind === "prebid"
-                ? "Já existe pré-lance registrado na área logada."
-                : "Ainda sem pré-lance acima da referência."}
+                ? "Já existe pré-lance dentro do limite operacional."
+                : "Ainda sem pré-lance válido acima da referência."}
             </p>
           </div>
           <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
@@ -169,7 +169,7 @@ export function OpportunityActionsPanel({
 
       <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.3)]">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-          Lances registrados
+          Lances válidos registrados
         </p>
         <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
           Histórico público resumido deste lote.
@@ -207,11 +207,11 @@ export function OpportunityActionsPanel({
           </div>
         ) : (
           <div className="mt-5 rounded-[22px] border border-dashed border-brand-line bg-brand-paper px-4 py-4 text-sm leading-7 text-brand-muted">
-            Ainda não há pré-lances públicos registrados para este lote.
+            Ainda não há pré-lances públicos válidos registrados para este lote.
           </div>
         )}
         <p className="mt-4 text-xs leading-5 text-brand-muted">
-          A lista pública mostra apenas nome mascarado, valor e data do pré-lance.
+          A lista pública mostra apenas nome mascarado, valor, data e lances dentro do limite operacional.
         </p>
       </div>
 
@@ -426,9 +426,9 @@ export function OpportunityActionsPanel({
             Cadastre-se para acompanhar e registrar contexto com rastreabilidade.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
-            Visitantes veem a referência comercial, o valor atual e o histórico
-            público mascarado. Usuários cadastrados também podem salvar interesse
-            e enviar pré-lances com rastreabilidade.
+            Visitantes veem a referência comercial, o maior pré-lance válido e o
+            histórico público mascarado. Usuários cadastrados também podem salvar
+            interesse e enviar pré-lances com rastreabilidade.
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">

@@ -163,7 +163,7 @@ export async function saveAdminLotAction(
         ...(!referenceValueCents
           ? { referencePrice: ["Informe um preço de referência válido."] }
           : {}),
-        ...(!currentValueCents ? { currentPrice: ["Informe um preço atual válido."] } : {}),
+        ...(!currentValueCents ? { currentPrice: ["Informe um valor separado válido."] } : {}),
         ...(!minimumIncrementCents
           ? { minimumIncrement: ["Informe um incremento mínimo válido."] }
           : {}),
@@ -177,14 +177,14 @@ export async function saveAdminLotAction(
 
   if (
     maximumPreBidAmountCents &&
-    maximumPreBidAmountCents < currentValueCents + minimumIncrementCents
+    maximumPreBidAmountCents < referenceValueCents + minimumIncrementCents
   ) {
     return {
       status: "error",
       message: "O teto manual precisa permitir pelo menos o próximo incremento do lote.",
       errors: {
         maximumPreBid: [
-          "Informe um teto maior que o preço atual somado ao incremento mínimo.",
+          "Informe um teto maior que a referência somada ao incremento mínimo.",
         ],
       },
       values: rawValues,

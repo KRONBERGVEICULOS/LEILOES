@@ -21,6 +21,30 @@ export function computeGlobalMaximumPreBidAmountCents(baseAmountCents: number) {
   );
 }
 
+export function resolveMaximumPreBidAmountCents(input: {
+  referenceValueCents: number;
+  maximumPreBidAmountCents?: number | null;
+}) {
+  return (
+    input.maximumPreBidAmountCents ??
+    computeGlobalMaximumPreBidAmountCents(input.referenceValueCents)
+  );
+}
+
+export function isPreBidWithinOperationalLimit(input: {
+  amountCents: number;
+  referenceValueCents: number;
+  maximumPreBidAmountCents?: number | null;
+}) {
+  return (
+    input.amountCents <=
+    resolveMaximumPreBidAmountCents({
+      referenceValueCents: input.referenceValueCents,
+      maximumPreBidAmountCents: input.maximumPreBidAmountCents,
+    })
+  );
+}
+
 export function resolvePreBidPolicy(
   input: PreBidPolicyInput,
 ): ResolvedPreBidPolicy {
@@ -32,8 +56,10 @@ export function resolvePreBidPolicy(
     baselineAmountCents + input.minimumIncrementCents;
   const computedMaximumAllowedAmountCents =
     computeGlobalMaximumPreBidAmountCents(input.referenceValueCents);
-  const candidateMaximumAmountCents =
-    input.maximumPreBidAmountCents ?? computedMaximumAllowedAmountCents;
+  const candidateMaximumAmountCents = resolveMaximumPreBidAmountCents({
+    referenceValueCents: input.referenceValueCents,
+    maximumPreBidAmountCents: input.maximumPreBidAmountCents,
+  });
 
   return {
     baselineAmountCents,

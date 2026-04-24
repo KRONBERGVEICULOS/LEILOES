@@ -4,7 +4,11 @@ import { randomUUID } from "node:crypto";
 
 import { createOfferWhatsAppLink, createWhatsAppLink } from "@/shared/config/site";
 import { isValidCpf, normalizeCpf } from "@/shared/lib/cpf";
-import { resolvePreBidPolicy } from "@/shared/lib/pre-bid-policy";
+import {
+  DEFAULT_PRE_BID_MAX_MULTIPLIER_BASIS_POINTS,
+  resolveMaximumPreBidAmountCents,
+  resolvePreBidPolicy,
+} from "@/shared/lib/pre-bid-policy";
 import { getLotStatusDefinition } from "@/backend/features/auctions/lib/lot-status";
 import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
 import { getLotBySlug } from "@/backend/features/auctions/server/catalog";
@@ -258,10 +262,7 @@ function getLotCurrentState(
     throw new Error("O lote informado não foi encontrado.");
   }
 
-  const baselineCurrentValue = Math.max(
-    lot.pricing.currentValueCents,
-    lot.pricing.referenceValueCents,
-  );
+  const baselineCurrentValue = lot.pricing.referenceValueCents;
   const currentValueCents = Math.max(topBidAmountCents ?? 0, baselineCurrentValue);
   const preBidPolicy = resolvePreBidPolicy({
     referenceValueCents: lot.pricing.referenceValueCents,
@@ -284,17 +285,34 @@ function getLotCurrentState(
   };
 }
 
+function getEffectiveMaximumPreBidAmountCents(
+  lot: Awaited<ReturnType<typeof getLotBySlug>>,
+) {
+  if (!lot) {
+    throw new Error("O lote informado não foi encontrado.");
+  }
+
+  return resolveMaximumPreBidAmountCents({
+    referenceValueCents: lot.pricing.referenceValueCents,
+    maximumPreBidAmountCents: lot.pricing.maximumPreBidAmountCents,
+  });
+}
+
 async function getTopLotBidAmount(lotSlug: string) {
   if (shouldUseLocalSeedData()) {
     void lotSlug;
     return null;
   }
 
+  const lot = await requireLot(lotSlug);
+  const maximumAllowedAmountCents = getEffectiveMaximumPreBidAmountCents(lot);
+
   return withPlatformDatabase(async (sql) => {
     const [row] = await sql<{ amount_cents: number }[]>`
       select amount_cents
       from platform_pre_bids
       where lot_slug = ${lotSlug}
+        and amount_cents <= ${maximumAllowedAmountCents}
       order by amount_cents desc, created_at desc
       limit 1
     `;
@@ -529,6 +547,7 @@ export async function listPublicActivity(limit = 6) {
   await ensurePlatformCatalogSeed();
 
   const cachedActivity = await readPublicCache<ActivityFeedItem[]>("activity", [
+    "valid-prebids-v2",
     "public",
     String(limit),
   ]);
@@ -540,24 +559,38 @@ export async function listPublicActivity(limit = 6) {
   return withPlatformDatabase(async (sql) => {
     const rows = await sql<DatabaseActivityRow[]>`
       select
-        id,
-        kind,
-        lot_slug,
-        actor_user_id,
-        actor_public_alias,
-        amount_cents,
-        title,
-        description,
-        audience,
-        created_at
-      from platform_activities
-      where audience = 'public'
-      order by created_at desc
+        activities.id,
+        activities.kind,
+        activities.lot_slug,
+        activities.actor_user_id,
+        activities.actor_public_alias,
+        activities.amount_cents,
+        activities.title,
+        activities.description,
+        activities.audience,
+        activities.created_at
+      from platform_activities as activities
+      left join platform_lots as lots
+        on lots.slug = activities.lot_slug
+      where activities.audience = 'public'
+        and (
+          activities.kind <> 'prebid_registered'
+          or activities.amount_cents <= coalesce(
+            lots.maximum_pre_bid_amount_cents,
+            round(lots.reference_value_cents * ${DEFAULT_PRE_BID_MAX_MULTIPLIER_BASIS_POINTS} / 10000.0)::int
+          )
+        )
+      order by activities.created_at desc
       limit ${limit}
     `;
 
     const items = await Promise.all(rows.map((row) => createActivityItem(row, "public")));
-    await writePublicCache("activity", ["public", String(limit)], items, 45);
+    await writePublicCache(
+      "activity",
+      ["valid-prebids-v2", "public", String(limit)],
+      items,
+      45,
+    );
 
     return items;
   });
@@ -626,6 +659,7 @@ export async function getLotPlatformSnapshot(
   }
 
   return withPlatformDatabase(async (sql) => {
+    const publicPreBidMaximumAmountCents = getEffectiveMaximumPreBidAmountCents(lot);
     const [
       topBidRow,
       activityRows,
@@ -637,25 +671,35 @@ export async function getLotPlatformSnapshot(
         select amount_cents
         from platform_pre_bids
         where lot_slug = ${lotSlug}
+          and amount_cents <= ${publicPreBidMaximumAmountCents}
         order by amount_cents desc, created_at desc
         limit 1
       `,
       sql<DatabaseActivityRow[]>`
         select
-          id,
-          kind,
-          lot_slug,
-          actor_user_id,
-          actor_public_alias,
-          amount_cents,
-          title,
-          description,
-          audience,
-          created_at
-        from platform_activities
-        where lot_slug = ${lotSlug}
-          and audience = 'public'
-        order by created_at desc
+          activities.id,
+          activities.kind,
+          activities.lot_slug,
+          activities.actor_user_id,
+          activities.actor_public_alias,
+          activities.amount_cents,
+          activities.title,
+          activities.description,
+          activities.audience,
+          activities.created_at
+        from platform_activities as activities
+        left join platform_lots as lots
+          on lots.slug = activities.lot_slug
+        where activities.lot_slug = ${lotSlug}
+          and activities.audience = 'public'
+          and (
+            activities.kind <> 'prebid_registered'
+            or activities.amount_cents <= coalesce(
+              lots.maximum_pre_bid_amount_cents,
+              round(lots.reference_value_cents * ${DEFAULT_PRE_BID_MAX_MULTIPLIER_BASIS_POINTS} / 10000.0)::int
+            )
+          )
+        order by activities.created_at desc
         limit 5
       `,
       sql<DatabasePublicPreBidRow[]>`
@@ -668,6 +712,7 @@ export async function getLotPlatformSnapshot(
         inner join platform_users as users
           on users.id = pre_bids.user_id
         where pre_bids.lot_slug = ${lotSlug}
+          and pre_bids.amount_cents <= ${publicPreBidMaximumAmountCents}
         order by pre_bids.amount_cents desc, pre_bids.created_at desc
         limit 8
       `,
@@ -686,6 +731,7 @@ export async function getLotPlatformSnapshot(
             from platform_pre_bids
             where user_id = ${viewerUserId}
               and lot_slug = ${lotSlug}
+              and amount_cents <= ${publicPreBidMaximumAmountCents}
             order by amount_cents desc, created_at desc
             limit 1
           `
@@ -897,10 +943,12 @@ export async function submitPreBid(
         }
       }
 
+      const maximumAllowedQueryAmountCents = getEffectiveMaximumPreBidAmountCents(lot);
       const [topBidRow] = await transaction<{ amount_cents: number }[]>`
         select amount_cents
         from platform_pre_bids
         where lot_slug = ${lotSlug}
+          and amount_cents <= ${maximumAllowedQueryAmountCents}
         order by amount_cents desc, created_at desc
         limit 1
       `;
@@ -959,14 +1007,6 @@ export async function submitPreBid(
           ${createdAt}
         )
         returning id
-      `;
-
-      await transaction`
-        update platform_lots
-        set
-          current_value_cents = greatest(current_value_cents, ${amountCents}),
-          updated_at = ${createdAt}
-        where slug = ${lotSlug}
       `;
 
       await transaction`

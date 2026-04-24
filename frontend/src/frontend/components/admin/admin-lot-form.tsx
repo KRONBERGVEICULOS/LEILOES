@@ -355,7 +355,7 @@ export function AdminLotForm({
 
             <div className="grid gap-2">
               <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-current-price">
-                Preço atual
+                Valor separado
               </label>
               <input
                 className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
@@ -369,6 +369,9 @@ export function AdminLotForm({
                 required
                 type="text"
               />
+              <p className="text-xs leading-5 text-brand-muted">
+                Não substitui a referência principal exibida nos cards.
+              </p>
               <FieldError message={state.errors?.currentPrice?.[0]} />
             </div>
 

@@ -160,7 +160,7 @@ export async function submitPreBidAction(
 
     return {
       status: "success",
-      message: `Pré-lance registrado. A referência atual da área logada está em ${snapshot.visibleValueLabel}.`,
+      message: `Pré-lance registrado. O maior pré-lance válido deste lote está em ${snapshot.visibleValueLabel}.`,
       whatsappHref: result.whatsappHref,
     };
   } catch (error) {

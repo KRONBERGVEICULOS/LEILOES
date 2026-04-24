@@ -161,7 +161,7 @@ export default async function AdminPreBidsPage({
             Leitura operacional
           </p>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
-            Cada registro traz dados completos apenas no admin. A vitrine pública segue usando nome mascarado.
+            Cada registro traz dados completos apenas no admin. A vitrine pública usa nome mascarado e considera apenas lances dentro do teto operacional.
           </p>
         </article>
       </section>
@@ -178,11 +178,19 @@ export default async function AdminPreBidsPage({
                 <span>{item.statusLabel}</span>
                 <span>{item.createdAtLabel}</span>
                 <span>{item.lotPreBidCount} lance(s) no lote</span>
+                {item.isAboveOperationalLimit ? (
+                  <span className="rounded-full bg-brand-danger/10 px-2 py-1 text-brand-danger">
+                    Acima do teto
+                  </span>
+                ) : null}
               </div>
               <h2 className="mt-3 text-xl font-semibold text-brand-ink">{item.lotTitle}</h2>
               <div className="mt-4 grid gap-3 text-sm text-brand-muted md:grid-cols-2 xl:grid-cols-4">
                 <p>
                   Pré-lance: <strong className="text-brand-ink">{item.amountLabel}</strong>
+                </p>
+                <p>
+                  Teto do lote: <strong className="text-brand-ink">{item.maximumAllowedAmountLabel}</strong>
                 </p>
                 <p>
                   Participante: <strong className="text-brand-ink">{item.userAlias}</strong>

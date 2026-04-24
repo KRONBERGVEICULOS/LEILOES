@@ -75,7 +75,7 @@ export default async function DashboardPage() {
                       Referência publicada: {interest.referenceValueLabel}
                     </p>
                     <p className="text-sm leading-6 text-brand-muted">
-                      Valor atual da área logada: {interest.visibleValueLabel}
+                      Maior pré-lance válido: {interest.visibleValueLabel}
                     </p>
                     <p className="mt-2 text-xs text-brand-muted">
                       Acompanhando desde {formatDateTimeBR(interest.createdAt)}
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
                       Seu pré-lance: {preBid.amountLabel}
                     </p>
                     <p className="text-sm leading-6 text-brand-muted">
-                      Valor atual exibido na área logada: {preBid.currentValueLabel}
+                      Maior pré-lance válido do lote: {preBid.currentValueLabel}
                     </p>
                     <p className="mt-2 text-xs text-brand-muted">
                       Registrado em {formatDateTimeBR(preBid.createdAt)}
