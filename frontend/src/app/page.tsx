@@ -141,11 +141,18 @@ const homeStructuredData = [
 ];
 
 export default async function Home() {
-  const [currentUser, publicActivity, featuredLots] = await Promise.all([
+  const [currentUserResult, publicActivityResult, featuredLotsResult] =
+    await Promise.allSettled([
     getCurrentUser(),
     listPublicActivity(4),
     listFeaturedLots(3),
   ]);
+  const currentUser =
+    currentUserResult.status === "fulfilled" ? currentUserResult.value : null;
+  const publicActivity =
+    publicActivityResult.status === "fulfilled" ? publicActivityResult.value : [];
+  const featuredLots =
+    featuredLotsResult.status === "fulfilled" ? featuredLotsResult.value : [];
 
   const dashboardHref = currentUser ? "/area" : "/cadastro";
   const dashboardLabel = currentUser ? "Abrir minha área" : "Criar cadastro";

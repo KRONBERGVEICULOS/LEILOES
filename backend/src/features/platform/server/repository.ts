@@ -577,7 +577,7 @@ export async function listPublicActivity(limit = 6) {
           activities.kind <> 'prebid_registered'
           or activities.amount_cents <= coalesce(
             lots.maximum_pre_bid_amount_cents,
-            round(lots.reference_value_cents * ${DEFAULT_PRE_BID_MAX_MULTIPLIER_BASIS_POINTS} / 10000.0)::int
+            round(lots.reference_value_cents::numeric * ${DEFAULT_PRE_BID_MAX_MULTIPLIER_BASIS_POINTS} / 10000)::int
           )
         )
       order by activities.created_at desc
@@ -696,7 +696,7 @@ export async function getLotPlatformSnapshot(
             activities.kind <> 'prebid_registered'
             or activities.amount_cents <= coalesce(
               lots.maximum_pre_bid_amount_cents,
-              round(lots.reference_value_cents * ${DEFAULT_PRE_BID_MAX_MULTIPLIER_BASIS_POINTS} / 10000.0)::int
+              round(lots.reference_value_cents::numeric * ${DEFAULT_PRE_BID_MAX_MULTIPLIER_BASIS_POINTS} / 10000)::int
             )
           )
         order by activities.created_at desc
