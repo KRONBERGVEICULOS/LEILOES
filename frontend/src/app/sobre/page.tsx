@@ -1,39 +1,39 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
+import { CtaBox } from "@/frontend/components/site/cta-box";
 import { Container } from "@/frontend/components/site/container";
-import { InterestActions } from "@/frontend/components/site/interest-actions";
+import { InstitutionalDataPanel } from "@/frontend/components/site/institutional-data-panel";
 import { PageHero } from "@/frontend/components/site/page-hero";
+import { TrustPanel } from "@/frontend/components/site/trust-panel";
 import { createPageMetadata } from "@/shared/lib/metadata";
+import {
+  howItWorksSteps,
+  trustPillars,
+} from "@/backend/features/content/data/site-content";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Atendimento",
+  title: "Sobre a plataforma",
   path: "/sobre",
   description:
-    "Entenda como funciona o atendimento comercial da Kron Leilões e como o site organiza a jornada até o contato humano.",
+    "Entenda como a Kron Leilões organiza catálogo público, área restrita, pré-lance e validação operacional.",
 });
 
-const serviceHighlights = [
+const experienceLayers = [
   {
-    title: "Portal comercial com foco em oportunidade",
+    title: "Catálogo público para leitura inicial",
     description:
-      "O site existe para mostrar oportunidades, gerar confiança e organizar o caminho até a tomada de decisão.",
+      "A plataforma publica lotes, referências, status e contexto suficiente para que a análise comece dentro do ambiente digital.",
   },
   {
-    title: "Fluxo simples e humano",
+    title: "Área restrita para histórico e acompanhamento",
     description:
-      "A navegação é leve, clara e focada em contexto. O portal mostra o essencial e o atendimento completa o processo.",
+      "Interesses, movimentações e pré-lances ficam registrados na conta do usuário, o que reduz ruído e melhora a continuidade da jornada.",
   },
   {
-    title: "Próximos passos com apoio da equipe",
+    title: "Canal oficial para validação final",
     description:
-      "Quando o lote fizer sentido, a conversa segue com contexto suficiente para a equipe dar sequência com segurança.",
+      "Edital, documentação, disponibilidade, pagamento e retirada continuam confirmados nos canais institucionais e no momento correto do processo.",
   },
-] as const;
-
-const expectations = [
-  "Você encontra os lotes com leitura rápida e informações objetivas.",
-  "Você fala com atendimento comercial para esclarecer dúvidas e validar próximos passos.",
-  "Você pode registrar interesse ou proposta sem simular compra automática no site.",
 ] as const;
 
 export default function AboutPageRoute() {
@@ -43,71 +43,89 @@ export default function AboutPageRoute() {
         aside={
           <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Resumo
+              Posicionamento
             </p>
             <p className="mt-3 text-sm leading-7 text-brand-muted">
-              Esta é uma página institucional da Kron Leilões para apresentar o modelo
-              de atendimento e como o site apoia a operação.
+              A proposta pública da Kron Leilões é se comportar como plataforma de
+              oportunidades com processo claro, não como um atalho desorganizado
+              para atendimento.
             </p>
           </div>
         }
-        description="A proposta aqui não é simular uma leiloeira com dezenas de camadas institucionais. É apresentar melhor as oportunidades, com clareza e confiança."
-        eyebrow="Atendimento"
-        meta={["Divulgação", "Catálogo", "Atendimento humano", "Confiança"]}
-        title="Como funciona o atendimento comercial desta página."
+        description="A experiência foi reorganizada para deixar explícito o que o usuário consegue resolver no site, o que entra na área restrita e em que momento a operação oficial assume a validação."
+        eyebrow="Sobre a plataforma"
+        meta={["Catálogo público", "Área restrita", "Pré-lance", "Canal oficial"]}
+        title="Como a Kron Leilões organiza produto, processo e legitimidade."
       />
 
-      <Container className="grid gap-8 py-16 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <section className="space-y-6">
-          <p className="text-base leading-8 text-brand-muted">
-            O foco do projeto agora é simples: apresentar oportunidades com boa
-            aparência, passar confiança comercial e transformar interesse em
-            atendimento organizado com apoio humano.
+      <Container className="grid gap-8 py-16 lg:grid-cols-3">
+        {experienceLayers.map((item) => (
+          <article
+            key={item.title}
+            className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]"
+          >
+            <h2 className="text-2xl font-semibold leading-tight text-brand-ink">
+              {item.title}
+            </h2>
+            <p className="mt-3 text-sm leading-7 text-brand-muted">
+              {item.description}
+            </p>
+          </article>
+        ))}
+      </Container>
+
+      <Container className="grid gap-10 border-t border-brand-line/80 py-16">
+        <div className="max-w-3xl space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
+            Processo operacional
           </p>
+          <h2 className="text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
+            Da descoberta ao próximo passo oficial, sem misturar papéis.
+          </h2>
+          <p className="text-base leading-8 text-brand-muted">
+            O fluxo abaixo mostra como o produto organiza consulta, acompanhamento
+            e pré-lance antes da validação operacional definitiva.
+          </p>
+        </div>
 
-          <InterestActions
-            primaryHref="/contato"
-            primaryLabel="Falar com atendimento"
-            secondaryHref="/eventos"
-            secondaryLabel="Ver oportunidades"
-          />
-        </section>
-
-        <div className="grid gap-4">
-          {serviceHighlights.map((item) => (
+        <div className="grid gap-4 xl:grid-cols-4">
+          {howItWorksSteps.map((step) => (
             <article
-              key={item.title}
-              className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]"
+              key={step.step}
+              className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_20px_52px_-44px_rgba(26,36,48,0.34)]"
             >
-              <h2 className="text-xl font-semibold text-brand-ink">{item.title}</h2>
+              <p className="text-4xl font-semibold leading-none text-brand-brass">
+                {step.step}
+              </p>
+              <h3 className="mt-5 text-xl font-semibold text-brand-ink">{step.title}</h3>
               <p className="mt-3 text-sm leading-7 text-brand-muted">
-                {item.description}
+                {step.description}
               </p>
             </article>
           ))}
         </div>
       </Container>
 
-      <Container className="grid gap-8 border-t border-brand-line/80 py-14">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-            O que esperar
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-            O site foi simplificado para ajudar a decidir com mais segurança.
-          </h2>
-        </div>
+      <Container className="grid gap-6 border-t border-brand-line/80 py-16 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]">
+        <InstitutionalDataPanel
+          description="Esta camada organiza os dados públicos que sustentam legitimidade, responsabilidade institucional e transparência operacional."
+          eyebrow="Base institucional"
+          title="Dados públicos e regulatórios da operação"
+        />
 
-        <div className="grid gap-4 md:grid-cols-3">
-          {expectations.map((item) => (
-            <article
-              key={item}
-              className="rounded-[28px] border border-brand-line bg-brand-paper p-6 text-sm leading-7 text-brand-muted"
-            >
-              {item}
-            </article>
-          ))}
-        </div>
+        <TrustPanel items={trustPillars.slice(0, 4)} />
+      </Container>
+
+      <Container className="grid gap-10 border-t border-brand-line/80 py-16">
+        <CtaBox
+          description="Explore as oportunidades com a confiança de uma estrutura que diferencia catálogo, área restrita e canal oficial sem diluir conversão."
+          eyebrow="Próximo passo"
+          primaryHref="/eventos"
+          primaryLabel="Explorar oportunidades"
+          secondaryHref="/cadastro"
+          secondaryLabel="Criar cadastro"
+          title="A experiência pública agora deixa mais claro onde o produto começa e onde a operação valida."
+        />
       </Container>
     </>
   );

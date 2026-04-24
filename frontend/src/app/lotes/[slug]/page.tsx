@@ -11,11 +11,7 @@ import { LotInfoPanel } from "@/frontend/components/site/lot-info-panel";
 import { LotCard } from "@/frontend/components/site/lot-card";
 import { OpportunityActionsPanel } from "@/frontend/components/site/opportunity-actions-panel";
 import { StructuredData } from "@/frontend/components/site/structured-data";
-import {
-  absoluteUrl,
-  createLotWhatsAppLink,
-  siteConfig,
-} from "@/shared/config/site";
+import { absoluteUrl, siteConfig } from "@/shared/config/site";
 import {
   getLotBySlug,
   getLotsByEventSlug,
@@ -68,12 +64,6 @@ export default async function LotDetailPage({ params }: LotPageProps) {
     )
     .slice(0, 3);
 
-  const whatsappHref = createLotWhatsAppLink({
-    title: lot.title,
-    lotCode: lot.lotCode,
-    location: lot.location,
-  });
-
   const structuredData = [
     {
       "@context": "https://schema.org",
@@ -120,21 +110,53 @@ export default async function LotDetailPage({ params }: LotPageProps) {
     },
   ];
 
-  const serviceSteps = [
+  const primaryAction = currentUser
+    ? snapshot.preBidEnabled
+      ? {
+          href: "#pre-lance-online",
+          label: "Ir para pré-lance",
+        }
+      : {
+          href: "#acoes-da-plataforma",
+          label: "Ver ações da plataforma",
+        }
+    : {
+        href: `/cadastro?redirect=${encodeURIComponent(`/lotes/${lot.slug}`)}`,
+        label: "Criar cadastro",
+      };
+
+  const secondaryAction = currentUser
+    ? {
+        href: "/como-participar",
+        label: "Entender o processo",
+      }
+    : {
+        href: `/entrar?redirect=${encodeURIComponent(`/lotes/${lot.slug}`)}`,
+        label: "Já tenho conta",
+      };
+
+  const experienceLayers = [
+    "Nesta página: galeria, código, localização, referência e atividade pública.",
+    "Na sua área: interesse e pré-lance com histórico da oportunidade.",
+    "No canal oficial: edital, disponibilidade, pagamento, comissão e retirada.",
+  ] as const;
+
+  const platformGuides = [
     {
-      title: "Você vê contexto suficiente para decidir",
-      description:
-        "Galeria, localização, código, referência online e status comercial aparecem de forma clara logo no topo.",
+      title: "O que você resolve aqui",
+      bullets: [
+        "Analisar fotos, resumo, fatos do lote e referência online.",
+        "Comparar o status comercial com a disponibilidade da camada online.",
+        "Registrar interesse e pré-lance com rastreabilidade, quando autenticado.",
+      ],
     },
     {
-      title: "A área logada organiza interesse e histórico",
-      description:
-        "Usuários cadastrados acompanham atividade desta oportunidade e registram interesse sem depender só da memória da conversa.",
-    },
-    {
-      title: "O atendimento continua humano",
-      description:
-        "Mesmo com pré-lance online, disponibilidade, aceite e próximos passos continuam sendo validados pela equipe oficial.",
+      title: "O que continua na validação oficial",
+      bullets: [
+        lot.sourceNote,
+        "Edital, anexos, disponibilidade, pagamento, comissão e retirada seguem confirmação formal da operação.",
+        "O pré-lance não substitui habilitação, leitura documental nem aceite definitivo da oportunidade.",
+      ],
     },
   ] as const;
 
@@ -194,32 +216,43 @@ export default async function LotDetailPage({ params }: LotPageProps) {
           <aside className="space-y-5 lg:sticky lg:top-24 lg:h-fit">
             <div className="rounded-[28px] bg-brand-navy p-6 text-white shadow-[0_28px_70px_-44px_rgba(13,32,52,0.85)]">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-sand">
-                Suporte especializado
+                Fluxo desta oportunidade
               </p>
               <h2 className="mt-3 text-2xl font-semibold leading-tight">
-                Valide contexto, disponibilidade e próximos passos com a equipe.
+                Use a plataforma para analisar e registrar contexto antes da validação oficial.
               </h2>
               <p className="mt-3 text-sm leading-7 text-white/74">
-                Esta página organiza a oportunidade. A equipe oficial confirma
-                disponibilidade, documentação, pré-lance e o que ainda precisa ser
-                alinhado fora do site.
+                A leitura pública do lote, o acompanhamento na área restrita e o
+                canal oficial agora aparecem como etapas diferentes da mesma jornada.
               </p>
+
+              <div className="mt-6 grid gap-3">
+                {experienceLayers.map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-[22px] border border-white/12 bg-white/8 px-4 py-4 text-sm leading-7 text-white/78"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+
               <InterestActions
                 className="mt-6"
-                primaryHref={whatsappHref}
-                primaryLabel="Falar com especialista"
-                secondaryHref="#pre-lance-online"
-                secondaryLabel="Ir para pré-lance"
+                primaryHref={primaryAction.href}
+                primaryLabel={primaryAction.label}
+                secondaryHref={secondaryAction.href}
+                secondaryLabel={secondaryAction.label}
               />
               <p className="mt-4 text-sm leading-6 text-white/72">
-                {siteConfig.whatsappDisplay} • {siteConfig.businessHours}
+                Canal institucional: {siteConfig.phoneDisplay} • {siteConfig.businessHours}
               </p>
             </div>
 
             <OpportunityActionsPanel lot={lot} snapshot={snapshot} />
 
             <LotInfoPanel
-              eyebrow="Informações principais"
+              eyebrow="Ficha pública do lote"
               items={[
                 { label: "Código do lote", value: lot.lotCode },
                 { label: "Localização", value: lot.location },
@@ -287,44 +320,33 @@ export default async function LotDetailPage({ params }: LotPageProps) {
                   : "Visitantes veem apenas o resumo público e anonimizado da atividade desta oportunidade."
               }
               items={snapshot.recentActivity}
-              title="Movimentação recente deste lote."
+              title="Movimentação recente deste lote"
             />
           ) : null}
         </section>
 
         <section className="space-y-5">
-          <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Como funciona
-            </p>
-            <div className="mt-5 space-y-4">
-              {serviceSteps.map((item) => (
-                <article
-                  key={item.title}
-                  className="border-t border-brand-line pt-4 first:border-t-0 first:pt-0"
-                >
-                  <h3 className="text-lg font-semibold text-brand-ink">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-7 text-brand-muted">
-                    {item.description}
-                  </p>
-                </article>
-              ))}
+          {platformGuides.map((guide) => (
+            <div
+              key={guide.title}
+              className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]"
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
+                Clareza de processo
+              </p>
+              <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
+                {guide.title}
+              </h2>
+              <ul className="mt-5 grid gap-3 text-sm leading-7 text-brand-muted">
+                {guide.bullets.map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <span className="mt-2 h-2 w-2 rounded-full bg-brand-brass" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
-
-          <div className="rounded-[28px] border border-brand-line bg-brand-paper p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Importante
-            </p>
-            <p className="mt-3 text-sm leading-7 text-brand-muted">
-              {lot.sourceNote}
-            </p>
-            <p className="mt-3 text-sm leading-7 text-brand-muted">
-              O pré-lance online registra interesse e contexto comercial. Ele não
-              substitui edital, documentação, validação humana nem fechamento
-              automático da oportunidade no site.
-            </p>
-          </div>
+          ))}
         </section>
       </Container>
 
@@ -335,7 +357,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
               Mais oportunidades
             </p>
             <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-              Outros lotes para continuar a conversa.
+              Outros lotes para continuar a análise.
             </h2>
           </div>
 

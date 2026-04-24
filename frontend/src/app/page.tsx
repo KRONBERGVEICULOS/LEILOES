@@ -1,15 +1,24 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
 import { ActivityFeed } from "@/frontend/components/site/activity-feed";
 import { Container } from "@/frontend/components/site/container";
+import { CtaBox } from "@/frontend/components/site/cta-box";
 import { FaqList } from "@/frontend/components/site/faq-list";
+import { InstitutionalDataPanel } from "@/frontend/components/site/institutional-data-panel";
 import { InterestActions } from "@/frontend/components/site/interest-actions";
 import { LotCard } from "@/frontend/components/site/lot-card";
+import { SectionHeading } from "@/frontend/components/site/section-heading";
 import { StructuredData } from "@/frontend/components/site/structured-data";
+import { TrustPanel } from "@/frontend/components/site/trust-panel";
 import { absoluteUrl, siteConfig } from "@/shared/config/site";
 import { listFeaturedLots } from "@/backend/features/auctions/server/catalog";
 import type { FaqItem } from "@/backend/features/auctions/types";
+import {
+  howItWorksSteps,
+  trustPillars,
+} from "@/backend/features/content/data/site-content";
 import { getCurrentUser } from "@/backend/features/platform/server/auth";
 import { listPublicActivity } from "@/backend/features/platform/server/repository";
 import { createPageMetadata } from "@/shared/lib/metadata";
@@ -20,91 +29,91 @@ export const metadata: Metadata = createPageMetadata({
   title: "Início",
   path: "/",
   description:
-    "Encontre veículos, máquinas e equipamentos de leilão com valores abaixo do mercado. Cadastre-se, acompanhe lotes e registre seu interesse com apoio humano.",
+    "Plataforma de oportunidades de leilão com catálogo público, área restrita para acompanhamento e pré-lance, e canais oficiais para validação operacional.",
   keywords: [
+    "plataforma de leilão",
+    "catálogo de oportunidades",
     "pré-lance online",
-    "leilão de veículos",
-    "oportunidades de leilão",
-    "lotes abaixo do mercado",
+    "lotes de veículos e equipamentos",
   ],
 });
 
-const heroSignals = [
+const heroHighlights = [
   {
-    label: "Economia real",
-    value: "Veículos, máquinas e equipamentos com valores abaixo do mercado, vindos de leilões oficiais.",
+    label: "Catálogo público",
+    value:
+      "Lotes com fotos, localização, código, referência online e status comercial visíveis para análise inicial.",
   },
   {
-    label: "Suporte especializado",
-    value: "Tire dúvidas e avance com apoio de uma equipe que conhece o processo de ponta a ponta.",
+    label: "Área restrita",
+    value:
+      "Interesses, acompanhamento e pré-lances ficam registrados com histórico centralizado dentro da plataforma.",
   },
   {
-    label: "Pré-lance online",
-    value: "Registre seu interesse e envie sua proposta antes do leilão, sem sair de casa.",
-  },
-] as const;
-
-const processSteps = [
-  {
-    step: "01",
-    title: "Escolha sua oportunidade",
-    description:
-      "Navegue pelo catálogo, veja fotos, localização, valores de referência e o status de cada lote disponível.",
-  },
-  {
-    step: "02",
-    title: "Cadastre-se e acompanhe",
-    description:
-      "Crie sua conta gratuita em segundos, salve os lotes que te interessam e acompanhe a movimentação em tempo real.",
-  },
-  {
-    step: "03",
-    title: "Registre interesse e avance com clareza",
-    description:
-      "Use a área logada para acompanhar o lote e, quando fizer sentido, siga com o atendimento humano já contextualizado.",
+    label: "Canal oficial",
+    value:
+      "Edital, disponibilidade, pagamento e retirada continuam validados pelos canais institucionais no momento certo.",
   },
 ] as const;
 
-const commercialPillars = [
+const platformLayers = [
   {
-    title: "Oportunidades selecionadas",
+    badge: "Público",
+    title: "Consulte oportunidades com mais contexto",
     description:
-      "Cada lote passa por uma triagem comercial antes de entrar no catálogo. Você vê só o que realmente vale a pena.",
+      "A home prioriza leitura rápida do lote, sinais de movimentação e dados úteis para decidir se vale aprofundar a análise.",
   },
   {
-    title: "Processo simples e transparente",
+    badge: "Área restrita",
+    title: "Transforme curiosidade em acompanhamento real",
     description:
-      "Sem burocracia desnecessária. Valores claros, status atualizado e atendimento humano do início ao fim.",
+      "O cadastro libera interesse, histórico e pré-lance sem depender apenas da memória de uma conversa fora do site.",
   },
   {
-    title: "Segurança e confiança",
+    badge: "Canal oficial",
+    title: "Acione a equipe quando a jornada sair do digital",
     description:
-      "Seus dados ficam protegidos, suas propostas são registradas com segurança e todo o histórico é rastreável.",
+      "O contato continua disponível para edital, documentos, comissão, pagamento e próximos passos operacionais.",
+  },
+] as const;
+
+const operationalSignals = [
+  {
+    label: "Praças atendidas",
+    value: siteConfig.serviceRegions.join(" • "),
+  },
+  {
+    label: "Horário institucional",
+    value: siteConfig.businessHours,
+  },
+  {
+    label: "Contato oficial",
+    value: `${siteConfig.phoneDisplay} • ${siteConfig.email}`,
   },
 ] as const;
 
 const faqPreview: FaqItem[] = [
   {
-    question: "Preciso me cadastrar para ver os lotes?",
+    question: "O que muda quando eu crio cadastro na plataforma?",
     answer:
-      "Não. Qualquer pessoa pode ver as oportunidades, fotos e valores de referência. O cadastro é necessário para acompanhar lotes e enviar pré-lances.",
+      "O cadastro libera a área restrita para acompanhar lotes, registrar interesse, ver o valor visível da área logada e enviar pré-lances com histórico centralizado.",
   },
   {
-    question: "O pré-lance garante a compra?",
+    question: "Registrar interesse é a mesma coisa que dar pré-lance?",
     answer:
-      "O pré-lance registra sua proposta de forma oficial. A confirmação final é feita pela equipe de atendimento, com toda a orientação necessária.",
+      "Não. Registrar interesse apenas adiciona o lote à sua área para acompanhamento. O pré-lance registra uma intenção comercial com valor, mas não fecha compra automaticamente.",
   },
   {
-    question: "Como funciona o pagamento?",
+    question: "O pré-lance garante reserva, arrematação ou disponibilidade?",
     answer:
-      "Após a aprovação do lance, nossa equipe orienta todo o processo de pagamento e documentação de forma segura e personalizada.",
+      "Não. O pré-lance organiza seu valor e o contexto comercial dentro da plataforma. Aceite, documentação, pagamento, comissão e retirada seguem sujeitos ao edital e à validação oficial.",
   },
   {
-    question: "Posso tirar dúvidas antes de dar um lance?",
+    question: "Quando eu preciso falar com a equipe?",
     answer:
-      "Claro. Use os canais de atendimento do site para falar com a equipe antes de tomar qualquer decisão.",
+      "Quando chegar a hora de validar edital, disponibilidade, anexos, visitação, pagamento, retirada ou qualquer condição operacional que não seja concluída dentro da plataforma.",
   },
-];
+] as const;
 
 const homeStructuredData = [
   {
@@ -113,12 +122,12 @@ const homeStructuredData = [
     name: siteConfig.name,
     url: absoluteUrl(),
     description:
-      "Página institucional da Kron Leilões com catálogo, cadastro, área restrita e atendimento humano.",
+      "Plataforma institucional da Kron Leilões com catálogo público, área restrita, acompanhamento e pré-lance online.",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: siteConfig.phoneNumber,
       email: siteConfig.email,
-      contactType: "sales",
+      contactType: "customer support",
       availableLanguage: ["pt-BR"],
     },
   },
@@ -137,10 +146,13 @@ export default async function Home() {
     listPublicActivity(4),
     listFeaturedLots(3),
   ]);
+
   const dashboardHref = currentUser ? "/area" : "/cadastro";
   const dashboardLabel = currentUser ? "Abrir minha área" : "Criar cadastro";
-  const secondaryCtaHref = currentUser ? "/contato" : "/eventos";
-  const secondaryCtaLabel = currentUser ? "Falar com especialista" : "Ver oportunidades";
+  const closingPrimaryHref = currentUser ? "/area" : "/cadastro";
+  const closingPrimaryLabel = currentUser
+    ? "Abrir minha área"
+    : "Criar cadastro para acompanhar";
 
   return (
     <>
@@ -149,30 +161,42 @@ export default async function Home() {
       <section className="relative overflow-hidden border-b border-brand-line bg-brand-navy-deep text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(242,139,27,0.24),transparent_34%),linear-gradient(160deg,#0d2034_8%,#173452_64%,#0d2034_100%)]" />
         <Container className="relative grid gap-10 py-14 sm:py-20 lg:min-h-[calc(100svh-84px)] lg:grid-cols-[minmax(0,0.94fr)_minmax(480px,1.06fr)] lg:items-center">
-          <div className="space-y-7">
+          <div className="space-y-8">
             <div className="space-y-4">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-sand">
-                Kron Leilões
+                Plataforma de oportunidades
               </p>
               <h1 className="max-w-4xl text-4xl font-semibold leading-tight text-balance sm:text-5xl lg:text-6xl">
-                Oportunidades de leilão com economia real, contexto e segurança.
+                Leilões com mais contexto, clareza operacional e credibilidade institucional.
               </h1>
               <p className="max-w-3xl text-base leading-8 text-white/78 sm:text-lg">
-                Encontre veículos, máquinas e equipamentos com valores abaixo do
-                mercado. Cadastre-se, acompanhe os lotes e registre seu interesse
-                em uma jornada mais organizada, com apoio especializado quando necessário.
+                A Kron Leilões organiza catálogo público, área restrita para
+                acompanhamento e pré-lance, e canais oficiais para tudo o que
+                precisa de validação fora da plataforma.
               </p>
             </div>
 
             <InterestActions
               primaryHref="/eventos"
-              primaryLabel="Ver oportunidades"
+              primaryLabel="Explorar oportunidades"
               secondaryHref={dashboardHref}
               secondaryLabel={dashboardLabel}
             />
 
+            <div className="flex flex-wrap items-center gap-3 text-sm text-white/72">
+              <Link
+                className="inline-flex items-center rounded-full border border-white/14 bg-white/8 px-4 py-2 font-semibold transition hover:border-white/28 hover:bg-white/12"
+                href="/como-participar"
+              >
+                Entender o processo
+              </Link>
+              <span className="inline-flex items-center rounded-full border border-white/14 bg-white/8 px-4 py-2 font-semibold">
+                Base institucional visível
+              </span>
+            </div>
+
             <div className="grid gap-3 sm:grid-cols-3">
-              {heroSignals.map((item) => (
+              {heroHighlights.map((item) => (
                 <div
                   key={item.label}
                   className="rounded-[24px] border border-white/14 bg-white/8 px-4 py-4 backdrop-blur-sm"
@@ -199,31 +223,40 @@ export default async function Home() {
                 width={1600}
               />
             </div>
-            <div className="grid gap-3 px-2 pb-2 pt-5 sm:grid-cols-3">
-              <div>
+
+            <div className="grid gap-3 px-2 pb-2 pt-5 sm:grid-cols-2">
+              <div className="rounded-[24px] border border-brand-line bg-white p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
-                  Catálogo atualizado
+                  Dentro da plataforma
                 </p>
-                <p className="mt-2 text-sm leading-6 text-brand-muted">
-                  Novos lotes entram regularmente com fotos, localização e valores de referência.
-                </p>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-brand-muted">
+                  <li>Catálogo público com lotes e referências.</li>
+                  <li>Área restrita para interesse e histórico.</li>
+                  <li>Pré-lance com registro centralizado.</li>
+                </ul>
               </div>
-              <div>
+
+              <div className="rounded-[24px] border border-brand-line bg-white p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
-                  Sua área exclusiva
+                  Fora da plataforma
                 </p>
-                <p className="mt-2 text-sm leading-6 text-brand-muted">
-                  Cadastre-se gratuitamente para acompanhar lotes e registrar pré-lances online.
-                </p>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-brand-muted">
+                  <li>Edital, documentos e anexos do evento.</li>
+                  <li>Disponibilidade, pagamento e retirada.</li>
+                  <li>Confirmações feitas pelo canal oficial.</li>
+                </ul>
               </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
-                  Suporte especializado
-                </p>
-                <p className="mt-2 text-sm leading-6 text-brand-muted">
-                  Conte com apoio humano para dúvidas, propostas e próximos passos sem perder o contexto da plataforma.
-                </p>
-              </div>
+            </div>
+
+            <div className="grid gap-3 px-2 pb-2 pt-1 sm:grid-cols-3">
+              {operationalSignals.map((item) => (
+                <div key={item.label}>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
+                    {item.label}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-brand-muted">{item.value}</p>
+                </div>
+              ))}
             </div>
           </div>
         </Container>
@@ -231,18 +264,38 @@ export default async function Home() {
 
       <Container className="grid gap-16 py-14 sm:py-20">
         <section className="grid gap-8">
-          <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Oportunidades em destaque
-            </p>
-            <h2 className="text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-              Confira os lotes com melhor potencial de economia.
-            </h2>
-            <p className="max-w-3xl text-base leading-8 text-brand-muted">
-              Veículos e equipamentos selecionados com valores de referência,
-              localização e status atualizados. Veja os detalhes antes de decidir o próximo passo.
-            </p>
+          <SectionHeading
+            description="A experiência pública agora deixa explícito o que acontece no catálogo, o que acontece na área restrita e o que continua dependendo da validação oficial da operação."
+            eyebrow="Camadas da experiência"
+            title="Uma jornada mais próxima de plataforma do que de página de captação."
+          />
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            {platformLayers.map((item) => (
+              <article
+                key={item.title}
+                className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_20px_52px_-44px_rgba(26,36,48,0.34)]"
+              >
+                <span className="inline-flex rounded-full bg-brand-paper px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-brand-navy">
+                  {item.badge}
+                </span>
+                <h2 className="mt-5 text-2xl font-semibold leading-tight text-brand-ink">
+                  {item.title}
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-brand-muted">
+                  {item.description}
+                </p>
+              </article>
+            ))}
           </div>
+        </section>
+
+        <section className="grid gap-8">
+          <SectionHeading
+            description="Os destaques reforçam a proposta da plataforma: leitura clara do lote, valor de referência e caminho objetivo para aprofundar a análise."
+            eyebrow="Oportunidades em destaque"
+            title="Lotes publicados com leitura mais objetiva e profissional."
+          />
 
           <div className="grid gap-6 lg:grid-cols-3">
             {featuredLots.map((lot) => (
@@ -252,27 +305,20 @@ export default async function Home() {
         </section>
 
         <ActivityFeed
-          description="Veja as últimas movimentações da plataforma: novos lotes, interesses registrados e pré-lances recentes."
+          description="Novos lotes, interesses registrados e pré-lances visíveis reforçam que existe movimentação pública e acompanhamento rastreável dentro do produto."
           items={publicActivity}
-          title="Atividade recente"
+          title="Sinais públicos de atividade na plataforma"
         />
 
-        <section className="grid gap-10 lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)] lg:items-start">
-          <div className="space-y-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Como funciona
-            </p>
-            <h2 className="text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-              Três passos para aproveitar a melhor oportunidade.
-            </h2>
-            <p className="text-base leading-8 text-brand-muted">
-              Um processo simples, transparente e com atendimento humano do
-              início ao fim. Você no controle, nós na orientação.
-            </p>
-          </div>
+        <section className="grid gap-10 lg:grid-cols-[minmax(0,0.84fr)_minmax(0,1.16fr)] lg:items-start">
+          <SectionHeading
+            description="A operação deixa explícito o que o usuário consegue resolver dentro do site e em que momento o canal oficial entra para validação formal."
+            eyebrow="Processo"
+            title="Como a experiência evolui da descoberta ao próximo passo oficial."
+          />
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {processSteps.map((item) => (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {howItWorksSteps.map((item) => (
               <article
                 key={item.step}
                 className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_20px_52px_-44px_rgba(26,36,48,0.34)]"
@@ -291,62 +337,75 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="grid gap-4 lg:grid-cols-3">
-          {commercialPillars.map((item) => (
-            <article
-              key={item.title}
-              className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_20px_52px_-44px_rgba(26,36,48,0.3)]"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
-                Diferencial da plataforma
-              </p>
-              <h3 className="mt-3 text-2xl font-semibold text-brand-ink">{item.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-brand-muted">
-                {item.description}
-              </p>
-            </article>
-          ))}
+        <section className="grid gap-6 lg:grid-cols-[minmax(0,1.06fr)_minmax(0,0.94fr)]">
+          <InstitutionalDataPanel
+            description="Razão social, contato, base pública e sinalização de dados regulatórios pendentes aparecem organizados para reforçar legitimidade sem improviso visual."
+            eyebrow="Credibilidade institucional"
+            title="Base pública e regulatória da operação"
+          />
+
+          <TrustPanel items={trustPillars.slice(0, 4)} />
         </section>
 
-        <section className="grid gap-10 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]">
-          <div className="space-y-5">
+        <section className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div className="rounded-[28px] border border-brand-line bg-brand-paper p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Perguntas frequentes
+              Clareza de produto
             </p>
-            <h2 className="text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-              Dúvidas? A gente responde.
+            <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
+              Interesse, pré-lance e contato deixados em papéis diferentes.
             </h2>
-            <p className="text-base leading-8 text-brand-muted">
-              Confira as respostas para as perguntas mais comuns. Se precisar de
-              mais detalhes, o atendimento da equipe continua disponível.
-            </p>
-          </div>
-          <FaqList items={faqPreview} />
-        </section>
-
-        <section className="overflow-hidden rounded-[34px] border border-brand-line bg-brand-navy text-white">
-          <div className="grid gap-6 px-6 py-8 sm:px-8 sm:py-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-sand">
-                Pronto para acompanhar?
-              </p>
-              <h2 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight sm:text-4xl">
-                Crie seu cadastro e acompanhe com mais contexto.
-              </h2>
-              <p className="mt-3 max-w-3xl text-base leading-8 text-white/72">
-                As melhores oportunidades de leilão estão aqui, com catálogo
-                atualizado, área restrita e suporte especializado quando necessário.
-              </p>
+            <div className="mt-6 grid gap-4">
+              <article className="rounded-[24px] border border-brand-line bg-white p-4">
+                <h3 className="text-lg font-semibold text-brand-ink">
+                  Interesse na plataforma
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-brand-muted">
+                  Salva o lote na sua área e organiza acompanhamento, sem compromisso
+                  comercial automático.
+                </p>
+              </article>
+              <article className="rounded-[24px] border border-brand-line bg-white p-4">
+                <h3 className="text-lg font-semibold text-brand-ink">
+                  Pré-lance com histórico
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-brand-muted">
+                  Registra o valor que você deseja apresentar, com rastreabilidade e
+                  contexto, mas sem substituir edital ou aceite oficial.
+                </p>
+              </article>
+              <article className="rounded-[24px] border border-brand-line bg-white p-4">
+                <h3 className="text-lg font-semibold text-brand-ink">
+                  Canal oficial quando necessário
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-brand-muted">
+                  O atendimento entra para validar disponibilidade, documentação,
+                  pagamento, retirada e qualquer confirmação fora do ambiente digital.
+                </p>
+              </article>
             </div>
+          </div>
 
-            <InterestActions
-              primaryHref={dashboardHref}
-              primaryLabel={dashboardLabel}
-              secondaryHref={secondaryCtaHref}
-              secondaryLabel={secondaryCtaLabel}
+          <div className="grid gap-5">
+            <SectionHeading
+              description="A FAQ reforça os limites do produto sem enfraquecer conversão: a plataforma resolve organização e contexto; a operação resolve validação formal."
+              eyebrow="FAQ e segurança"
+              title="Perguntas frequentes sobre o fluxo público e a etapa oficial."
             />
+            <FaqList items={faqPreview} />
           </div>
         </section>
+
+        <CtaBox
+          description="Explore os lotes, acompanhe o que faz sentido na sua área e use o canal oficial apenas quando chegar o momento de validar edital, disponibilidade e próximos passos."
+          eyebrow="Fechamento"
+          primaryHref={closingPrimaryHref}
+          primaryLabel={closingPrimaryLabel}
+          secondaryHref="/como-participar"
+          secondaryLabel="Entender o processo"
+          title="Comece pela plataforma e avance com mais segurança."
+          tone="dark"
+        />
       </Container>
     </>
   );

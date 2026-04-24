@@ -1,0 +1,14 @@
+⨯ Error: DATABASE_URL é obrigatório em produção. O fallback silencioso para local-seed foi desabilitado.
+    at aA (C:\Users\Pedro Spoto\Desktop\leilão\frontend\.next\server\chunks\ssr\backend_src_features_platform_server_database_ts_018021j._.js:21:12598)
+    at z (C:\Users\Pedro Spoto\Desktop\leilão\frontend\.next\server\chunks\ssr\backend_src_features_platform_server_repository_ts_0-dzb06._.js:65:529)
+    at z (C:\Users\Pedro Spoto\Desktop\leilão\frontend\.next\server\chunks\ssr\[root-of-the-server]__0zr3nmq._.js:1:16592)
+    at stringify (<anonymous>) {
+  digest: '1434909670'
+}
+⨯ Error: DATABASE_URL é obrigatório em produção. O fallback silencioso para local-seed foi desabilitado.
+    at aA (C:\Users\Pedro Spoto\Desktop\leilão\frontend\.next\server\chunks\ssr\backend_src_features_platform_server_database_ts_018021j._.js:21:12598)
+    at z (C:\Users\Pedro Spoto\Desktop\leilão\frontend\.next\server\chunks\ssr\backend_src_features_platform_server_repository_ts_0-dzb06._.js:65:529)
+    at z (C:\Users\Pedro Spoto\Desktop\leilão\frontend\.next\server\chunks\ssr\[root-of-the-server]__0zr3nmq._.js:1:16592)
+    at stringify (<anonymous>) {
+  digest: '1434909670'
+}

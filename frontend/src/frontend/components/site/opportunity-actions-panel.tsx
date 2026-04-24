@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useActionState } from "react";
@@ -16,6 +16,24 @@ type OpportunityActionsPanelProps = {
   lot: Lot;
   snapshot: LotPlatformSnapshot;
 };
+
+const actionLayers = [
+  {
+    title: "Interesse",
+    description:
+      "Adiciona o lote à sua área e centraliza o histórico da oportunidade dentro da plataforma.",
+  },
+  {
+    title: "Pré-lance",
+    description:
+      "Registra sua intenção comercial com valor, sem gerar reserva, arrematação ou fechamento automático.",
+  },
+  {
+    title: "Canal oficial",
+    description:
+      "Usado para validar edital, disponibilidade, pagamento, documentação e retirada quando a etapa exigir confirmação formal.",
+  },
+] as const;
 
 function StatusMessage({
   kind,
@@ -56,12 +74,12 @@ export function OpportunityActionsPanel({
   );
 
   return (
-    <div className="grid gap-5">
+    <div className="grid gap-5" id="acoes-da-plataforma">
       <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.32)]">
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
           <span>{snapshot.onlineStatusLabel}</span>
           <span>•</span>
-          <span>{snapshot.viewerIsAuthenticated ? "Área autenticada" : "Acesso restrito"}</span>
+          <span>{snapshot.viewerIsAuthenticated ? "Área autenticada" : "Ações autenticadas"}</span>
         </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
@@ -102,6 +120,25 @@ export function OpportunityActionsPanel({
         </div>
       </div>
 
+      <div className="rounded-[28px] border border-brand-line bg-brand-paper p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
+          Fluxo da oportunidade
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {actionLayers.map((item) => (
+            <article
+              key={item.title}
+              className="rounded-[22px] border border-brand-line bg-white px-4 py-4"
+            >
+              <h2 className="text-lg font-semibold text-brand-ink">{item.title}</h2>
+              <p className="mt-2 text-sm leading-7 text-brand-muted">
+                {item.description}
+              </p>
+            </article>
+          ))}
+        </div>
+      </div>
+
       {snapshot.viewerIsAuthenticated ? (
         <>
           <form
@@ -110,33 +147,33 @@ export function OpportunityActionsPanel({
           >
             <input name="lotSlug" type="hidden" value={lot.slug} />
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Acompanhar oportunidade
+              Interesse na plataforma
             </p>
             <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
-              Centralize este lote na sua área.
+              Adicione este lote à sua área.
             </h2>
             <p className="mt-3 text-sm leading-7 text-brand-muted">
               {snapshot.viewerHasInterest
-                ? "Você já acompanha este lote. Use o botão abaixo se quiser seguir com a equipe usando o contexto já registrado."
+                ? "O interesse já está registrado. Use o canal oficial apenas se precisar levar a análise para a etapa operacional."
                 : !snapshot.interestEnabled
-                  ? "No momento este lote não aceita novos acompanhamentos pela área logada. Ajuste o contato direto com a operação quando necessário."
-                  : "Ao acompanhar, este lote entra na sua área com histórico de atividade e CTA contextual para falar com a equipe."}
+                  ? "No momento este lote não aceita novos registros de interesse pela área logada. Quando necessário, siga pela validação oficial."
+                  : "Registrar interesse centraliza este lote na sua área com histórico de atividade e contexto pronto para o próximo passo."}
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               {!snapshot.viewerHasInterest && snapshot.interestEnabled ? (
                 <FormSubmitButton
                   className="w-full sm:w-auto"
-                  idleLabel="Acompanhar lote"
+                  idleLabel="Registrar interesse"
                   pendingLabel="Salvando..."
                 />
               ) : snapshot.viewerHasInterest ? (
                 <span className="inline-flex w-full items-center justify-center rounded-full border border-brand-line bg-brand-paper px-5 py-3 text-sm font-semibold text-brand-ink sm:w-auto">
-                  Já salvo na sua área
+                  Interesse já registrado
                 </span>
               ) : (
                 <span className="inline-flex w-full items-center justify-center rounded-full border border-brand-line bg-brand-paper px-5 py-3 text-sm font-semibold text-brand-ink sm:w-auto">
-                  Acompanhamento indisponível
+                  Registro indisponível
                 </span>
               )}
               {interestState.whatsappHref ? (
@@ -146,7 +183,7 @@ export function OpportunityActionsPanel({
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Falar com especialista
+                  Abrir canal oficial
                 </a>
               ) : null}
             </div>
@@ -168,20 +205,41 @@ export function OpportunityActionsPanel({
 
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-                Pré-lance online
+                Pré-lance na plataforma
               </p>
               <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
-                Registre seu valor com transparência.
+                Informe o valor que deseja registrar.
               </h2>
               <p className="mt-3 text-sm leading-7 text-brand-muted">
                 {snapshot.preBidEnabled
-                  ? "O site registra sua manifestação comercial, mas a validação final continua com a equipe. Não existe arrematação automática aqui."
+                  ? "O pré-lance registra sua intenção comercial com histórico e contexto. Ele não substitui edital, não reserva o lote e não conclui compra automaticamente."
                   : snapshot.preBidMessage}
               </p>
             </div>
 
             {snapshot.preBidEnabled ? (
               <>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
+                      Dentro da plataforma
+                    </p>
+                    <p className="mt-2 text-sm leading-7 text-brand-muted">
+                      Seu valor e suas observações ficam associados ao lote e ao seu
+                      histórico de acompanhamento.
+                    </p>
+                  </div>
+                  <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
+                      Na validação oficial
+                    </p>
+                    <p className="mt-2 text-sm leading-7 text-brand-muted">
+                      A equipe confirma disponibilidade, edital, pagamento, comissão,
+                      retirada e qualquer condição necessária para avançar.
+                    </p>
+                  </div>
+                </div>
+
                 <div className="mt-6 grid gap-4">
                   <label className="grid gap-2 text-sm font-semibold text-brand-ink">
                     Valor do seu pré-lance
@@ -228,14 +286,15 @@ export function OpportunityActionsPanel({
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      Compartilhar com a equipe
+                      Continuar no canal oficial
                     </a>
                   ) : null}
                 </div>
               </>
             ) : (
               <div className="mt-6 rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4 text-sm leading-7 text-brand-muted">
-                O envio de pré-lance fica escondido até o lote voltar para um status compatível com a operação online.
+                O envio de pré-lance fica indisponível até o lote voltar para um
+                status compatível com a operação online.
               </div>
             )}
 
@@ -263,19 +322,45 @@ export function OpportunityActionsPanel({
             {lot.onlineTeaserLabel}
           </p>
           <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
-            Cadastre-se para acompanhar e registrar seu valor com contexto.
+            Cadastre-se para acompanhar e registrar contexto com rastreabilidade.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
             Visitantes veem a referência comercial e o status do lote. Usuários
-            cadastrados passam a ver o valor atual da área logada, registrar
-            interesse e enviar pré-lances online com histórico centralizado na plataforma.
+            cadastrados passam a ver o valor atual da área logada, salvar interesse
+            e enviar pré-lances com histórico centralizado na plataforma.
           </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
+                Interesse
+              </p>
+              <p className="mt-2 text-sm leading-7 text-brand-muted">
+                Adiciona o lote à sua área para acompanhamento recorrente.
+              </p>
+            </div>
+            <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
+                Pré-lance
+              </p>
+              <p className="mt-2 text-sm leading-7 text-brand-muted">
+                Registra um valor dentro da plataforma sem gerar reserva automática.
+              </p>
+            </div>
+            <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
+                Canal oficial
+              </p>
+              <p className="mt-2 text-sm leading-7 text-brand-muted">
+                Valida edital, disponibilidade, pagamento e retirada quando a etapa exigir.
+              </p>
+            </div>
+          </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link
               className="inline-flex items-center justify-center rounded-full bg-brand-brass px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-brass/90"
               href={`/cadastro?redirect=${encodeURIComponent(`/lotes/${lot.slug}`)}`}
             >
-              Criar cadastro
+              Criar cadastro para acompanhar
             </Link>
             <Link
               className="inline-flex items-center justify-center rounded-full border border-brand-line px-5 py-3 text-sm font-semibold text-brand-navy transition hover:border-brand-navy"

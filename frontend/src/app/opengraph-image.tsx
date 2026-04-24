@@ -8,13 +8,14 @@ export const alt = "Kron Leilões";
 export default function Image() {
   return createOgImage({
     eyebrow: siteConfig.name,
-    title: "Oportunidades, cadastro e pré-lance online",
+    title: "Plataforma de oportunidades e pré-lance online",
     description:
-      "Branding institucional forte, área restrita simples e atendimento humano para levar a negociação adiante.",
+      "Catálogo público, área restrita, atividade rastreável e base institucional para analisar lotes com clareza.",
     meta: [
-      "Cadastro simples",
+      "Catálogo público",
       "Área restrita",
-      "Atendimento humano",
+      "Base institucional",
+      "Canal oficial",
     ],
   });
 }

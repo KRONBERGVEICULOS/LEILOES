@@ -50,7 +50,7 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
             width={168}
           />
           <span className="hidden text-xs leading-5 text-brand-muted xl:block">
-            Catálogo público e área restrita para acompanhar oportunidades com clareza.
+            Catálogo público, área restrita e base institucional para acompanhar oportunidades com clareza.
           </span>
         </Link>
 

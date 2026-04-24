@@ -24,25 +24,25 @@ const archivo = Archivo({
 export const metadata: Metadata = {
   metadataBase: new URL(absoluteUrl()),
   title: {
-    default: `${siteConfig.name} | Oportunidades de leilão com economia real`,
+    default: `${siteConfig.name} | Plataforma de oportunidades de leilão`,
     template: `%s | ${siteConfig.name}`,
   },
   description:
-    "Encontre veículos, máquinas e equipamentos de leilão com valores abaixo do mercado. Cadastre-se, acompanhe lotes e registre seu interesse com atendimento humano.",
+    "Plataforma de oportunidades de leilão com catálogo público, área restrita para acompanhamento e pré-lance, e canais oficiais para validação operacional.",
   applicationName: siteConfig.name,
   keywords: [
     ...siteConfig.defaultKeywords,
-    "oportunidades",
-    "atendimento comercial",
-    "cadastro",
+    "plataforma de leilões",
+    "catálogo público",
+    "área restrita",
     "pré-lance online",
   ],
   creator: siteConfig.name,
   publisher: siteConfig.legalName,
   openGraph: {
-    title: `${siteConfig.name} | Oportunidades de leilão com economia real`,
+    title: `${siteConfig.name} | Plataforma de oportunidades de leilão`,
     description:
-      "Veículos e equipamentos selecionados com valores de referência, cadastro gratuito, pré-lance online e atendimento humano.",
+      "Catálogo público, área restrita, atividade rastreável e pré-lance online com validação pelos canais oficiais.",
     type: "website",
     locale: "pt_BR",
     url: absoluteUrl(),
@@ -52,15 +52,15 @@ export const metadata: Metadata = {
         url: absoluteUrl("/opengraph-image"),
         width: 1200,
         height: 630,
-        alt: `${siteConfig.name} - oportunidades de leilão com economia real`,
+        alt: `${siteConfig.name} - plataforma de oportunidades de leilão`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} | Oportunidades de leilão com economia real`,
+    title: `${siteConfig.name} | Plataforma de oportunidades de leilão`,
     description:
-      "Consulte oportunidades de leilão, cadastre-se gratuitamente e acompanhe tudo com atendimento humano.",
+      "Consulte oportunidades, acompanhe lotes e registre pré-lances com mais clareza operacional.",
     images: [absoluteUrl("/opengraph-image")],
   },
   alternates: {

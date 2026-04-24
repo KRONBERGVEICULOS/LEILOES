@@ -1,0 +1,83 @@
+- generic [active] [ref=e1]:
+  - link "Ir para o conteúdo" [ref=e2] [cursor=pointer]:
+    - /url: "#conteudo"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "Ir para a página inicial da Kron Leilões" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "Logo Kron Leilões" [ref=e7]
+          - generic [ref=e8]: Catálogo público, área restrita e base institucional para acompanhar oportunidades com clareza.
+        - navigation "Navegação principal" [ref=e9]:
+          - link "Início" [ref=e10] [cursor=pointer]:
+            - /url: /
+          - link "Oportunidades" [ref=e11] [cursor=pointer]:
+            - /url: /eventos
+          - link "Como funciona" [ref=e12] [cursor=pointer]:
+            - /url: /sobre
+          - link "Contato" [ref=e13] [cursor=pointer]:
+            - /url: /contato
+        - generic [ref=e14]:
+          - link "Entrar" [ref=e15] [cursor=pointer]:
+            - /url: /entrar
+          - link "Criar cadastro" [ref=e16] [cursor=pointer]:
+            - /url: /cadastro
+    - main [ref=e17]:
+      - generic [ref=e30]:
+        - article [ref=e32]
+        - article [ref=e45]
+        - article [ref=e58]
+    - link "Abrir canal oficial no WhatsApp" [ref=e71] [cursor=pointer]:
+      - /url: https://wa.me/5516996540954?text=Ol%C3%A1%2C%20preciso%20validar%20uma%20oportunidade%20publicada%20na%20plataforma.
+      - generic [ref=e72]: WA
+      - generic [ref=e73]: Canal oficial
+    - contentinfo [ref=e74]:
+      - generic [ref=e75]:
+        - generic [ref=e76]:
+          - img "Logo Kron Leilões" [ref=e77]
+          - paragraph [ref=e78]: Plataforma pública para analisar oportunidades com mais contexto e menos improviso.
+          - paragraph [ref=e79]: Catálogo público, área restrita, pré-lance rastreável e canais oficiais organizados em uma experiência que deixa explícito o que acontece na plataforma e o que depende de validação operacional.
+          - generic [ref=e80]:
+            - link "Criar cadastro" [ref=e81] [cursor=pointer]:
+              - /url: /cadastro
+            - link "Entender o processo" [ref=e82] [cursor=pointer]:
+              - /url: /como-participar
+          - paragraph [ref=e83]: O site não recebe pagamento. Antes de qualquer lance, proposta ou arrematação, confirme edital, comissão, visitação, documentação e retirada somente pelos canais oficiais.
+        - generic [ref=e84]:
+          - paragraph [ref=e85]: Plataforma
+          - list [ref=e86]:
+            - listitem [ref=e87]:
+              - link "Início" [ref=e88] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e89]:
+              - link "Oportunidades" [ref=e90] [cursor=pointer]:
+                - /url: /eventos
+            - listitem [ref=e91]:
+              - link "Como funciona" [ref=e92] [cursor=pointer]:
+                - /url: /sobre
+            - listitem [ref=e93]:
+              - link "Contato" [ref=e94] [cursor=pointer]:
+                - /url: /contato
+            - listitem [ref=e95]:
+              - link "Criar cadastro" [ref=e96] [cursor=pointer]:
+                - /url: /cadastro
+            - listitem [ref=e97]:
+              - link "Entrar" [ref=e98] [cursor=pointer]:
+                - /url: /entrar
+            - listitem [ref=e99]:
+              - link "Minha área" [ref=e100] [cursor=pointer]:
+                - /url: /area
+        - generic [ref=e101]:
+          - paragraph [ref=e102]: Base institucional
+          - list [ref=e103]:
+            - listitem [ref=e104]: "Razão social: Kron Leilões Ltda."
+            - listitem [ref=e105]: "CNPJ: Publicação institucional pendente com o dado cadastral definitivo."
+            - listitem [ref=e106]: "Telefone: (16) 3500-0954"
+            - listitem [ref=e107]: "E-mail: atendimento@kronleiloes.com.br"
+            - listitem [ref=e108]: "Horário: Segunda a sexta, das 9h às 18h."
+            - listitem [ref=e109]: "Praças: Curitiba/PR • Campinas/SP • Guapimirim/RJ • Brasília/DF"
+            - listitem [ref=e110]: "Leiloeiro responsável: Publicação regulatória pendente com nome, matrícula e Junta Comercial."
+            - listitem [ref=e111]:
+              - link "Privacidade" [ref=e112] [cursor=pointer]:
+                - /url: /privacidade
+  - alert [ref=e113]

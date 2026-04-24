@@ -27,7 +27,7 @@ export function createPageMetadata({
 }: CreatePageMetadataOptions): Metadata {
   const resolvedTitle =
     title === "Início"
-      ? `${siteConfig.name} | Oportunidades, cadastro e pré-lance online`
+      ? `${siteConfig.name} | Plataforma de oportunidades e pré-lance online`
       : `${title} | ${siteConfig.name}`;
   const resolvedImage = resolveImageUrl(imagePath);
   const resolvedKeywords = [...new Set([...siteConfig.defaultKeywords, ...keywords])];

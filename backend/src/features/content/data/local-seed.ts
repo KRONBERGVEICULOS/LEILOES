@@ -150,9 +150,9 @@ const rawSeed = {
     legalName: "Kron Leilões Ltda.",
     taxId: null,
     shortDescription:
-      "Plataforma comercial enxuta para divulgar oportunidades de leilão, captar interessados e conduzir atendimento humano com contexto.",
+      "Plataforma digital para publicar oportunidades de leilão, organizar acompanhamento e registrar interesse com clareza operacional.",
     longDescription:
-      "A Kron Leilões usa este site como vitrine comercial para apresentar oportunidades, organizar cadastro, acompanhamento e pré-lance online com suporte humano antes da validação final pelo atendimento.",
+      "A Kron Leilões usa este site como plataforma pública de oportunidades: catálogo, cadastro, acompanhamento e pré-lance ficam organizados no ambiente digital, enquanto validações formais seguem pelos canais oficiais.",
     addressLines: ["Rua André de Barros, 226", "15º andar - Centro", "Curitiba/PR"],
     city: "Curitiba",
     state: "PR",
@@ -170,9 +170,9 @@ const rawSeed = {
       "O site não recebe pagamento. Antes de qualquer lance, proposta ou arrematação, confirme edital, comissão, visitação, documentação e retirada somente pelos canais oficiais.",
     primaryContactChannelId: "contact-whatsapp-institucional",
     seo: makeSeo({
-      title: "Kron Leilões | Oportunidades com atendimento humano",
+      title: "Kron Leilões | Plataforma de oportunidades de leilão",
       description:
-        "Oportunidades de leilão com cadastro, acompanhamento, pré-lance online e atendimento comercial humano.",
+        "Catálogo público, área restrita, acompanhamento e pré-lance online com canais oficiais para validação operacional.",
       canonicalPath: "/",
       ogImage: "/media/brand/kron-banner.svg",
       keywords: [

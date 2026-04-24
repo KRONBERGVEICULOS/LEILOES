@@ -1,0 +1,42 @@
+
+> kron-leiloes-platform@0.1.0 dev
+> npm run dev --workspace @kron/frontend -- --port 3002
+
+
+> @kron/frontend@0.1.0 dev
+> next dev --port 3002
+
+▲ Next.js 16.2.3 (Turbopack)
+- Local:         http://localhost:3002
+- Network:       http://192.168.56.1:3002
+✓ Ready in 987ms
+
+ GET / 200 in 987ms (next.js: 283ms, application-code: 704ms)
+ GET / 200 in 518ms (next.js: 7ms, application-code: 511ms)
+ GET / 200 in 182ms (next.js: 4ms, application-code: 177ms)
+ GET / 200 in 223ms (next.js: 5ms, application-code: 218ms)
+ GET / 200 in 167ms (next.js: 3ms, application-code: 164ms)
+ GET / 200 in 159ms (next.js: 4ms, application-code: 155ms)
+ GET /eventos 200 in 235ms (next.js: 40ms, application-code: 195ms)
+ GET /cadastro 200 in 133ms (next.js: 32ms, application-code: 101ms)
+ GET /como-participar 200 in 884ms (next.js: 710ms, application-code: 175ms)
+ GET /lotes/amarok-extreme-cd-3-0-2021 200 in 1642ms (next.js: 1352ms, application-code: 290ms)
+ GET / 200 in 196ms (next.js: 4ms, application-code: 192ms)
+ GET /lotes/amarok-extreme-cd-3-0-2021 200 in 644ms (next.js: 505ms, application-code: 139ms)
+ GET / 200 in 636ms (next.js: 177ms, application-code: 459ms)
+ GET / 200 in 187ms (next.js: 3ms, application-code: 184ms)
+ GET / 200 in 161ms (next.js: 3ms, application-code: 158ms)
+ GET / 200 in 205ms (next.js: 3ms, application-code: 202ms)
+ GET / 200 in 189ms (next.js: 4ms, application-code: 185ms)
+ GET / 200 in 153ms (next.js: 3ms, application-code: 150ms)
+ GET / 200 in 154ms (next.js: 3ms, application-code: 151ms)
+ GET / 200 in 179ms (next.js: 3ms, application-code: 176ms)
+ GET / 200 in 154ms (next.js: 2ms, application-code: 152ms)
+ GET / 200 in 144ms (next.js: 4ms, application-code: 140ms)
+ GET / 200 in 204ms (next.js: 5ms, application-code: 199ms)
+ GET / 200 in 167ms (next.js: 3ms, application-code: 164ms)
+ GET / 200 in 164ms (next.js: 3ms, application-code: 161ms)
+ GET / 200 in 150ms (next.js: 2ms, application-code: 148ms)
+ GET / 200 in 157ms (next.js: 3ms, application-code: 154ms)
+ GET / 200 in 156ms (next.js: 3ms, application-code: 153ms)
+ GET / 200 in 152ms (next.js: 3ms, application-code: 149ms)

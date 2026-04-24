@@ -204,7 +204,7 @@ export function createOgImage({
                 color: "#f8d6a8",
               }}
             >
-                Plataforma comercial
+                Plataforma digital
               </div>
               <div
                 style={{
@@ -230,7 +230,7 @@ export function createOgImage({
                     fontWeight: 700,
                   }}
                 >
-                  Cadastro, área restrita e atendimento humano
+                  Catálogo público, área restrita e base institucional
                 </div>
               </div>
             </div>
@@ -259,7 +259,7 @@ export function createOgImage({
                   color: "rgba(255,255,255,0.74)",
                 }}
               >
-                Pré-lance online responsável, atividade rastreável e atendimento humano.
+                Atividade rastreável, pré-lance responsável e validação por canal oficial.
               </div>
             </div>
           </div>

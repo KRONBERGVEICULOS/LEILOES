@@ -1,8 +1,7 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 import { StatusBadge } from "@/frontend/components/site/status-badge";
-import { createLotWhatsAppLink } from "@/shared/config/site";
 import type { Lot } from "@/backend/features/auctions/types";
 
 type LotCardProps = {
@@ -12,13 +11,13 @@ type LotCardProps = {
 function getLotCardSummaryLabel(statusKey: Lot["statusKey"]) {
   switch (statusKey) {
     case "prebid_open":
-      return "Pré-lance na área logada";
+      return "Pré-lance disponível na área";
     case "available":
     case "featured":
     case "in_review":
-      return "Acompanhamento na área logada";
+      return "Acompanhamento na área";
     case "closed":
-      return "Consulte a equipe";
+      return "Validação operacional necessária";
     case "sold":
       return "Lote concluído";
     default:
@@ -26,15 +25,35 @@ function getLotCardSummaryLabel(statusKey: Lot["statusKey"]) {
   }
 }
 
+function getLotSecondaryAction(lot: Lot) {
+  const signupHref = `/cadastro?redirect=${encodeURIComponent(`/lotes/${lot.slug}`)}`;
+
+  switch (lot.statusKey) {
+    case "prebid_open":
+      return {
+        href: signupHref,
+        label: "Cadastrar para pré-lance",
+      };
+    case "available":
+    case "featured":
+    case "in_review":
+      return {
+        href: signupHref,
+        label: "Cadastrar para acompanhar",
+      };
+    default:
+      return {
+        href: "/como-participar",
+        label: "Entender o processo",
+      };
+  }
+}
+
 export function LotCard({ lot }: LotCardProps) {
   const coverImage = lot.media[0];
-  const whatsappHref = createLotWhatsAppLink({
-    title: lot.title,
-    lotCode: lot.lotCode,
-    location: lot.location,
-  });
   const lotMeta = [lot.lotCode, lot.category, lot.location].join(" • ");
   const lotCardSummaryLabel = getLotCardSummaryLabel(lot.statusKey);
+  const secondaryAction = getLotSecondaryAction(lot);
 
   return (
     <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-[28px] border border-brand-line bg-white shadow-[0_24px_60px_-42px_rgba(26,36,48,0.3)] transition hover:-translate-y-1 hover:shadow-[0_34px_80px_-42px_rgba(26,36,48,0.42)] focus-within:-translate-y-1 focus-within:shadow-[0_34px_80px_-42px_rgba(26,36,48,0.42)]">
@@ -95,9 +114,7 @@ export function LotCard({ lot }: LotCardProps) {
         </div>
 
         <div className="space-y-4">
-          <p className="text-sm leading-7 text-brand-muted">
-            {lot.overview}
-          </p>
+          <p className="text-sm leading-7 text-brand-muted">{lot.overview}</p>
 
           <ul className="grid gap-2 text-sm text-brand-muted sm:grid-cols-2">
             <li className="rounded-2xl border border-brand-line bg-brand-paper px-3 py-3">
@@ -122,14 +139,12 @@ export function LotCard({ lot }: LotCardProps) {
           >
             Ver lote
           </Link>
-          <a
+          <Link
             className="inline-flex flex-1 items-center justify-center rounded-full border border-brand-line px-4 py-3 text-sm font-semibold text-brand-navy transition hover:border-brand-navy hover:text-brand-navy"
-            href={whatsappHref}
-            rel="noopener noreferrer"
-            target="_blank"
+            href={secondaryAction.href}
           >
-            Falar com especialista
-          </a>
+            {secondaryAction.label}
+          </Link>
         </div>
       </div>
     </article>
