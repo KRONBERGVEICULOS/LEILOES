@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState, type FormEvent } from "react";
 
 import { FormSubmitButton } from "@/frontend/components/site/form-submit-button";
 import { initialOpportunityActionState } from "@/backend/features/platform/forms";
@@ -11,6 +11,7 @@ import {
 } from "@/backend/features/platform/actions/opportunities";
 import type { Lot } from "@/backend/features/auctions/types";
 import type { LotPlatformSnapshot } from "@/backend/features/platform/types";
+import { parseCurrencyInput } from "@/shared/lib/currency";
 
 type OpportunityActionsPanelProps = {
   lot: Lot;
@@ -72,6 +73,37 @@ export function OpportunityActionsPanel({
     submitPreBidAction,
     initialOpportunityActionState,
   );
+  const [clientPreBidError, setClientPreBidError] = useState<string>();
+
+  function validatePreBidSubmission(event: FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    const amount = formData.get("amount");
+    const amountCents = typeof amount === "string" ? parseCurrencyInput(amount) : null;
+
+    if (!amountCents) {
+      event.preventDefault();
+      setClientPreBidError("Digite um valor válido para o pré-lance.");
+      return;
+    }
+
+    if (amountCents < snapshot.nextAllowedAmountCents) {
+      event.preventDefault();
+      setClientPreBidError(
+        `O próximo pré-lance precisa ser a partir de ${snapshot.nextAllowedAmountLabel}.`,
+      );
+      return;
+    }
+
+    if (amountCents > snapshot.maximumAllowedAmountCents) {
+      event.preventDefault();
+      setClientPreBidError(
+        `O valor informado está acima do limite operacional deste lote. Envie até ${snapshot.maximumAllowedAmountLabel} ou fale com a equipe para análise.`,
+      );
+      return;
+    }
+
+    setClientPreBidError(undefined);
+  }
 
   return (
     <div className="grid gap-5" id="acoes-da-plataforma">
@@ -108,16 +140,79 @@ export function OpportunityActionsPanel({
           </div>
           <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
-              Incremento mínimo
+              Próximo pré-lance
             </p>
             <p className="mt-2 text-2xl font-semibold text-brand-ink">
-              {snapshot.minimumIncrementLabel}
+              {snapshot.nextAllowedAmountLabel}
             </p>
             <p className="mt-1 text-xs leading-5 text-brand-muted">
-              Próximo envio mínimo: {snapshot.nextAllowedAmountLabel}
+              Incremento mínimo: {snapshot.minimumIncrementLabel}
             </p>
           </div>
         </div>
+        <div className="mt-4 rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
+              Limite operacional
+            </p>
+            <p className="text-sm font-semibold text-brand-ink">
+              Até {snapshot.maximumAllowedAmountLabel}
+            </p>
+          </div>
+          <p className="mt-2 text-xs leading-5 text-brand-muted">
+            {snapshot.maximumAllowedAmountSource === "lot"
+              ? "Teto definido manualmente para este lote."
+              : "Teto global calculado pela regra da plataforma."}
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.3)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
+          Lances registrados
+        </p>
+        <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
+          Histórico público resumido deste lote.
+        </h2>
+        {snapshot.publicPreBids.length ? (
+          <div className="mt-5 overflow-x-auto rounded-[22px] border border-brand-line">
+            <table className="w-full min-w-[560px] border-collapse text-left text-sm">
+              <thead className="bg-brand-paper text-xs font-semibold uppercase tracking-[0.12em] text-brand-muted">
+                <tr>
+                  <th className="px-4 py-3">#</th>
+                  <th className="px-4 py-3">Participante</th>
+                  <th className="px-4 py-3">Valor</th>
+                  <th className="px-4 py-3">Data</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-brand-line">
+                {snapshot.publicPreBids.map((preBid) => (
+                  <tr key={preBid.id}>
+                    <td className="px-4 py-3 font-semibold text-brand-muted">
+                      {preBid.position}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-brand-ink">
+                      {preBid.maskedName}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-brand-ink">
+                      {preBid.amountLabel}
+                    </td>
+                    <td className="px-4 py-3 text-brand-muted">
+                      {preBid.createdAtLabel}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="mt-5 rounded-[22px] border border-dashed border-brand-line bg-brand-paper px-4 py-4 text-sm leading-7 text-brand-muted">
+            Ainda não há pré-lances públicos registrados para este lote.
+          </div>
+        )}
+        <p className="mt-4 text-xs leading-5 text-brand-muted">
+          A lista pública mostra apenas nome mascarado, valor e data do pré-lance.
+        </p>
       </div>
 
       <div className="rounded-[28px] border border-brand-line bg-brand-paper p-6">
@@ -200,6 +295,7 @@ export function OpportunityActionsPanel({
             action={preBidAction}
             className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.3)]"
             id="pre-lance-online"
+            onSubmit={validatePreBidSubmission}
           >
             <input name="lotSlug" type="hidden" value={lot.slug} />
 
@@ -254,6 +350,11 @@ export function OpportunityActionsPanel({
                     {preBidState.errors?.amount?.[0] ? (
                       <span className="text-sm text-brand-danger">
                         {preBidState.errors.amount[0]}
+                      </span>
+                    ) : null}
+                    {clientPreBidError ? (
+                      <span className="text-sm text-brand-danger">
+                        {clientPreBidError}
                       </span>
                     ) : null}
                   </label>
@@ -311,7 +412,7 @@ export function OpportunityActionsPanel({
             <div className="mt-4">
               <StatusMessage
                 kind={preBidState.status === "success" ? "success" : "error"}
-                message={preBidState.message}
+                message={clientPreBidError ? undefined : preBidState.message}
               />
             </div>
           </form>
@@ -325,9 +426,9 @@ export function OpportunityActionsPanel({
             Cadastre-se para acompanhar e registrar contexto com rastreabilidade.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
-            Visitantes veem a referência comercial e o status do lote. Usuários
-            cadastrados passam a ver o valor atual da área logada, salvar interesse
-            e enviar pré-lances com histórico centralizado na plataforma.
+            Visitantes veem a referência comercial, o valor atual e o histórico
+            público mascarado. Usuários cadastrados também podem salvar interesse
+            e enviar pré-lances com rastreabilidade.
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">

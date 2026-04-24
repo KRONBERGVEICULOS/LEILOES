@@ -14,6 +14,7 @@ const requiredPlatformMigrationVersions = [
   "001_initial_platform_schema",
   "002_harden_platform_users",
   "003_contact_leads",
+  "004_pre_bid_guardrails",
 ] as const;
 
 const requiredPlatformTables = [

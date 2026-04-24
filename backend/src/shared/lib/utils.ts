@@ -35,6 +35,24 @@ export function formatDateBR(value: string | Date) {
   }).format(typeof value === "string" ? new Date(value) : value);
 }
 
+export function formatPhoneBR(value: string) {
+  const digits = value.replace(/\D/g, "");
+
+  if (digits.length === 11) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
+
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  if (digits.length > 11) {
+    return `+${digits.slice(0, digits.length - 11)} (${digits.slice(-11, -9)}) ${digits.slice(-9, -4)}-${digits.slice(-4)}`;
+  }
+
+  return value;
+}
+
 export function slugify(value: string) {
   return value
     .normalize("NFD")

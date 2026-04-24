@@ -212,6 +212,9 @@ export default async function AdminLotsPage({
                       Atual: <strong className="text-brand-ink">{lot.currentValueLabel}</strong>
                     </p>
                     <p>
+                      Pré-lances: <strong className="text-brand-ink">{lot.preBidCount}</strong>
+                    </p>
+                    <p>
                       Atualizado em: <strong className="text-brand-ink">
                         {lot.updatedAt ? formatDateTimeBR(lot.updatedAt) : "Sem registro"}
                       </strong>

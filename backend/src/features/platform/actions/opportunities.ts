@@ -64,6 +64,9 @@ export async function registerInterestAction(
     revalidatePath("/");
     revalidatePath("/eventos");
     revalidatePath("/area");
+    revalidatePath("/admin");
+    revalidatePath("/admin/interesses");
+    revalidatePath("/admin/usuarios");
     revalidatePath(getLotPath(validated.data.lotSlug));
 
     return {
@@ -149,6 +152,10 @@ export async function submitPreBidAction(
     revalidatePath("/");
     revalidatePath("/eventos");
     revalidatePath("/area");
+    revalidatePath("/admin");
+    revalidatePath("/admin/lotes");
+    revalidatePath("/admin/pre-lances");
+    revalidatePath("/admin/usuarios");
     revalidatePath(getLotPath(validated.data.lotSlug));
 
     return {

@@ -37,6 +37,7 @@ type AdminLotFormProps = {
       referenceValueLabel: string;
       currentValueLabel: string;
       minimumIncrementLabel: string;
+      maximumPreBidAmountLabel?: string;
     };
     createdAt?: string;
     updatedAt?: string;
@@ -332,7 +333,7 @@ export function AdminLotForm({
             </h2>
           </div>
 
-          <div className="mt-6 grid gap-5 md:grid-cols-3">
+          <div className="mt-6 grid gap-5 md:grid-cols-4">
             <div className="grid gap-2">
               <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-reference-price">
                 Preço de referência
@@ -388,6 +389,27 @@ export function AdminLotForm({
                 type="text"
               />
               <FieldError message={state.errors?.minimumIncrement?.[0]} />
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-maximum-prebid">
+                Teto manual de pré-lance
+              </label>
+              <input
+                className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 text-brand-ink outline-none transition focus:border-brand-brass"
+                defaultValue={readValue(
+                  "maximumPreBid",
+                  lot?.pricing.maximumPreBidAmountLabel ?? "",
+                )}
+                id="lot-maximum-prebid"
+                name="maximumPreBid"
+                placeholder="Opcional"
+                type="text"
+              />
+              <p className="text-xs leading-5 text-brand-muted">
+                Se vazio, vale a margem global da plataforma.
+              </p>
+              <FieldError message={state.errors?.maximumPreBid?.[0]} />
             </div>
 
             <div className="grid gap-2 md:col-span-2">

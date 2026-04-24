@@ -82,6 +82,7 @@ function collectLotFormValues(formData: FormData) {
     referencePrice: readString(formData, "referencePrice"),
     currentPrice: readString(formData, "currentPrice"),
     minimumIncrement: readString(formData, "minimumIncrement"),
+    maximumPreBid: readString(formData, "maximumPreBid"),
     statusKey: readString(formData, "statusKey"),
     isFeatured: readString(formData, "isFeatured"),
     isVisible: readString(formData, "isVisible"),
@@ -91,6 +92,8 @@ function collectLotFormValues(formData: FormData) {
 function revalidateLotPaths(result: AdminLotMutationResult) {
   revalidatePath("/admin");
   revalidatePath("/admin/lotes");
+  revalidatePath("/admin/pre-lances");
+  revalidatePath("/admin/interesses");
   revalidatePath(`/admin/lotes/${result.id}/editar`);
   revalidatePath("/");
   revalidatePath("/eventos");
@@ -139,12 +142,20 @@ export async function saveAdminLotAction(
   const referenceValueCents = parseCurrencyInput(validated.data.referencePrice);
   const currentValueCents = parseCurrencyInput(validated.data.currentPrice);
   const minimumIncrementCents = parseCurrencyInput(validated.data.minimumIncrement);
+  const maximumPreBidAmountCents = validated.data.maximumPreBid
+    ? parseCurrencyInput(validated.data.maximumPreBid)
+    : null;
   const parsedGallery = parseGalleryLines(validated.data.gallery ?? "");
   const details = splitLines(validated.data.details);
   const highlights = splitLines(validated.data.highlights);
   const facts = splitLines(validated.data.facts ?? "");
 
-  if (!referenceValueCents || !currentValueCents || !minimumIncrementCents) {
+  if (
+    !referenceValueCents ||
+    !currentValueCents ||
+    !minimumIncrementCents ||
+    (validated.data.maximumPreBid && !maximumPreBidAmountCents)
+  ) {
     return {
       status: "error",
       message: "Os campos de preço precisam ter valores monetários válidos.",
@@ -156,6 +167,25 @@ export async function saveAdminLotAction(
         ...(!minimumIncrementCents
           ? { minimumIncrement: ["Informe um incremento mínimo válido."] }
           : {}),
+        ...(validated.data.maximumPreBid && !maximumPreBidAmountCents
+          ? { maximumPreBid: ["Informe um teto de pré-lance válido."] }
+          : {}),
+      },
+      values: rawValues,
+    };
+  }
+
+  if (
+    maximumPreBidAmountCents &&
+    maximumPreBidAmountCents < currentValueCents + minimumIncrementCents
+  ) {
+    return {
+      status: "error",
+      message: "O teto manual precisa permitir pelo menos o próximo incremento do lote.",
+      errors: {
+        maximumPreBid: [
+          "Informe um teto maior que o preço atual somado ao incremento mínimo.",
+        ],
       },
       values: rawValues,
     };
@@ -220,6 +250,7 @@ export async function saveAdminLotAction(
       referenceValueCents,
       currentValueCents,
       minimumIncrementCents,
+      maximumPreBidAmountCents,
       statusKey: validated.data.statusKey as Parameters<typeof saveAdminLot>[0]["statusKey"],
       isFeatured: validated.data.isFeatured === "on",
       isVisible: validated.data.isVisible === "on",

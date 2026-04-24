@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { isValidCpf, normalizeCpf } from "@/shared/lib/cpf";
+import { parseCurrencyInput } from "@/shared/lib/currency";
 import {
   isValidPhone,
   normalizeEmail,
@@ -118,17 +119,4 @@ export const preBidFormSchema = z.object({
   note: z.string().trim().max(280, "Use no máximo 280 caracteres.").optional(),
 });
 
-export function parseCurrencyInput(rawValue: string) {
-  const normalized = rawValue.replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
-  const numeric = Number(
-    normalized
-      .replace(/[^\d.]/g, "")
-      .replace(/(\..*)\./g, "$1"),
-  );
-
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return null;
-  }
-
-  return Math.round(numeric * 100);
-}
+export { parseCurrencyInput };

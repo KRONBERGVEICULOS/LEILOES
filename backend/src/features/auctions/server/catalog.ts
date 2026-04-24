@@ -34,6 +34,7 @@ type LotRow = {
   reference_value_cents: number;
   current_value_cents: number;
   minimum_increment_cents: number;
+  maximum_pre_bid_amount_cents: number | null;
   is_featured: boolean;
   is_visible: boolean;
   sort_order: number;
@@ -99,6 +100,14 @@ function mapRowToLot(row: LotRow): Lot {
       currentValueLabel: formatCurrencyBRL(row.current_value_cents),
       minimumIncrementCents: row.minimum_increment_cents,
       minimumIncrementLabel: formatCurrencyBRL(row.minimum_increment_cents),
+      ...(row.maximum_pre_bid_amount_cents
+        ? {
+            maximumPreBidAmountCents: row.maximum_pre_bid_amount_cents,
+            maximumPreBidAmountLabel: formatCurrencyBRL(
+              row.maximum_pre_bid_amount_cents,
+            ),
+          }
+        : {}),
       supportLabel: status.supportLabel,
     },
     sourceNote: row.source_note,
@@ -122,37 +131,49 @@ async function getDatabaseLots() {
   return withPlatformDatabase(async (sql) => {
     const rows = await sql<LotRow[]>`
       select
-        id,
-        source_slug,
-        slug,
-        title,
-        lot_code,
-        event_slug,
-        category,
-        location,
-        overview,
-        details,
-        observations,
-        source_note,
-        facts,
-        highlights,
-        faq,
-        gallery,
-        year,
-        mileage,
-        fuel,
-        transmission,
-        status_key,
-        reference_value_cents,
-        current_value_cents,
-        minimum_increment_cents,
-        is_featured,
-        is_visible,
-        sort_order,
-        created_at,
-        updated_at
-      from platform_lots
-      order by is_featured desc, sort_order asc, updated_at desc, created_at desc
+        lots.id,
+        lots.source_slug,
+        lots.slug,
+        lots.title,
+        lots.lot_code,
+        lots.event_slug,
+        lots.category,
+        lots.location,
+        lots.overview,
+        lots.details,
+        lots.observations,
+        lots.source_note,
+        lots.facts,
+        lots.highlights,
+        lots.faq,
+        lots.gallery,
+        lots.year,
+        lots.mileage,
+        lots.fuel,
+        lots.transmission,
+        lots.status_key,
+        lots.reference_value_cents,
+        greatest(
+          lots.reference_value_cents,
+          lots.current_value_cents,
+          coalesce(top_pre_bid.amount_cents, 0)
+        )::int as current_value_cents,
+        lots.minimum_increment_cents,
+        lots.maximum_pre_bid_amount_cents,
+        lots.is_featured,
+        lots.is_visible,
+        lots.sort_order,
+        lots.created_at,
+        lots.updated_at
+      from platform_lots as lots
+      left join lateral (
+        select amount_cents
+        from platform_pre_bids
+        where lot_slug = lots.slug
+        order by amount_cents desc, created_at desc
+        limit 1
+      ) as top_pre_bid on true
+      order by lots.is_featured desc, lots.sort_order asc, lots.updated_at desc, lots.created_at desc
     `;
 
     return rows.map(mapRowToLot);

@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 
 import { createOfferWhatsAppLink, createWhatsAppLink } from "@/shared/config/site";
 import { isValidCpf, normalizeCpf } from "@/shared/lib/cpf";
+import { resolvePreBidPolicy } from "@/shared/lib/pre-bid-policy";
 import { getLotStatusDefinition } from "@/backend/features/auctions/lib/lot-status";
 import { lots as seedLots } from "@/backend/features/auctions/data/catalog";
 import { getLotBySlug } from "@/backend/features/auctions/server/catalog";
@@ -16,11 +17,12 @@ import { ensurePlatformCatalogSeed } from "@/backend/features/platform/server/ca
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
 import {
   invalidatePublicActivityCache,
+  invalidatePublicCatalogCache,
   readPublicCache,
   writePublicCache,
 } from "@/backend/features/platform/server/public-cache";
 import { shouldUseLocalSeedData } from "@/backend/features/platform/server/mode";
-import { formatCurrencyBRL } from "@/shared/lib/utils";
+import { formatCurrencyBRL, formatDateTimeBR } from "@/shared/lib/utils";
 import type {
   ActivityFeedItem,
   AuthenticatedUser,
@@ -28,6 +30,7 @@ import type {
   DashboardPreBid,
   LotPlatformSnapshot,
   PlatformActivity,
+  PublicPreBidItem,
   UserDashboard,
 } from "@/backend/features/platform/types";
 
@@ -64,6 +67,13 @@ type DatabaseInterestRow = {
 type DatabasePreBidRow = {
   id: string;
   lot_slug: string;
+  amount_cents: number;
+  created_at: string | Date;
+};
+
+type DatabasePublicPreBidRow = {
+  id: string;
+  bidder_name: string;
   amount_cents: number;
   created_at: string | Date;
 };
@@ -191,6 +201,30 @@ function buildPublicAlias(aliasNumber: number) {
   return `Participante KR-${String(aliasNumber).padStart(3, "0")}`;
 }
 
+function maskBidderName(name: string) {
+  const firstName = name.trim().split(/\s+/)[0] ?? "";
+  const firstCharacter = firstName[0]?.toLocaleUpperCase("pt-BR") ?? "P";
+  const maskLength = Math.max(firstName.length - 1, 3);
+
+  return `${firstCharacter}${"*".repeat(maskLength)}`;
+}
+
+function mapPublicPreBidRows(rows: DatabasePublicPreBidRow[]): PublicPreBidItem[] {
+  return rows.map((row, index) => {
+    const createdAt = toIsoString(row.created_at);
+
+    return {
+      id: row.id,
+      position: index + 1,
+      maskedName: maskBidderName(row.bidder_name),
+      amountCents: row.amount_cents,
+      amountLabel: formatCurrencyBRL(row.amount_cents),
+      createdAt,
+      createdAtLabel: formatDateTimeBR(createdAt),
+    };
+  });
+}
+
 function isDatabaseErrorCode(error: unknown, code: string) {
   return (
     typeof error === "object" &&
@@ -229,7 +263,12 @@ function getLotCurrentState(
     lot.pricing.referenceValueCents,
   );
   const currentValueCents = Math.max(topBidAmountCents ?? 0, baselineCurrentValue);
-  const nextAllowedAmountCents = currentValueCents + lot.pricing.minimumIncrementCents;
+  const preBidPolicy = resolvePreBidPolicy({
+    referenceValueCents: lot.pricing.referenceValueCents,
+    currentValueCents,
+    minimumIncrementCents: lot.pricing.minimumIncrementCents,
+    maximumPreBidAmountCents: lot.pricing.maximumPreBidAmountCents,
+  });
   const status = getLotStatusDefinition(lot.statusKey);
 
   return {
@@ -237,7 +276,11 @@ function getLotCurrentState(
     lot,
     baselineCurrentValue,
     currentValueCents,
-    nextAllowedAmountCents,
+    nextAllowedAmountCents: preBidPolicy.nextAllowedAmountCents,
+    maximumAllowedAmountCents: preBidPolicy.maximumAllowedAmountCents,
+    maximumAllowedAmountSource: preBidPolicy.usesManualMaximum
+      ? ("lot" as const)
+      : ("global" as const),
   };
 }
 
@@ -527,13 +570,13 @@ export async function getLotPlatformSnapshot(
   const lot = await requireLot(lotSlug);
 
   if (shouldUseLocalSeedData()) {
-    const status = getLotStatusDefinition(lot.statusKey);
-    const currentValueCents = Math.max(
-      lot.pricing.currentValueCents,
-      lot.pricing.referenceValueCents,
-    );
-    const nextAllowedAmountCents =
-      currentValueCents + lot.pricing.minimumIncrementCents;
+    const {
+      status,
+      currentValueCents,
+      nextAllowedAmountCents,
+      maximumAllowedAmountCents,
+      maximumAllowedAmountSource,
+    } = getLotCurrentState(null, lot);
     const seedActivity = await createActivityItem(
       {
         id: `seed-lot-available-${lot.slug}`,
@@ -558,25 +601,38 @@ export async function getLotPlatformSnapshot(
       supportLabel: lot.pricing.supportLabel,
       referenceValueCents: lot.pricing.referenceValueCents,
       referenceValueLabel: lot.pricing.referenceValueLabel,
-      visibleValueCents: lot.pricing.referenceValueCents,
-      visibleValueLabel: lot.pricing.referenceValueLabel,
-      visibleValueKind: "reference",
+      visibleValueCents: currentValueCents,
+      visibleValueLabel: formatCurrencyBRL(currentValueCents),
+      visibleValueKind:
+        currentValueCents !== lot.pricing.referenceValueCents
+          ? "prebid"
+          : "reference",
       minimumIncrementCents: lot.pricing.minimumIncrementCents,
       minimumIncrementLabel: lot.pricing.minimumIncrementLabel,
       nextAllowedAmountCents,
       nextAllowedAmountLabel: formatCurrencyBRL(nextAllowedAmountCents),
+      maximumAllowedAmountCents,
+      maximumAllowedAmountLabel: formatCurrencyBRL(maximumAllowedAmountCents),
+      maximumAllowedAmountSource,
       viewerIsAuthenticated: false,
       interestEnabled: status.interestEnabled,
       viewerHasInterest: false,
       preBidEnabled: status.preBidEnabled,
       preBidMessage:
         "Banco de dados não configurado para habilitar interesse e pré-lance online.",
+      publicPreBids: [],
       recentActivity: [seedActivity],
     };
   }
 
   return withPlatformDatabase(async (sql) => {
-    const [topBidRow, activityRows, viewerInterestRow, viewerPreBidRow] = await Promise.all([
+    const [
+      topBidRow,
+      activityRows,
+      publicPreBidRows,
+      viewerInterestRow,
+      viewerPreBidRow,
+    ] = await Promise.all([
       sql<{ amount_cents: number }[]>`
         select amount_cents
         from platform_pre_bids
@@ -602,6 +658,19 @@ export async function getLotPlatformSnapshot(
         order by created_at desc
         limit 5
       `,
+      sql<DatabasePublicPreBidRow[]>`
+        select
+          pre_bids.id,
+          users.name as bidder_name,
+          pre_bids.amount_cents,
+          pre_bids.created_at
+        from platform_pre_bids as pre_bids
+        inner join platform_users as users
+          on users.id = pre_bids.user_id
+        where pre_bids.lot_slug = ${lotSlug}
+        order by pre_bids.amount_cents desc, pre_bids.created_at desc
+        limit 8
+      `,
       viewerUserId
         ? sql<{ id: string }[]>`
             select id
@@ -624,11 +693,16 @@ export async function getLotPlatformSnapshot(
     ]);
 
     const topBidAmountCents = topBidRow[0]?.amount_cents ?? null;
-    const { status, currentValueCents, nextAllowedAmountCents } = getLotCurrentState(
-      topBidAmountCents,
-      lot,
-    );
+    const {
+      status,
+      currentValueCents,
+      nextAllowedAmountCents,
+      maximumAllowedAmountCents,
+      maximumAllowedAmountSource,
+    } = getLotCurrentState(topBidAmountCents, lot);
     const viewerHighestPreBidAmount = viewerPreBidRow[0]?.amount_cents ?? null;
+    const preBidLimitReached =
+      status.preBidEnabled && nextAllowedAmountCents > maximumAllowedAmountCents;
 
     return {
       lotSlug,
@@ -637,23 +711,26 @@ export async function getLotPlatformSnapshot(
       supportLabel: lot.pricing.supportLabel,
       referenceValueCents: lot.pricing.referenceValueCents,
       referenceValueLabel: lot.pricing.referenceValueLabel,
-      visibleValueCents: viewerUserId ? currentValueCents : lot.pricing.referenceValueCents,
-      visibleValueLabel: formatCurrencyBRL(
-        viewerUserId ? currentValueCents : lot.pricing.referenceValueCents,
-      ),
+      visibleValueCents: currentValueCents,
+      visibleValueLabel: formatCurrencyBRL(currentValueCents),
       visibleValueKind:
-        viewerUserId && currentValueCents !== lot.pricing.referenceValueCents
+        currentValueCents !== lot.pricing.referenceValueCents
           ? "prebid"
           : "reference",
       minimumIncrementCents: lot.pricing.minimumIncrementCents,
       minimumIncrementLabel: lot.pricing.minimumIncrementLabel,
       nextAllowedAmountCents,
       nextAllowedAmountLabel: formatCurrencyBRL(nextAllowedAmountCents),
+      maximumAllowedAmountCents,
+      maximumAllowedAmountLabel: formatCurrencyBRL(maximumAllowedAmountCents),
+      maximumAllowedAmountSource,
       viewerIsAuthenticated: Boolean(viewerUserId),
       interestEnabled: status.interestEnabled,
       viewerHasInterest: Boolean(viewerInterestRow[0]),
-      preBidEnabled: status.preBidEnabled,
-      preBidMessage: status.preBidEnabled
+      preBidEnabled: status.preBidEnabled && !preBidLimitReached,
+      preBidMessage: preBidLimitReached
+        ? `O limite operacional online deste lote foi atingido. Fale com a equipe para qualquer análise acima de ${formatCurrencyBRL(maximumAllowedAmountCents)}.`
+        : status.preBidEnabled
         ? "O pré-lance online segue liberado para este lote."
         : `No momento este lote está com status "${status.label.toLowerCase()}".`,
       ...(viewerHighestPreBidAmount !== null
@@ -662,6 +739,7 @@ export async function getLotPlatformSnapshot(
             viewerHighestPreBidLabel: formatCurrencyBRL(viewerHighestPreBidAmount),
           }
         : {}),
+      publicPreBids: mapPublicPreBidRows(publicPreBidRows),
       recentActivity: await Promise.all(
         activityRows.map((row) =>
           createActivityItem(row, viewerUserId ? "authenticated" : "public"),
@@ -827,14 +905,21 @@ export async function submitPreBid(
         limit 1
       `;
 
-      const { currentValueCents, nextAllowedAmountCents } = getLotCurrentState(
-        topBidRow?.amount_cents ?? null,
-        lot,
-      );
+      const {
+        currentValueCents,
+        nextAllowedAmountCents,
+        maximumAllowedAmountCents,
+      } = getLotCurrentState(topBidRow?.amount_cents ?? null, lot);
 
       if (amountCents < nextAllowedAmountCents) {
         throw new Error(
           `O próximo pré-lance precisa ser a partir de ${formatCurrencyBRL(nextAllowedAmountCents)}.`,
+        );
+      }
+
+      if (amountCents > maximumAllowedAmountCents) {
+        throw new Error(
+          `O valor informado está acima do limite operacional deste lote. Envie um pré-lance de até ${formatCurrencyBRL(maximumAllowedAmountCents)} ou fale com a equipe para análise.`,
         );
       }
 
@@ -877,6 +962,14 @@ export async function submitPreBid(
       `;
 
       await transaction`
+        update platform_lots
+        set
+          current_value_cents = greatest(current_value_cents, ${amountCents}),
+          updated_at = ${createdAt}
+        where slug = ${lotSlug}
+      `;
+
+      await transaction`
         insert into platform_activities (
           id,
           kind,
@@ -911,7 +1004,10 @@ export async function submitPreBid(
     }),
   );
 
-  await invalidatePublicActivityCache();
+  await Promise.all([
+    invalidatePublicActivityCache(),
+    invalidatePublicCatalogCache(),
+  ]);
 
   return result;
 }

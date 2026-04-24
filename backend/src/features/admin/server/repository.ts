@@ -17,7 +17,8 @@ import {
   isDatabaseConfigured,
   shouldUseLocalSeedData,
 } from "@/backend/features/platform/server/mode";
-import { formatCurrencyBRL, formatDateTimeBR, slugify } from "@/shared/lib/utils";
+import { formatCpf } from "@/shared/lib/cpf";
+import { formatCurrencyBRL, formatDateTimeBR, formatPhoneBR, slugify } from "@/shared/lib/utils";
 
 type InterestRow = {
   id: string;
@@ -32,8 +33,27 @@ type PreBidRow = {
   lot_slug: string;
   user_id: string;
   public_alias: string;
+  user_name: string;
+  user_email: string;
+  user_cpf: string;
+  user_phone: string;
   amount_cents: number;
+  note: string | null;
+  lot_pre_bid_count: number;
   created_at: string | Date;
+};
+
+type AdminUserRow = {
+  id: string;
+  public_alias: string;
+  name: string;
+  email: string;
+  cpf: string;
+  phone: string;
+  city: string | null;
+  created_at: string | Date;
+  interests_count: number;
+  pre_bids_count: number;
 };
 
 type ActivityRow = {
@@ -71,6 +91,7 @@ type StoredLotUpdatePayload = {
   referenceValueCents: number;
   currentValueCents: number;
   minimumIncrementCents: number;
+  maximumPreBidAmountCents?: number | null;
   statusKey: LotStatusKey;
   isFeatured: boolean;
   isVisible: boolean;
@@ -80,6 +101,7 @@ export type AdminDashboardData = {
   totalLots: number;
   activeLots: number;
   inactiveLots: number;
+  totalUsers: number;
   totalInterests: number;
   totalPreBids: number;
   recentActivity: AdminActivityItem[];
@@ -97,6 +119,7 @@ export type AdminLotListItem = {
   isVisible: boolean;
   referenceValueLabel: string;
   currentValueLabel: string;
+  preBidCount: number;
   updatedAt?: string;
 };
 
@@ -119,8 +142,30 @@ export type AdminPreBidItem = {
   statusKey: string;
   statusLabel: string;
   userAlias: string;
+  userName: string;
+  userCpf: string;
+  userPhone: string;
+  userEmail: string;
   amountLabel: string;
+  note?: string;
+  lotPreBidCount: number;
   createdAt: string;
+  createdAtLabel: string;
+};
+
+export type AdminUserItem = {
+  id: string;
+  publicAlias: string;
+  name: string;
+  email: string;
+  cpf: string;
+  phone: string;
+  city?: string;
+  statusLabel: string;
+  interestsCount: number;
+  preBidsCount: number;
+  createdAt: string;
+  createdAtLabel: string;
 };
 
 export type AdminActivityItem = {
@@ -149,6 +194,12 @@ export type AdminLotFilters = {
 export type AdminRecordFilters = {
   lotSlug?: string;
   status?: string;
+  from?: string;
+  to?: string;
+};
+
+export type AdminUserFilters = {
+  query?: string;
   from?: string;
   to?: string;
 };
@@ -358,7 +409,11 @@ export async function getAdminDashboard() {
   ]);
 
   return withPlatformDatabase(async (sql) => {
-    const [interestsCount, preBidsCount] = await Promise.all([
+    const [usersCount, interestsCount, preBidsCount] = await Promise.all([
+      sql<{ count: number }[]>`
+        select count(*)::int as count
+        from platform_users
+      `,
       sql<{ count: number }[]>`
         select count(*)::int as count
         from platform_interests
@@ -373,6 +428,7 @@ export async function getAdminDashboard() {
       totalLots: lots.length,
       activeLots: lots.filter((lot) => isLotPubliclyVisible(lot.statusKey, lot.isVisible)).length,
       inactiveLots: lots.filter((lot) => !isLotPubliclyVisible(lot.statusKey, lot.isVisible)).length,
+      totalUsers: usersCount[0]?.count ?? 0,
       totalInterests: interestsCount[0]?.count ?? 0,
       totalPreBids: preBidsCount[0]?.count ?? 0,
       recentActivity: recentActivity.slice(0, 8),
@@ -428,6 +484,16 @@ export async function listAdminLots(filters: AdminLotFilters) {
         return new Date(right.updatedAt ?? 0).getTime() - new Date(left.updatedAt ?? 0).getTime();
     }
   });
+  const preBidCountRows = await withPlatformDatabase((sql) =>
+    sql<{ lot_slug: string; count: number }[]>`
+      select lot_slug, count(*)::int as count
+      from platform_pre_bids
+      group by lot_slug
+    `,
+  );
+  const preBidCounts = new Map(
+    preBidCountRows.map((row) => [row.lot_slug, row.count]),
+  );
 
   return sorted.map(
     (lot) =>
@@ -443,6 +509,7 @@ export async function listAdminLots(filters: AdminLotFilters) {
         isVisible: lot.isVisible,
         referenceValueLabel: lot.pricing.referenceValueLabel,
         currentValueLabel: lot.pricing.currentValueLabel,
+        preBidCount: preBidCounts.get(lot.slug) ?? 0,
         updatedAt: lot.updatedAt,
       }) satisfies AdminLotListItem,
   );
@@ -494,6 +561,7 @@ export async function saveAdminLot(input: StoredLotUpdatePayload) {
           reference_value_cents,
           current_value_cents,
           minimum_increment_cents,
+          maximum_pre_bid_amount_cents,
           is_featured,
           is_visible,
           updated_at,
@@ -524,6 +592,7 @@ export async function saveAdminLot(input: StoredLotUpdatePayload) {
           ${input.referenceValueCents},
           ${input.currentValueCents},
           ${input.minimumIncrementCents},
+          ${input.maximumPreBidAmountCents ?? null},
           ${input.isFeatured},
           ${input.isVisible},
           ${now},
@@ -552,6 +621,7 @@ export async function saveAdminLot(input: StoredLotUpdatePayload) {
           reference_value_cents = excluded.reference_value_cents,
           current_value_cents = excluded.current_value_cents,
           minimum_increment_cents = excluded.minimum_increment_cents,
+          maximum_pre_bid_amount_cents = excluded.maximum_pre_bid_amount_cents,
           is_featured = excluded.is_featured,
           is_visible = excluded.is_visible,
           updated_at = excluded.updated_at
@@ -657,6 +727,7 @@ export async function duplicateAdminLot(id: string) {
     referenceValueCents: existing.pricing.referenceValueCents,
     currentValueCents: existing.pricing.currentValueCents,
     minimumIncrementCents: existing.pricing.minimumIncrementCents,
+    maximumPreBidAmountCents: existing.pricing.maximumPreBidAmountCents,
     statusKey: existing.statusKey as LotStatusKey,
     isFeatured: false,
     isVisible: false,
@@ -828,7 +899,13 @@ export async function listAdminPreBids(filters: AdminRecordFilters) {
         pre_bids.lot_slug,
         pre_bids.user_id,
         users.public_alias,
+        users.name as user_name,
+        users.email as user_email,
+        users.cpf as user_cpf,
+        users.phone as user_phone,
         pre_bids.amount_cents,
+        pre_bids.note,
+        count(*) over (partition by pre_bids.lot_slug)::int as lot_pre_bid_count,
         pre_bids.created_at
       from platform_pre_bids as pre_bids
       inner join platform_users as users
@@ -852,8 +929,15 @@ export async function listAdminPreBids(filters: AdminRecordFilters) {
           statusKey: lot.statusKey,
           statusLabel: getLotStatusDefinition(lot.statusKey).label,
           userAlias: row.public_alias,
+          userName: row.user_name,
+          userCpf: formatCpf(row.user_cpf),
+          userPhone: formatPhoneBR(row.user_phone),
+          userEmail: row.user_email,
           amountLabel: formatCurrencyBRL(row.amount_cents),
+          ...(row.note ? { note: row.note } : {}),
+          lotPreBidCount: row.lot_pre_bid_count,
           createdAt: toIsoString(row.created_at),
+          createdAtLabel: formatDateTimeBR(row.created_at),
         } satisfies AdminPreBidItem;
       })
       .filter((item): item is AdminPreBidItem => Boolean(item))
@@ -864,6 +948,82 @@ export async function listAdminPreBids(filters: AdminRecordFilters) {
 
         if (filters.status && item.statusKey !== filters.status) {
           return false;
+        }
+
+        return parseDateWithinRange(item.createdAt, filters.from, filters.to);
+      });
+  });
+}
+
+export async function listAdminUsers(filters: AdminUserFilters) {
+  assertDatabaseConfigured();
+
+  const normalizedSearch = normalizeQuery(filters.query);
+
+  return withPlatformDatabase(async (sql) => {
+    const rows = await sql<AdminUserRow[]>`
+      select
+        users.id,
+        users.public_alias,
+        users.name,
+        users.email,
+        users.cpf,
+        users.phone,
+        users.city,
+        users.created_at,
+        coalesce(interests.count, 0)::int as interests_count,
+        coalesce(pre_bids.count, 0)::int as pre_bids_count
+      from platform_users as users
+      left join (
+        select user_id, count(*)::int as count
+        from platform_interests
+        group by user_id
+      ) as interests on interests.user_id = users.id
+      left join (
+        select user_id, count(*)::int as count
+        from platform_pre_bids
+        group by user_id
+      ) as pre_bids on pre_bids.user_id = users.id
+      order by users.created_at desc
+    `;
+
+    return rows
+      .map((row) => {
+        const createdAt = toIsoString(row.created_at);
+
+        return {
+          id: row.id,
+          publicAlias: row.public_alias,
+          name: row.name,
+          email: row.email,
+          cpf: formatCpf(row.cpf),
+          phone: formatPhoneBR(row.phone),
+          ...(row.city ? { city: row.city } : {}),
+          statusLabel: "Conta ativa",
+          interestsCount: row.interests_count,
+          preBidsCount: row.pre_bids_count,
+          createdAt,
+          createdAtLabel: formatDateTimeBR(createdAt),
+        } satisfies AdminUserItem;
+      })
+      .filter((item) => {
+        if (normalizedSearch) {
+          const searchable = normalizeQuery(
+            [
+              item.name,
+              item.email,
+              item.cpf,
+              item.cpf.replace(/\D/g, ""),
+              item.phone,
+              item.phone.replace(/\D/g, ""),
+              item.publicAlias,
+              item.city ?? "",
+            ].join(" "),
+          );
+
+          if (!searchable?.includes(normalizedSearch)) {
+            return false;
+          }
         }
 
         return parseDateWithinRange(item.createdAt, filters.from, filters.to);

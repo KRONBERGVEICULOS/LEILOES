@@ -38,6 +38,8 @@ export type LotPricing = {
   currentValueLabel: string;
   minimumIncrementCents: number;
   minimumIncrementLabel: string;
+  maximumPreBidAmountCents?: number;
+  maximumPreBidAmountLabel?: string;
   supportLabel: string;
 };
 

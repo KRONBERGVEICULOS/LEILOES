@@ -45,6 +45,7 @@ export const adminLotSchema = z.object({
   referencePrice: z.string().trim().min(1, "Informe o preço de referência."),
   currentPrice: z.string().trim().min(1, "Informe o preço atual."),
   minimumIncrement: z.string().trim().min(1, "Informe o incremento mínimo."),
+  maximumPreBid: z.string().trim().optional(),
   statusKey: z
     .string()
     .trim()

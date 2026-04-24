@@ -10,6 +10,7 @@ const quickLinks = [
   { href: "/admin/lotes", label: "Editar lotes" },
   { href: "/admin/pre-lances", label: "Ver pré-lances" },
   { href: "/admin/interesses", label: "Ver interesses" },
+  { href: "/admin/usuarios", label: "Ver usuários" },
   { href: "/admin/atividade", label: "Atualizar status e atividade" },
 ] as const;
 
@@ -44,11 +45,12 @@ export default async function AdminDashboardPage() {
         </p>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
         {[
           { label: "Total de lotes", value: dashboard.totalLots },
           { label: "Lotes ativos", value: dashboard.activeLots },
           { label: "Lotes inativos", value: dashboard.inactiveLots },
+          { label: "Usuários", value: dashboard.totalUsers },
           { label: "Interesses", value: dashboard.totalInterests },
           { label: "Pré-lances", value: dashboard.totalPreBids },
         ].map((item) => (

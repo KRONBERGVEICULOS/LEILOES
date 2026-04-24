@@ -74,6 +74,16 @@ export type ActivityFeedItem = {
   lotCode?: string;
 };
 
+export type PublicPreBidItem = {
+  id: string;
+  position: number;
+  maskedName: string;
+  amountCents: number;
+  amountLabel: string;
+  createdAt: string;
+  createdAtLabel: string;
+};
+
 export type LotPlatformSnapshot = {
   lotSlug: string;
   onlineStatusLabel: string;
@@ -88,6 +98,9 @@ export type LotPlatformSnapshot = {
   minimumIncrementLabel: string;
   nextAllowedAmountCents: number;
   nextAllowedAmountLabel: string;
+  maximumAllowedAmountCents: number;
+  maximumAllowedAmountLabel: string;
+  maximumAllowedAmountSource: "global" | "lot";
   viewerIsAuthenticated: boolean;
   interestEnabled: boolean;
   viewerHasInterest: boolean;
@@ -95,6 +108,7 @@ export type LotPlatformSnapshot = {
   preBidMessage: string;
   viewerHighestPreBidCents?: number;
   viewerHighestPreBidLabel?: string;
+  publicPreBids: PublicPreBidItem[];
   recentActivity: ActivityFeedItem[];
 };
 

@@ -10,6 +10,7 @@ const navigationItems = [
   { href: "/admin/lotes", label: "Lotes" },
   { href: "/admin/pre-lances", label: "Pré-lances" },
   { href: "/admin/interesses", label: "Interesses" },
+  { href: "/admin/usuarios", label: "Usuários" },
   { href: "/admin/atividade", label: "Atividade" },
 ] as const;
 
