@@ -16,7 +16,7 @@ export const metadata: Metadata = createPageMetadata({
   title: "Cadastro",
   path: "/cadastro",
   description:
-    "Crie seu cadastro na Kron Leilões para acompanhar oportunidades, interesses e pré-lances online.",
+    "Crie seu cadastro na Kron Leilões para acompanhar oportunidades, registrar interesse e enviar pré-lances na área restrita.",
 });
 
 function readRedirect(searchParams: Record<string, string | string[] | undefined>) {
@@ -39,21 +39,21 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
       <Container className="grid gap-10 py-14 lg:grid-cols-[minmax(0,0.88fr)_minmax(460px,1.12fr)] lg:items-center">
         <div className="space-y-6">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-            Cadastro comercial
+            Área restrita
           </p>
           <h1 className="text-4xl font-semibold leading-tight text-brand-ink sm:text-5xl">
-            Crie seu acesso para acompanhar oportunidades sem sair do foco comercial.
+            Crie seu acesso para acompanhar oportunidades com histórico centralizado.
           </h1>
           <p className="max-w-2xl text-base leading-8 text-brand-muted">
             O cadastro foi desenhado para ser objetivo: nome, CPF, contato, senha
             e consentimento básico. Depois disso, você já entra na área com seus
-            interesses e pré-lances organizados.
+            interesses, acompanhamentos e pré-lances organizados dentro da plataforma.
           </p>
           <div className="grid gap-3 sm:grid-cols-3">
             {[
               "Acompanhar lotes",
               "Registrar interesse",
-              "Pré-lance online com validação humana",
+              "Pré-lance com rastreabilidade",
             ].map((item) => (
               <div
                 key={item}
@@ -84,8 +84,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             Cadastro rápido, claro e focado em oportunidade.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
-            Você continua contando com atendimento humano quando precisar, mas agora
-            com uma área restrita para centralizar seus movimentos no site.
+            O canal oficial continua disponível quando a etapa exigir validação
+            operacional, mas o cadastro passa a concentrar sua jornada digital no site.
           </p>
           <div className="mt-8">
             <SignupForm redirectTo={redirectTo} />

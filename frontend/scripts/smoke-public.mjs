@@ -60,7 +60,7 @@ try {
 
   await expectHtml(
     "/",
-    "Plataforma digital para acompanhar oportunidades com mais contexto e segurança.",
+    "Leilões com mais contexto, clareza operacional e credibilidade institucional.",
   );
   await expectHtml("/cadastro", "Cadastro rápido, claro e focado em oportunidade.");
   await expectHtml("/entrar", "Use seu cadastro para seguir com segurança.");
