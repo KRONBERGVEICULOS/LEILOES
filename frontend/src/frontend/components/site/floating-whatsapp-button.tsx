@@ -2,7 +2,7 @@
 
 export function FloatingWhatsAppButton() {
   const href = createWhatsAppLink(
-    "Olá, preciso validar uma oportunidade publicada na plataforma.",
+    "Olá, quero confirmar uma oportunidade publicada no site da Kron Leilões.",
   );
 
   return (

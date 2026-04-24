@@ -44,11 +44,11 @@ export default function DocumentsPage() {
             Documentos por evento
           </p>
           <h2 className="text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-            Estrutura documental por evento.
+            Documentos e orientações por evento.
           </h2>
           <p className="max-w-3xl text-base leading-7 text-brand-muted">
-            Cada evento agora deixa claro qual é o documento base, qual o status de publicação do material
-            e quando ainda depende de liberação operacional em vez de fingir um PDF oficial inexistente.
+            Cada evento indica o documento base, o status do material e o canal
+            correto para solicitar edital, anexos ou orientação complementar.
           </p>
         </div>
 
@@ -108,7 +108,7 @@ export default function DocumentsPage() {
                   </p>
                   <p className="mt-2 text-sm leading-7 text-brand-muted">
                     {primaryDocument?.statusDescription ??
-                      "A publicação documental ainda depende de validação operacional."}
+                      "Solicite a orientação documental pelo canal oficial."}
                   </p>
                 </div>
                 <div className="mt-5 space-y-3">
@@ -165,33 +165,32 @@ export default function DocumentsPage() {
         <div className="grid gap-5 lg:grid-cols-2">
           <article className="rounded-xl border border-brand-line bg-white p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Regras de publicação
+              Acesso aos documentos
             </p>
             <h3 className="mt-3 text-2xl font-semibold text-brand-ink">
-              Nem todo documento precisa estar em URL pública.
+              O edital é a referência principal de participação.
             </h3>
             <p className="mt-3 text-sm leading-7 text-brand-muted">
-              Quando o material ainda estiver apenas em fluxo operacional, a página informa isso com
-              clareza e direciona para o canal oficial. O objetivo é evitar aparência de documento
-              definitivo onde ainda existe apenas solicitação assistida.
+              Quando o material não estiver disponível para acesso direto, solicite
+              a versão aplicável pelo atendimento oficial antes de qualquer decisão.
             </p>
           </article>
           <article className="rounded-xl border border-brand-line bg-brand-paper p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              O que falta para a operação real
+              Antes de avançar
             </p>
             <ul className="mt-4 grid gap-3 text-sm leading-7 text-brand-muted">
               <li className="flex gap-3">
                 <span className="mt-2 h-2 w-2 rounded-full bg-brand-brass" />
-                <span>Substituir CTAs sob solicitação por PDFs oficiais quando a operação autorizar publicação.</span>
+                <span>Confira a versão vigente do edital, anexos e fichas aplicáveis ao lote.</span>
               </li>
               <li className="flex gap-3">
                 <span className="mt-2 h-2 w-2 rounded-full bg-brand-brass" />
-                <span>Versionar edital, anexos e fichas por evento para evitar link desatualizado em página pública.</span>
+                <span>Confirme cronograma, visitação, pagamento, comissão e retirada com a equipe.</span>
               </li>
               <li className="flex gap-3">
                 <span className="mt-2 h-2 w-2 rounded-full bg-brand-brass" />
-                <span>Confirmar cronogramas finais, observações de praça e material complementar por lote quando houver.</span>
+                <span>Use o código do lote e a praça informada para receber orientação mais precisa.</span>
               </li>
             </ul>
           </article>

@@ -30,7 +30,7 @@ export default async function DashboardPage() {
               Minha área
             </p>
             <h1 className="mt-3 text-4xl font-semibold leading-tight text-brand-ink sm:text-5xl">
-              {dashboard.user.name}, seu acompanhamento na plataforma está aqui.
+              {dashboard.user.name}, seus lotes acompanhados estão aqui.
             </h1>
             <p className="mt-3 max-w-3xl text-base leading-8 text-brand-muted">
               Você está logado como {dashboard.user.publicAlias}. Use esta área

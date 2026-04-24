@@ -30,7 +30,7 @@ export default async function AdminNewLotPage() {
         </h1>
         <p className="mt-3 max-w-3xl text-base leading-8 text-brand-muted">
           Preencha os campos essenciais do lote, defina o status operacional e publique
-          quando fizer sentido para a vitrine do MVP.
+          quando fizer sentido para a vitrine comercial.
         </p>
       </section>
 

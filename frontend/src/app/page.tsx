@@ -29,9 +29,9 @@ export const metadata: Metadata = createPageMetadata({
   title: "Início",
   path: "/",
   description:
-    "Plataforma de oportunidades de leilão com catálogo público, área restrita para acompanhamento e pré-lance, e canais oficiais para validação operacional.",
+    "Oportunidades de leilão com catálogo público, área do comprador, pré-lance online e atendimento oficial da Kron Leilões.",
   keywords: [
-    "plataforma de leilão",
+    "leilões de veículos",
     "catálogo de oportunidades",
     "pré-lance online",
     "lotes de veículos e equipamentos",
@@ -40,40 +40,40 @@ export const metadata: Metadata = createPageMetadata({
 
 const heroHighlights = [
   {
-    label: "Catálogo público",
+    label: "Lotes publicados",
     value:
-      "Lotes com fotos, localização, código, referência online e status comercial visíveis para análise inicial.",
+      "Fotos, código, praça, referência de valor e status comercial reunidos para sua análise inicial.",
   },
   {
-    label: "Área restrita",
+    label: "Área do comprador",
     value:
-      "Interesses, acompanhamento e pré-lances ficam registrados com histórico centralizado dentro da plataforma.",
+      "Salve oportunidades, acompanhe movimentações e registre pré-lances com histórico da sua conta.",
   },
   {
-    label: "Canal oficial",
+    label: "Atendimento oficial",
     value:
-      "Edital, disponibilidade, pagamento e retirada continuam validados pelos canais institucionais no momento certo.",
+      "Confirme edital, disponibilidade, pagamento, comissão e retirada antes de avançar.",
   },
 ] as const;
 
 const platformLayers = [
   {
-    badge: "Público",
-    title: "Consulte oportunidades com mais contexto",
+    badge: "Catálogo",
+    title: "Consulte oportunidades com contexto",
     description:
-      "A home prioriza leitura rápida do lote, sinais de movimentação e dados úteis para decidir se vale aprofundar a análise.",
+      "Compare lotes por fotos, localização, código, referência de valor e informações úteis para decidir se vale aprofundar a análise.",
   },
   {
-    badge: "Área restrita",
-    title: "Transforme curiosidade em acompanhamento real",
+    badge: "Cadastro",
+    title: "Acompanhe o que interessa",
     description:
-      "O cadastro libera interesse, histórico e pré-lance sem depender apenas da memória de uma conversa fora do site.",
+      "Com cadastro, seus interesses e pré-lances ficam organizados em uma área própria, com histórico para retomar a conversa com a equipe.",
   },
   {
-    badge: "Canal oficial",
-    title: "Acione a equipe quando a jornada sair do digital",
+    badge: "Atendimento",
+    title: "Confirme as condições oficiais",
     description:
-      "O contato continua disponível para edital, documentos, comissão, pagamento e próximos passos operacionais.",
+      "Use os canais oficiais para edital, documentos, comissão, pagamento, visitação, retirada e demais condições do evento.",
   },
 ] as const;
 
@@ -94,9 +94,9 @@ const operationalSignals = [
 
 const faqPreview: FaqItem[] = [
   {
-    question: "O que muda quando eu crio cadastro na plataforma?",
+    question: "Por que criar cadastro?",
     answer:
-      "O cadastro libera a área restrita para acompanhar lotes, registrar interesse, ver o valor visível da área logada e enviar pré-lances com histórico centralizado.",
+      "O cadastro libera a área do comprador para acompanhar lotes, registrar interesse, ver valores disponíveis para usuários logados e enviar pré-lances online.",
   },
   {
     question: "Registrar interesse é a mesma coisa que dar pré-lance?",
@@ -106,12 +106,12 @@ const faqPreview: FaqItem[] = [
   {
     question: "O pré-lance garante reserva, arrematação ou disponibilidade?",
     answer:
-      "Não. O pré-lance organiza seu valor e o contexto comercial dentro da plataforma. Aceite, documentação, pagamento, comissão e retirada seguem sujeitos ao edital e à validação oficial.",
+      "Não. O pré-lance registra sua intenção comercial, mas aceite, documentação, pagamento, comissão e retirada seguem sujeitos ao edital e à validação oficial.",
   },
   {
     question: "Quando eu preciso falar com a equipe?",
     answer:
-      "Quando chegar a hora de validar edital, disponibilidade, anexos, visitação, pagamento, retirada ou qualquer condição operacional que não seja concluída dentro da plataforma.",
+      "Quando chegar a hora de confirmar edital, disponibilidade, anexos, visitação, pagamento, retirada ou qualquer condição que dependa do atendimento oficial.",
   },
 ] as const;
 
@@ -122,7 +122,7 @@ const homeStructuredData = [
     name: siteConfig.name,
     url: absoluteUrl(),
     description:
-      "Plataforma institucional da Kron Leilões com catálogo público, área restrita, acompanhamento e pré-lance online.",
+      "Kron Leilões reúne catálogo público, área do comprador, acompanhamento e pré-lance online para oportunidades de leilão.",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: siteConfig.phoneNumber,
@@ -171,15 +171,15 @@ export default async function Home() {
           <div className="space-y-8">
             <div className="space-y-4">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-sand">
-                Plataforma de oportunidades
+                Leilões de veículos e ativos
               </p>
               <h1 className="max-w-4xl text-4xl font-semibold leading-tight text-balance sm:text-5xl lg:text-6xl">
-                Leilões com mais contexto, clareza operacional e credibilidade institucional.
+                Oportunidades de leilão para analisar com segurança.
               </h1>
               <p className="max-w-3xl text-base leading-8 text-white/78 sm:text-lg">
-                A Kron Leilões organiza catálogo público, área restrita para
-                acompanhamento e pré-lance, e canais oficiais para tudo o que
-                precisa de validação fora da plataforma.
+                Consulte lotes publicados, acompanhe oportunidades na sua área e
+                fale com a equipe para confirmar edital, documentação, pagamento
+                e retirada antes de participar.
               </p>
             </div>
 
@@ -198,7 +198,7 @@ export default async function Home() {
                 Entender o processo
               </Link>
               <span className="inline-flex items-center rounded-full border border-white/14 bg-white/8 px-4 py-2 font-semibold">
-                Base institucional visível
+                Atendimento oficial
               </span>
             </div>
 
@@ -234,18 +234,18 @@ export default async function Home() {
             <div className="grid gap-3 px-2 pb-2 pt-5 sm:grid-cols-2">
               <div className="rounded-[24px] border border-brand-line bg-white p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
-                  Dentro da plataforma
+                  No site
                 </p>
                 <ul className="mt-3 grid gap-2 text-sm leading-6 text-brand-muted">
                   <li>Catálogo público com lotes e referências.</li>
-                  <li>Área restrita para interesse e histórico.</li>
-                  <li>Pré-lance com registro centralizado.</li>
+                  <li>Área do comprador para interesse e histórico.</li>
+                  <li>Pré-lance online com registro centralizado.</li>
                 </ul>
               </div>
 
               <div className="rounded-[24px] border border-brand-line bg-white p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
-                  Fora da plataforma
+                  Atendimento oficial
                 </p>
                 <ul className="mt-3 grid gap-2 text-sm leading-6 text-brand-muted">
                   <li>Edital, documentos e anexos do evento.</li>
@@ -272,9 +272,9 @@ export default async function Home() {
       <Container className="grid gap-16 py-14 sm:py-20">
         <section className="grid gap-8">
           <SectionHeading
-            description="A experiência pública agora deixa explícito o que acontece no catálogo, o que acontece na área restrita e o que continua dependendo da validação oficial da operação."
-            eyebrow="Camadas da experiência"
-            title="Uma jornada mais próxima de plataforma do que de página de captação."
+            description="Cada etapa tem uma função clara: consultar, acompanhar e confirmar as condições oficiais antes de participar."
+            eyebrow="Jornada do comprador"
+            title="Do catálogo ao atendimento oficial, sem misturar etapas."
           />
 
           <div className="grid gap-4 lg:grid-cols-3">
@@ -299,9 +299,9 @@ export default async function Home() {
 
         <section className="grid gap-8">
           <SectionHeading
-            description="Os destaques reforçam a proposta da plataforma: leitura clara do lote, valor de referência e caminho objetivo para aprofundar a análise."
+            description="Veja lotes com fotos, referência de valor, status e caminho claro para acompanhar ou solicitar atendimento."
             eyebrow="Oportunidades em destaque"
-            title="Lotes publicados com leitura mais objetiva e profissional."
+            title="Lotes em destaque para começar sua análise."
           />
 
           <div className="grid gap-6 lg:grid-cols-3">
@@ -312,16 +312,16 @@ export default async function Home() {
         </section>
 
         <ActivityFeed
-          description="Novos lotes, interesses registrados e pré-lances visíveis reforçam que existe movimentação pública e acompanhamento rastreável dentro do produto."
+          description="Acompanhe atualizações públicas, novos interesses e pré-lances registrados de forma resumida."
           items={publicActivity}
-          title="Sinais públicos de atividade na plataforma"
+          title="Movimentação recente"
         />
 
         <section className="grid gap-10 lg:grid-cols-[minmax(0,0.84fr)_minmax(0,1.16fr)] lg:items-start">
           <SectionHeading
-            description="A operação deixa explícito o que o usuário consegue resolver dentro do site e em que momento o canal oficial entra para validação formal."
+            description="O fluxo orienta a consulta inicial, a solicitação de documentos e os próximos passos com a equipe."
             eyebrow="Processo"
-            title="Como a experiência evolui da descoberta ao próximo passo oficial."
+            title="Como avançar da descoberta ao próximo passo oficial."
           />
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -346,9 +346,9 @@ export default async function Home() {
 
         <section className="grid gap-6 lg:grid-cols-[minmax(0,1.06fr)_minmax(0,0.94fr)]">
           <InstitutionalDataPanel
-            description="Razão social, contato, base pública e sinalização de dados regulatórios pendentes aparecem organizados para reforçar legitimidade sem improviso visual."
+            description="Canais de atendimento, razão social, endereço e orientações regulatórias ficam reunidos para conferência antes da participação."
             eyebrow="Credibilidade institucional"
-            title="Base pública e regulatória da operação"
+            title="Base institucional da Kron Leilões"
           />
 
           <TrustPanel items={trustPillars.slice(0, 4)} />
@@ -357,15 +357,15 @@ export default async function Home() {
         <section className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <div className="rounded-[28px] border border-brand-line bg-brand-paper p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Clareza de produto
+              Clareza para decidir
             </p>
             <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-              Interesse, pré-lance e contato deixados em papéis diferentes.
+              Interesse, pré-lance e atendimento têm papéis diferentes.
             </h2>
             <div className="mt-6 grid gap-4">
               <article className="rounded-[24px] border border-brand-line bg-white p-4">
                 <h3 className="text-lg font-semibold text-brand-ink">
-                  Interesse na plataforma
+                  Interesse no lote
                 </h3>
                 <p className="mt-2 text-sm leading-7 text-brand-muted">
                   Salva o lote na sua área e organiza acompanhamento, sem compromisso
@@ -386,8 +386,8 @@ export default async function Home() {
                   Canal oficial quando necessário
                 </h3>
                 <p className="mt-2 text-sm leading-7 text-brand-muted">
-                  O atendimento entra para validar disponibilidade, documentação,
-                  pagamento, retirada e qualquer confirmação fora do ambiente digital.
+                  O atendimento confirma disponibilidade, documentação, pagamento,
+                  retirada e demais condições do evento.
                 </p>
               </article>
             </div>
@@ -395,22 +395,22 @@ export default async function Home() {
 
           <div className="grid gap-5">
             <SectionHeading
-              description="A FAQ reforça os limites do produto sem enfraquecer conversão: a plataforma resolve organização e contexto; a operação resolve validação formal."
+              description="As respostas ajudam a entender cadastro, interesse, pré-lance e confirmação oficial antes de participar."
               eyebrow="FAQ e segurança"
-              title="Perguntas frequentes sobre o fluxo público e a etapa oficial."
+              title="Perguntas frequentes para comprar com mais clareza."
             />
             <FaqList items={faqPreview} />
           </div>
         </section>
 
         <CtaBox
-          description="Explore os lotes, acompanhe o que faz sentido na sua área e use o canal oficial apenas quando chegar o momento de validar edital, disponibilidade e próximos passos."
+          description="Explore os lotes, salve as oportunidades que fazem sentido e fale com a equipe quando precisar confirmar edital, disponibilidade e próximos passos."
           eyebrow="Fechamento"
           primaryHref={closingPrimaryHref}
           primaryLabel={closingPrimaryLabel}
           secondaryHref="/como-participar"
           secondaryLabel="Entender o processo"
-          title="Comece pela plataforma e avance com mais segurança."
+          title="Comece pelo catálogo e avance com mais segurança."
           tone="dark"
         />
       </Container>

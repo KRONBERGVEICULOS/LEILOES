@@ -1,5 +1,5 @@
 export const DEFAULT_OPERATIONAL_PENDING_LABEL =
-  "Pendente de publicação com o dado real da operação.";
+  "Consulte o edital ou o canal oficial para confirmação.";
 
 export function hasOperationalValue(value: string | null | undefined) {
   return Boolean(value && value.trim().length > 0);

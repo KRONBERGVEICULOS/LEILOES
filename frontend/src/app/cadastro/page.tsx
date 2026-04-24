@@ -42,12 +42,11 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             Área restrita
           </p>
           <h1 className="text-4xl font-semibold leading-tight text-brand-ink sm:text-5xl">
-            Crie seu acesso para acompanhar oportunidades com histórico centralizado.
+            Crie seu acesso para acompanhar oportunidades de leilão.
           </h1>
           <p className="max-w-2xl text-base leading-8 text-brand-muted">
-            O cadastro foi desenhado para ser objetivo: nome, CPF, contato, senha
-            e consentimento básico. Depois disso, você já entra na área com seus
-            interesses, acompanhamentos e pré-lances organizados dentro da plataforma.
+            Com seu cadastro, você salva lotes de interesse, acompanha movimentações
+            e registra pré-lances online com histórico organizado na sua conta.
           </p>
           <div className="grid gap-3 sm:grid-cols-3">
             {[
@@ -70,7 +69,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
               height={760}
               priority
               sizes="(max-width: 1024px) 100vw, 48vw"
-              src="/media/brand/kron-banner.svg"
+              src="/media/brand/banner-kronberg.png"
               width={1600}
             />
           </div>
@@ -81,11 +80,11 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             Criar conta
           </p>
           <h2 className="mt-3 text-3xl font-semibold text-brand-ink">
-            Cadastro rápido, claro e focado em oportunidade.
+            Cadastro rápido para seguir sua análise.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
-            O canal oficial continua disponível quando a etapa exigir validação
-            operacional, mas o cadastro passa a concentrar sua jornada digital no site.
+            O atendimento oficial continua disponível para edital, documentação,
+            pagamento e retirada. A área logada organiza o que você acompanha no site.
           </p>
           <div className="mt-8">
             <SignupForm redirectTo={redirectTo} />

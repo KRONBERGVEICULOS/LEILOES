@@ -4,7 +4,6 @@ import { Archivo, Public_Sans } from "next/font/google";
 import { AppChrome } from "@/frontend/components/site/app-chrome";
 import { absoluteUrl, getMetadataRobots, siteConfig } from "@/shared/config/site";
 import { getCurrentUser } from "@/backend/features/platform/server/auth";
-import { listPublicActivity } from "@/backend/features/platform/server/repository";
 
 import "@/frontend/styles/globals.css";
 
@@ -24,25 +23,25 @@ const archivo = Archivo({
 export const metadata: Metadata = {
   metadataBase: new URL(absoluteUrl()),
   title: {
-    default: `${siteConfig.name} | Plataforma de oportunidades de leilão`,
+    default: `${siteConfig.name} | Oportunidades de leilão`,
     template: `%s | ${siteConfig.name}`,
   },
   description:
-    "Plataforma de oportunidades de leilão com catálogo público, área restrita para acompanhamento e pré-lance, e canais oficiais para validação operacional.",
+    "Oportunidades de leilão com catálogo público, área do comprador, pré-lance online e atendimento oficial.",
   applicationName: siteConfig.name,
   keywords: [
     ...siteConfig.defaultKeywords,
-    "plataforma de leilões",
+    "leilões de veículos",
     "catálogo público",
-    "área restrita",
+    "área do comprador",
     "pré-lance online",
   ],
   creator: siteConfig.name,
   publisher: siteConfig.legalName,
   openGraph: {
-    title: `${siteConfig.name} | Plataforma de oportunidades de leilão`,
+    title: `${siteConfig.name} | Oportunidades de leilão`,
     description:
-      "Catálogo público, área restrita, atividade rastreável e pré-lance online com validação pelos canais oficiais.",
+      "Catálogo público, área do comprador, pré-lance online e atendimento oficial para oportunidades de leilão.",
     type: "website",
     locale: "pt_BR",
     url: absoluteUrl(),
@@ -52,15 +51,15 @@ export const metadata: Metadata = {
         url: absoluteUrl("/opengraph-image"),
         width: 1200,
         height: 630,
-        alt: `${siteConfig.name} - plataforma de oportunidades de leilão`,
+        alt: `${siteConfig.name} - oportunidades de leilão`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} | Plataforma de oportunidades de leilão`,
+    title: `${siteConfig.name} | Oportunidades de leilão`,
     description:
-      "Consulte oportunidades, acompanhe lotes e registre pré-lances com mais clareza operacional.",
+      "Consulte oportunidades, acompanhe lotes e registre pré-lances online com atendimento oficial.",
     images: [absoluteUrl("/opengraph-image")],
   },
   alternates: {
@@ -83,14 +82,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [currentUserResult, publicActivityResult] = await Promise.allSettled([
-    getCurrentUser(),
-    listPublicActivity(),
-  ]);
-  const currentUser =
-    currentUserResult.status === "fulfilled" ? currentUserResult.value : null;
-  const publicActivity =
-    publicActivityResult.status === "fulfilled" ? publicActivityResult.value : [];
+  const currentUser = await getCurrentUser().catch(() => null);
 
   return (
     <html
@@ -105,7 +97,7 @@ export default async function RootLayout({
         >
           Ir para o conteúdo
         </a>
-        <AppChrome currentUser={currentUser} publicActivity={publicActivity}>
+        <AppChrome currentUser={currentUser}>
           {children}
         </AppChrome>
       </body>

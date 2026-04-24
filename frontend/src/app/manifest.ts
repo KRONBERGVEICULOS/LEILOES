@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: siteConfig.name,
     short_name: "KRON",
     description:
-      "Plataforma de oportunidades de leilão com catálogo público, área restrita e pré-lance online.",
+      "Oportunidades de leilão com catálogo público, área do comprador e pré-lance online.",
     start_url: "/",
     display: "standalone",
     background_color: "#0d2034",

@@ -23,7 +23,7 @@ export default async function AdminProtectedLayout({
             </h1>
             <p className="mt-3 text-sm leading-7 text-white/76">
               Logado como <strong>{session.username}</strong>. Use este painel para mexer no
-              essencial do MVP com consistência e sem editar código.
+              essencial da operação com consistência e sem editar código.
             </p>
           </div>
 

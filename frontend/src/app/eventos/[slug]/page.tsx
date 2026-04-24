@@ -219,7 +219,7 @@ export default async function EventDetailPage({
 
       <Container className="grid gap-10 border-t border-brand-line/80 py-16">
         <DocumentCenter
-          description="A camada documental do evento separa o documento base, materiais complementares e o status de publicação de cada item. Quando um arquivo ainda não está público, isso aparece de forma explícita."
+          description="Veja o documento base do evento, materiais complementares e o melhor canal para solicitar arquivos ou confirmar a versão aplicável."
           documents={event.documents}
           eyebrow="Central documental do evento"
           observations={documentObservations}

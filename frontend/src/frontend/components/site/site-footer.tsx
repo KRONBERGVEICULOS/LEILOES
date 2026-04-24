@@ -24,12 +24,11 @@ export function SiteFooter() {
             width={182}
           />
           <p className="max-w-xl text-3xl font-semibold leading-tight">
-            Plataforma pública para analisar oportunidades com mais contexto e menos improviso.
+            Oportunidades de leilão com consulta clara e atendimento oficial.
           </p>
           <p className="max-w-2xl text-sm leading-7 text-white/74">
-            Catálogo público, área restrita, pré-lance rastreável e canais oficiais
-            organizados em uma experiência que deixa explícito o que acontece na
-            plataforma e o que depende de validação operacional.
+            Consulte lotes, acompanhe oportunidades na área do comprador e confirme
+            edital, pagamento, documentação e retirada pelos canais oficiais.
           </p>
 
           <InterestActions
@@ -46,7 +45,7 @@ export function SiteFooter() {
 
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white">
-            Plataforma
+            Navegação
           </p>
           <ul className="mt-4 grid gap-3 text-sm text-white/74">
             {mainNavigation.map((item) => (
@@ -84,7 +83,7 @@ export function SiteFooter() {
               CNPJ:{" "}
               {getOperationalValue(
                 siteConfig.taxId,
-                "Publicação institucional pendente com o dado cadastral definitivo.",
+                "Consulte o edital ou o canal oficial.",
               )}
             </li>
             <li>Telefone: {siteConfig.phoneDisplay}</li>
@@ -95,7 +94,7 @@ export function SiteFooter() {
               Leiloeiro responsável:{" "}
               {hasAuctioneerData
                 ? `${siteConfig.auctioneerName} • ${siteConfig.auctioneerRegistration} • ${siteConfig.auctioneerBoard}`
-                : "Publicação regulatória pendente com nome, matrícula e Junta Comercial."}
+                : "Consulte o edital ou o canal oficial."}
             </li>
             {legalNavigation.map((item) => (
               <li key={item.href}>

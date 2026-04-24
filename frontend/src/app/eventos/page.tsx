@@ -22,12 +22,12 @@ export const metadata: Metadata = createPageMetadata({
   title: "Oportunidades",
   path: "/eventos",
   description:
-    "Catálogo público de oportunidades com referência online, área restrita e próximos passos institucionais.",
+    "Catálogo de oportunidades de leilão com lotes, referência de valor, cadastro e atendimento oficial.",
   keywords: [
     "oportunidades",
     "lotes",
     "veículos",
-    "plataforma de leilões",
+    "leilões de veículos",
     "pré-lance",
   ],
 });
@@ -56,7 +56,7 @@ export default async function OpportunitiesPage({
           name: "Oportunidades",
           url: absoluteUrl("/eventos"),
           description:
-            "Página de oportunidades publicada para consulta, comparação e avanço pela plataforma.",
+            "Catálogo de oportunidades para consulta, comparação e solicitação de atendimento.",
           numberOfItems: filteredLots.length,
         }}
       />
@@ -65,12 +65,12 @@ export default async function OpportunitiesPage({
         aside={
           <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Camada pública
+              Catálogo de oportunidades
             </p>
             <p className="mt-3 text-sm leading-7 text-brand-muted">
               Procure por nome, código ou cidade. Quando encontrar o lote certo,
-              abra o detalhe para ver referência online, atividade recente e o
-              caminho entre plataforma, área restrita e canal oficial.
+              abra o detalhe para ver referência online, atividade recente e os
+              próximos passos de acompanhamento ou atendimento.
             </p>
             <InterestActions
               className="mt-5"
@@ -81,10 +81,10 @@ export default async function OpportunitiesPage({
             />
           </div>
         }
-        description="A vitrine organiza referência online, área restrita e próximos passos institucionais em uma jornada mais clara para comparar oportunidades."
+        description="Compare lotes publicados, confira referências de valor e avance para cadastro ou atendimento quando uma oportunidade fizer sentido."
         eyebrow="Oportunidades"
-        meta={["Lotes", "Referência online", "Área restrita", "Fluxo institucional"]}
-        title="Escolha uma oportunidade e avance com mais contexto."
+        meta={["Lotes", "Referência online", "Área do comprador", "Atendimento oficial"]}
+        title="Escolha uma oportunidade e avance com clareza."
       />
 
       <Container className="grid gap-8 py-16">
@@ -113,7 +113,7 @@ export default async function OpportunitiesPage({
           </div>
         ) : (
           <EmptyState
-            description="A busca atual não encontrou nenhuma oportunidade. Limpe os filtros ou ajuste a consulta para continuar a análise pela plataforma."
+            description="A busca atual não encontrou nenhuma oportunidade. Limpe os filtros ou ajuste a consulta para continuar sua análise."
             primaryHref="/eventos"
             primaryLabel="Limpar busca"
             secondaryHref="/como-participar"
@@ -127,12 +127,12 @@ export default async function OpportunitiesPage({
             Próximo passo
           </p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-            Quando a análise estiver madura, avance com cadastro ou processo.
+            Quando uma oportunidade fizer sentido, avance com cadastro ou atendimento.
           </h2>
           <p className="mt-4 max-w-3xl text-base leading-8 text-brand-muted">
-            A plataforma organiza comparação, histórico e leitura do lote. O
-            cadastro libera acompanhamento e pré-lance; o canal oficial entra
-            quando a etapa exigir edital, documentação ou validação operacional.
+            O cadastro libera acompanhamento e pré-lance online. O atendimento
+            oficial confirma edital, documentação, pagamento, comissão e retirada
+            antes de qualquer decisão.
           </p>
           <InterestActions
             className="mt-8"

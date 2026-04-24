@@ -17,10 +17,10 @@ type InstitutionalItem = {
   note?: string;
 };
 
-function PendingBadge() {
+function ConfirmationBadge() {
   return (
     <span className="inline-flex rounded-full border border-brand-line bg-brand-paper px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-muted">
-      Pendente
+      Confirmar
     </span>
   );
 }
@@ -44,11 +44,11 @@ export function InstitutionalDataPanel({
       label: "CNPJ",
       value: getOperationalValue(
         siteConfig.taxId,
-        "Publicação pendente com o CNPJ real da operação.",
+        "Consulte o edital ou o atendimento oficial.",
       ),
       pending: !hasTaxId,
       note: !hasTaxId
-        ? "Inserir o dado cadastral definitivo antes da validação pública final."
+        ? "Confira os dados cadastrais aplicáveis antes de qualquer participação."
         : undefined,
     },
     { label: "Endereço", value: siteConfig.address.join(", ") },
@@ -59,7 +59,7 @@ export function InstitutionalDataPanel({
       label: "Leiloeiro responsável",
       value: getOperationalValue(
         siteConfig.auctioneerName,
-        "Publicação pendente com o nome do leiloeiro responsável.",
+        "Consulte o edital ou o atendimento oficial.",
       ),
       pending: !hasAuctioneerName,
     },
@@ -67,7 +67,7 @@ export function InstitutionalDataPanel({
       label: "Matrícula / Junta Comercial",
       value: hasAuctioneerRegistry
         ? `${siteConfig.auctioneerRegistration} • ${siteConfig.auctioneerBoard}`
-        : "Publicação pendente com matrícula e Junta Comercial competentes.",
+        : "Consulte o edital ou o atendimento oficial.",
       pending: !hasAuctioneerRegistry,
     },
   ];
@@ -97,7 +97,7 @@ export function InstitutionalDataPanel({
           >
             <div className="flex flex-wrap items-center gap-2">
               <dt className="text-sm font-semibold text-brand-ink">{item.label}</dt>
-              {item.pending ? <PendingBadge /> : null}
+              {item.pending ? <ConfirmationBadge /> : null}
             </div>
             <dd className="mt-1 text-sm leading-6 text-brand-muted">{item.value}</dd>
             {item.note ? (

@@ -12,27 +12,27 @@ import {
 } from "@/backend/features/content/data/site-content";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Sobre a plataforma",
+  title: "Como funciona",
   path: "/sobre",
   description:
-    "Entenda como a Kron Leilões organiza catálogo público, área restrita, pré-lance e validação operacional.",
+    "Entenda como a Kron Leilões organiza catálogo, área do comprador, pré-lance e atendimento oficial.",
 });
 
 const experienceLayers = [
   {
-    title: "Catálogo público para leitura inicial",
+    title: "Catálogo público para consulta inicial",
     description:
-      "A plataforma publica lotes, referências, status e contexto suficiente para que a análise comece dentro do ambiente digital.",
+      "Os lotes publicados reúnem fotos, referência, status e informações essenciais para começar sua análise.",
   },
   {
-    title: "Área restrita para histórico e acompanhamento",
+    title: "Área do comprador para acompanhamento",
     description:
-      "Interesses, movimentações e pré-lances ficam registrados na conta do usuário, o que reduz ruído e melhora a continuidade da jornada.",
+      "Interesses, movimentações e pré-lances ficam registrados na sua conta, facilitando a retomada da análise.",
   },
   {
-    title: "Canal oficial para validação final",
+    title: "Atendimento oficial para confirmação",
     description:
-      "Edital, documentação, disponibilidade, pagamento e retirada continuam confirmados nos canais institucionais e no momento correto do processo.",
+      "Edital, documentação, disponibilidade, pagamento e retirada devem ser confirmados pelos canais oficiais.",
   },
 ] as const;
 
@@ -43,19 +43,18 @@ export default function AboutPageRoute() {
         aside={
           <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Posicionamento
+              Jornada do comprador
             </p>
             <p className="mt-3 text-sm leading-7 text-brand-muted">
-              A proposta pública da Kron Leilões é se comportar como plataforma de
-              oportunidades com processo claro, não como um atalho desorganizado
-              para atendimento.
+              A Kron Leilões organiza consulta, acompanhamento e atendimento para
+              que cada etapa avance com informação clara.
             </p>
           </div>
         }
-        description="A experiência foi reorganizada para deixar explícito o que o usuário consegue resolver no site, o que entra na área restrita e em que momento a operação oficial assume a validação."
-        eyebrow="Sobre a plataforma"
-        meta={["Catálogo público", "Área restrita", "Pré-lance", "Canal oficial"]}
-        title="Como a Kron Leilões organiza produto, processo e legitimidade."
+        description="Entenda o que você consulta no site, o que fica salvo na área do comprador e quando o atendimento oficial entra para confirmar as condições do evento."
+        eyebrow="Como funciona"
+        meta={["Catálogo público", "Área do comprador", "Pré-lance", "Atendimento oficial"]}
+        title="Consulta, acompanhamento e confirmação em uma jornada clara."
       />
 
       <Container className="grid gap-8 py-16 lg:grid-cols-3">
@@ -77,14 +76,14 @@ export default function AboutPageRoute() {
       <Container className="grid gap-10 border-t border-brand-line/80 py-16">
         <div className="max-w-3xl space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-            Processo operacional
+            Processo de participação
           </p>
           <h2 className="text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-            Da descoberta ao próximo passo oficial, sem misturar papéis.
+            Da descoberta ao próximo passo oficial.
           </h2>
           <p className="text-base leading-8 text-brand-muted">
-            O fluxo abaixo mostra como o produto organiza consulta, acompanhamento
-            e pré-lance antes da validação operacional definitiva.
+            O fluxo abaixo mostra como consultar oportunidades, solicitar documentos
+            e confirmar as condições antes de participar.
           </p>
         </div>
 
@@ -108,7 +107,7 @@ export default function AboutPageRoute() {
 
       <Container className="grid gap-6 border-t border-brand-line/80 py-16 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]">
         <InstitutionalDataPanel
-          description="Esta camada organiza os dados públicos que sustentam legitimidade, responsabilidade institucional e transparência operacional."
+          description="Informações institucionais e canais oficiais reunidos para facilitar a conferência antes da participação."
           eyebrow="Base institucional"
           title="Dados públicos e regulatórios da operação"
         />
@@ -118,13 +117,13 @@ export default function AboutPageRoute() {
 
       <Container className="grid gap-10 border-t border-brand-line/80 py-16">
         <CtaBox
-          description="Explore as oportunidades com a confiança de uma estrutura que diferencia catálogo, área restrita e canal oficial sem diluir conversão."
+          description="Explore as oportunidades, acompanhe os lotes de interesse e confirme as condições oficiais antes de avançar."
           eyebrow="Próximo passo"
           primaryHref="/eventos"
           primaryLabel="Explorar oportunidades"
           secondaryHref="/cadastro"
           secondaryLabel="Criar cadastro"
-          title="A experiência pública agora deixa mais claro onde o produto começa e onde a operação valida."
+          title="Comece pelo catálogo e siga com o atendimento quando precisar confirmar regras."
         />
       </Container>
     </>

@@ -150,9 +150,9 @@ const rawSeed = {
     legalName: "Kron Leilões Ltda.",
     taxId: null,
     shortDescription:
-      "Plataforma digital para publicar oportunidades de leilão, organizar acompanhamento e registrar interesse com clareza operacional.",
+      "Oportunidades de leilão com catálogo claro, acompanhamento online e atendimento oficial para compradores.",
     longDescription:
-      "A Kron Leilões usa este site como plataforma pública de oportunidades: catálogo, cadastro, acompanhamento e pré-lance ficam organizados no ambiente digital, enquanto validações formais seguem pelos canais oficiais.",
+      "A Kron Leilões reúne lotes, informações comerciais e canais de atendimento para compradores que querem analisar oportunidades com segurança antes de participar.",
     addressLines: ["Rua André de Barros, 226", "15º andar - Centro", "Curitiba/PR"],
     city: "Curitiba",
     state: "PR",
@@ -164,17 +164,17 @@ const rawSeed = {
     auctioneerRegistration: null,
     auctioneerBoard: null,
     registrationNote:
-      "CNPJ, leiloeiro responsável e matrícula na Junta Comercial devem ser publicados com os dados reais da operação antes do go-live público.",
+      "Dados cadastrais e regulatórios aplicáveis a cada evento devem ser conferidos no edital e nos canais oficiais antes da participação.",
     serviceRegions: ["Curitiba/PR", "Campinas/SP", "Guapimirim/RJ", "Brasília/DF"],
     footerDisclaimer:
       "O site não recebe pagamento. Antes de qualquer lance, proposta ou arrematação, confirme edital, comissão, visitação, documentação e retirada somente pelos canais oficiais.",
     primaryContactChannelId: "contact-whatsapp-institucional",
     seo: makeSeo({
-      title: "Kron Leilões | Plataforma de oportunidades de leilão",
-      description:
-        "Catálogo público, área restrita, acompanhamento e pré-lance online com canais oficiais para validação operacional.",
+        title: "Kron Leilões | Oportunidades de leilão",
+        description:
+          "Catálogo público, área do comprador, acompanhamento e pré-lance online com atendimento oficial.",
       canonicalPath: "/",
-      ogImage: "/media/brand/kron-banner.svg",
+        ogImage: "/media/brand/banner-kronberg.png",
       keywords: [
         "leilões",
         "oportunidades de leilão",
@@ -661,7 +661,7 @@ const rawSeed = {
       slug: "como-confirmar-dados-institucionais",
       question: "Como confirmo CNPJ, leiloeiro responsável e matrícula na Junta Comercial?",
       answer:
-        "Esses dados devem constar na versão operacional do site e no edital aplicável ao evento. Enquanto a publicação pública definitiva não estiver concluída, a confirmação deve ser feita pelos canais oficiais de atendimento.",
+        "Esses dados devem ser conferidos no edital aplicável ao evento e nos canais oficiais de atendimento antes da participação.",
       scope: "global",
       tags: ["institucional", "cnpj", "leiloeiro", "junta-comercial"],
     },
@@ -841,7 +841,7 @@ const rawSeed = {
       slug: "lote-factor-edital-whatsapp",
       question: "Consigo receber o edital pelo WhatsApp?",
       answer:
-        "Sim. O canal principal desta fase é o WhatsApp. A equipe informa se o edital ou documento aplicável já está disponível para envio.",
+        "Sim. O canal principal é o WhatsApp. A equipe informa se o edital ou documento aplicável já está disponível para envio.",
       scope: "lot",
       relatedEntityIds: ["lot-factor-2017"],
     },
@@ -894,11 +894,11 @@ const rawSeed = {
           id: "section-sobre-pilares",
           title: "Como a base institucional é apresentada",
           body: [
-            "A operação precisa manter endereço, canais oficiais, razão social e dados regulatórios em áreas públicas específicas para sustentar credibilidade institucional antes do go-live.",
+            "A Kron Leilões mantém canais oficiais, endereço, razão social e orientação documental em áreas públicas para facilitar a conferência do comprador.",
           ],
           bullets: [
             "Atendimento por WhatsApp, telefone e e-mail em dias úteis.",
-            "Estrutura pronta para CNPJ, leiloeiro responsável e matrícula da Junta Comercial.",
+            "Dados cadastrais e regulatórios conferidos no edital e no atendimento oficial.",
             "Solicitação de edital, ficha do lote e orientação da praça pelo canal oficial.",
             "Consulta de um lote ou de vários ativos no mesmo atendimento.",
             "Informações comerciais e operacionais tratadas com base no edital aplicável.",
@@ -1079,7 +1079,7 @@ const rawSeed = {
           body: [
             "Ao solicitar um documento, informe o lote ou evento de interesse, a praça indicada na página e se a consulta envolve um único ativo ou vários lotes.",
             "Se a dúvida for sobre comissão, pagamento, retirada, visitação ou documentação, deixe isso claro já no primeiro contato para receber o material correto.",
-            "Quando um documento ainda não estiver em URL pública, a experiência deve assumir isso com transparência e encaminhar o pedido pelo canal oficial, sem simular arquivo definitivo inexistente.",
+            "Quando um documento não estiver disponível para acesso direto, solicite a versão aplicável pelo canal oficial antes de avançar.",
           ],
         },
       ],
@@ -1774,7 +1774,7 @@ const rawSeed = {
         id: "pillar-base-institucional",
         title: "Base institucional pública",
         description:
-          "Razão social, endereço, canais oficiais e campos regulatórios ficam agrupados em áreas institucionais próprias. Itens ainda não validados aparecem sinalizados até a operação liberar o dado real.",
+          "Razão social, endereço, canais oficiais e orientações regulatórias ficam reunidos em áreas próprias para facilitar a conferência do comprador.",
       },
       {
         id: "pillar-atendimento-assistido",
@@ -1858,7 +1858,7 @@ export const localSeedContentSource: ContentSource = {
       id: "pending-company-tax-id",
       label: "CNPJ oficial",
       description:
-        "Publicar o CNPJ real da operação em todas as áreas institucionais antes do go-live.",
+        "Registrar o CNPJ oficial nas áreas institucionais quando o dado estiver liberado.",
       owner: "juridico",
     },
     {
@@ -1872,7 +1872,7 @@ export const localSeedContentSource: ContentSource = {
       id: "pending-document-urls",
       label: "URLs finais de editais e anexos",
       description:
-        "Substituir CTAs apenas sob solicitação por arquivos públicos ou links oficiais sempre que a operação autorizar publicação.",
+        "Atualizar CTAs de solicitação para arquivos públicos ou links oficiais sempre que a operação autorizar publicação.",
       owner: "operacao",
     },
     {

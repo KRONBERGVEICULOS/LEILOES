@@ -50,7 +50,7 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
             width={168}
           />
           <span className="hidden text-xs leading-5 text-brand-muted xl:block">
-            Catálogo público, área restrita e base institucional para acompanhar oportunidades com clareza.
+            Catálogo, área do comprador e atendimento oficial para oportunidades de leilão.
           </span>
         </Link>
 
@@ -132,9 +132,9 @@ export function SiteHeader({ currentUser }: SiteHeaderProps) {
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-semibold text-brand-ink">Área da plataforma</p>
+                  <p className="text-sm font-semibold text-brand-ink">Área do comprador</p>
                   <p className="text-xs text-brand-muted">
-                    Acompanhe lotes, interesses e interações em um ambiente seguro.
+                    Acompanhe lotes, interesses e pré-lances com acesso seguro.
                   </p>
                 </>
               )}

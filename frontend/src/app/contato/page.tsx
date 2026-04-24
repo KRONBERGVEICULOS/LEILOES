@@ -119,16 +119,16 @@ export default function ContactPage() {
       />
 
       <Container className="grid gap-8 py-16 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <section className="grid gap-4">
+        <section className="grid min-w-0 gap-4">
           {contactPoints.map((item) => (
             <article
               key={item.title}
-              className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]"
+              className="min-w-0 overflow-hidden rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]"
             >
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
                 {item.title}
               </p>
-              <h2 className="mt-3 break-words text-2xl font-semibold leading-tight text-brand-ink">
+              <h2 className="mt-3 min-w-0 break-words text-2xl font-semibold leading-tight text-brand-ink">
                 {item.value}
               </h2>
               <p className="mt-3 text-sm leading-7 text-brand-muted">
@@ -137,7 +137,7 @@ export default function ContactPage() {
             </article>
           ))}
 
-          <article className="rounded-[28px] border border-brand-line bg-brand-paper p-6">
+          <article className="min-w-0 overflow-hidden rounded-[28px] border border-brand-line bg-brand-paper p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
               O que vale mandar
             </p>
@@ -145,7 +145,7 @@ export default function ContactPage() {
               {contactChecklist.map((item) => (
                 <li key={item} className="flex gap-3">
                   <span className="mt-2 h-2 w-2 rounded-full bg-brand-brass" />
-                  <span>{item}</span>
+                  <span className="min-w-0">{item}</span>
                 </li>
               ))}
             </ul>

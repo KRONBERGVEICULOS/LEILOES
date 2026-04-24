@@ -118,7 +118,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
         }
       : {
           href: "#acoes-da-plataforma",
-          label: "Ver ações da plataforma",
+          label: "Ver ações do lote",
         }
     : {
         href: `/cadastro?redirect=${encodeURIComponent(`/lotes/${lot.slug}`)}`,
@@ -137,16 +137,16 @@ export default async function LotDetailPage({ params }: LotPageProps) {
 
   const experienceLayers = [
     "Nesta página: galeria, código, localização, referência e atividade pública.",
-    "Na sua área: interesse e pré-lance com histórico da oportunidade.",
+    "Na sua área: interesse e pré-lance com histórico do lote.",
     "No canal oficial: edital, disponibilidade, pagamento, comissão e retirada.",
   ] as const;
 
   const platformGuides = [
     {
-      title: "O que você resolve aqui",
+      title: "O que você analisa no site",
       bullets: [
         "Analisar fotos, resumo, fatos do lote e referência online.",
-        "Comparar o status comercial com a disponibilidade da camada online.",
+        "Comparar status comercial, localização e informações principais.",
         "Registrar interesse e pré-lance com rastreabilidade, quando autenticado.",
       ],
     },
@@ -219,11 +219,11 @@ export default async function LotDetailPage({ params }: LotPageProps) {
                 Fluxo desta oportunidade
               </p>
               <h2 className="mt-3 text-2xl font-semibold leading-tight">
-                Use a plataforma para analisar e registrar contexto antes da validação oficial.
+                Analise o lote e registre seu interesse antes da confirmação oficial.
               </h2>
               <p className="mt-3 text-sm leading-7 text-white/74">
-                A leitura pública do lote, o acompanhamento na área restrita e o
-                canal oficial agora aparecem como etapas diferentes da mesma jornada.
+                A consulta do lote, o acompanhamento na área do comprador e o
+                atendimento oficial têm funções diferentes dentro da jornada.
               </p>
 
               <div className="mt-6 grid gap-3">

@@ -41,7 +41,7 @@ export function ActivityTicker({ items: initialItems }: ActivityTickerProps) {
 
     const openTimer = window.setTimeout(() => {
       setVisible(true);
-    }, 4000);
+    }, 10000);
     const rotateItems = window.setInterval(() => {
       setActiveIndex((currentIndex) => (currentIndex + 1) % items.length);
     }, 12000);
@@ -63,11 +63,11 @@ export function ActivityTicker({ items: initialItems }: ActivityTickerProps) {
   const activeItem = items[activeIndex] ?? items[0];
 
   return (
-    <div className="fixed bottom-24 left-3 right-20 z-40 rounded-[24px] border border-brand-line bg-white/96 p-3 shadow-[0_24px_60px_-36px_rgba(13,32,52,0.45)] backdrop-blur sm:bottom-6 sm:left-4 sm:right-auto sm:max-w-[360px] sm:p-4">
+    <div className="fixed bottom-24 left-3 right-20 z-40 rounded-[22px] border border-brand-line bg-white/96 p-3 shadow-[0_24px_60px_-36px_rgba(13,32,52,0.36)] backdrop-blur sm:bottom-6 sm:left-4 sm:right-auto sm:max-w-[320px]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-brand-brass">
-            Plataforma em movimento
+            Oportunidades em movimento
           </p>
           <p className="mt-2 text-sm font-semibold text-brand-ink">{activeItem.title}</p>
           <p className="mt-1 text-sm leading-6 text-brand-muted">

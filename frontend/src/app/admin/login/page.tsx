@@ -86,12 +86,12 @@ export default async function AdminLoginPage({
             Operação Kron
           </p>
           <h1 className="text-4xl font-semibold leading-tight text-brand-ink sm:text-5xl">
-            Painel administrativo simples, direto e pronto para operar o MVP.
+            Painel administrativo simples, direto e pronto para a operação.
           </h1>
           <p className="max-w-3xl text-base leading-8 text-brand-muted">
             Este acesso existe só para tocar a operação básica do site: criar lotes,
             ajustar preços, trocar status, acompanhar interesses e revisar pré-lances
-            sem transformar o projeto em um painel corporativo pesado.
+            sem transformar a rotina em um painel corporativo pesado.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-3">
@@ -116,7 +116,7 @@ export default async function AdminLoginPage({
             <p className="mt-3 text-sm leading-7 text-white/76">
               O admin continua simples, mas agora com credenciais fortes vindas do ambiente,
               sessão por cookie e bloqueio básico de tentativas de login. Nada de ACL ou
-              múltiplos perfis nesta rodada.
+              múltiplos perfis nesta etapa.
             </p>
             <Link
               className="mt-5 inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-brand-navy transition hover:bg-brand-paper"

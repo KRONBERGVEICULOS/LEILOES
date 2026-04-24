@@ -48,20 +48,20 @@ function toDocumentStatus(document: ResolvedDocumentAsset) {
       return {
         label: "Arquivo público",
         description:
-          "O documento já pode ser acessado diretamente em URL pública e deve continuar vinculado à versão mais atual da operação.",
+          "O documento pode ser acessado diretamente. Confira se ele corresponde ao evento e ao lote consultado.",
       };
     case "external":
       return {
         label: "Link externo",
         description:
-          "O documento está hospedado fora do site. Confirme origem, versão e vigência antes de usar como referência operacional.",
+          "O documento está em um canal externo. Confirme versão e vigência antes de usar como referência.",
       };
     case "request":
     default:
       return {
         label: "Disponível sob solicitação",
         description:
-          "O material ainda não está publicado em URL pública. A liberação acontece pelo canal oficial conforme o evento, o lote e a etapa da operação.",
+          "Solicite o material pelo canal oficial conforme o evento, o lote e a etapa da sua análise.",
       };
   }
 }

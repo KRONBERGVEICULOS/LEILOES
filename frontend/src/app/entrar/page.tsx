@@ -42,11 +42,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             Área restrita Kron Leilões
           </p>
           <h1 className="text-4xl font-semibold leading-tight text-brand-ink sm:text-5xl">
-            Entre para acompanhar seus lotes e registrar seu pré-lance com contexto.
+            Entre para acompanhar seus lotes e registrar pré-lances online.
           </h1>
           <p className="max-w-2xl text-base leading-8 text-brand-muted">
-            O acesso libera histórico recente da plataforma, registro de interesse,
-            maior pré-lance válido do lote e um caminho mais organizado até o atendimento humano.
+            Acesse seus interesses, veja a movimentação dos lotes acompanhados e
+            continue a conversa com a equipe com mais contexto.
           </p>
           <div className="overflow-hidden rounded-[30px] border border-brand-line bg-brand-navy shadow-[0_30px_90px_-54px_rgba(13,32,52,0.58)]">
             <Image
@@ -55,7 +55,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               height={760}
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
-              src="/media/brand/kron-banner.svg"
+              src="/media/brand/banner-kronberg.png"
               width={1600}
             />
           </div>
@@ -66,11 +66,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             Entrar
           </p>
           <h2 className="mt-3 text-3xl font-semibold text-brand-ink">
-            Use seu cadastro para seguir com segurança.
+            Use seu cadastro para continuar.
           </h2>
           <p className="mt-3 text-sm leading-7 text-brand-muted">
-            O site continua comercial e simples. O login existe para restringir o
-            acompanhamento e o pré-lance a usuários autenticados.
+            O login protege seus dados, seus lotes acompanhados e os pré-lances
+            registrados na sua conta.
           </p>
           <div className="mt-8">
             <LoginForm redirectTo={redirectTo} />

@@ -22,7 +22,7 @@ const actionLayers = [
   {
     title: "Interesse",
     description:
-      "Adiciona o lote à sua área e centraliza o histórico da oportunidade dentro da plataforma.",
+      "Adiciona o lote à sua área e mantém o histórico da oportunidade na sua conta.",
   },
   {
     title: "Pré-lance",
@@ -32,7 +32,7 @@ const actionLayers = [
   {
     title: "Canal oficial",
     description:
-      "Usado para validar edital, disponibilidade, pagamento, documentação e retirada quando a etapa exigir confirmação formal.",
+      "Confirma edital, disponibilidade, pagamento, documentação e retirada quando a etapa exigir validação formal.",
   },
 ] as const;
 
@@ -161,8 +161,8 @@ export function OpportunityActionsPanel({
           </div>
           <p className="mt-2 text-xs leading-5 text-brand-muted">
             {snapshot.maximumAllowedAmountSource === "lot"
-              ? "Teto definido manualmente para este lote."
-              : "Teto global calculado pela regra da plataforma."}
+              ? "Limite definido para este lote."
+              : "Limite definido pela regra comercial vigente."}
           </p>
         </div>
       </div>
@@ -242,7 +242,7 @@ export function OpportunityActionsPanel({
           >
             <input name="lotSlug" type="hidden" value={lot.slug} />
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Interesse na plataforma
+              Interesse no lote
             </p>
             <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
               Adicione este lote à sua área.
@@ -301,7 +301,7 @@ export function OpportunityActionsPanel({
 
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-                Pré-lance na plataforma
+                Pré-lance online
               </p>
               <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-ink">
                 Informe o valor que deseja registrar.
@@ -318,7 +318,7 @@ export function OpportunityActionsPanel({
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-muted">
-                      Dentro da plataforma
+                      No site
                     </p>
                     <p className="mt-2 text-sm leading-7 text-brand-muted">
                       Seu valor e suas observações ficam associados ao lote e ao seu
@@ -428,7 +428,7 @@ export function OpportunityActionsPanel({
           <p className="mt-3 text-sm leading-7 text-brand-muted">
             Visitantes veem a referência comercial, o maior pré-lance válido e o
             histórico público mascarado. Usuários cadastrados também podem salvar
-            interesse e enviar pré-lances com rastreabilidade.
+            interesse e enviar pré-lances online.
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">
@@ -444,7 +444,7 @@ export function OpportunityActionsPanel({
                 Pré-lance
               </p>
               <p className="mt-2 text-sm leading-7 text-brand-muted">
-                Registra um valor dentro da plataforma sem gerar reserva automática.
+                Registra um valor online sem gerar reserva automática.
               </p>
             </div>
             <div className="rounded-[22px] border border-brand-line bg-brand-paper px-4 py-4">

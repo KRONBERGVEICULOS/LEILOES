@@ -17,7 +17,7 @@ function getLotCardSummaryLabel(statusKey: Lot["statusKey"]) {
     case "in_review":
       return "Acompanhamento na área";
     case "closed":
-      return "Validação operacional necessária";
+      return "Consulte disponibilidade";
     case "sold":
       return "Lote concluído";
     default:
