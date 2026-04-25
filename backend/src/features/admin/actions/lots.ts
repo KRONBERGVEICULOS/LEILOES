@@ -1,5 +1,9 @@
 ﻿"use server";
 
+import { randomUUID } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
@@ -17,6 +21,14 @@ import {
 } from "@/backend/features/admin/server/repository";
 import { parseCurrencyInput } from "@/backend/features/platform/forms";
 
+const allowedImageMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+const imageExtensionByMimeType = new Map([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/webp", "webp"],
+]);
+const maximumImageUploadSizeBytes = 8 * 1024 * 1024;
+
 function readString(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
@@ -32,6 +44,116 @@ function splitLines(value: string) {
     .split(/\r?\n/g)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function sanitizePathSegment(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 96);
+}
+
+function sanitizeFileStem(value: string) {
+  return (
+    value
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .toLowerCase()
+      .replace(/\.[^.]+$/g, "")
+      .replace(/[^a-z0-9-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "imagem"
+  );
+}
+
+function isUploadedFile(value: FormDataEntryValue): value is File {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "arrayBuffer" in value &&
+    "name" in value &&
+    "size" in value &&
+    "type" in value
+  );
+}
+
+function readImageUploads(formData: FormData) {
+  return formData
+    .getAll("imageUploads")
+    .filter(isUploadedFile)
+    .filter((file) => file.size > 0 && file.name.trim().length > 0);
+}
+
+function validateImageUploads(files: File[]) {
+  const errors: string[] = [];
+
+  files.forEach((file) => {
+    if (!allowedImageMimeTypes.has(file.type)) {
+      errors.push(`${file.name}: use apenas imagens JPEG, PNG ou WebP.`);
+    }
+
+    if (file.size > maximumImageUploadSizeBytes) {
+      errors.push(`${file.name}: limite de 8 MB por imagem.`);
+    }
+  });
+
+  return errors;
+}
+
+function assertInsideDirectory(parent: string, target: string) {
+  const relativePath = path.relative(parent, target);
+
+  if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
+    throw new Error("Caminho de upload inválido.");
+  }
+}
+
+async function saveLocalLotImages(input: {
+  files: File[];
+  lotStorageKey: string;
+  title: string;
+}) {
+  if (!input.files.length) {
+    return [];
+  }
+
+  const safeLotKey = sanitizePathSegment(input.lotStorageKey) || `lote-${Date.now()}`;
+  const mediaRoot = path.resolve(process.cwd(), "public", "media", "lotes");
+  const lotDirectory = path.resolve(mediaRoot, safeLotKey);
+
+  assertInsideDirectory(mediaRoot, lotDirectory);
+  await mkdir(lotDirectory, { recursive: true });
+
+  const savedImages: MediaAsset[] = [];
+
+  for (const [index, file] of input.files.entries()) {
+    const extension = imageExtensionByMimeType.get(file.type);
+
+    if (!extension) {
+      throw new Error(`${file.name}: formato de imagem não permitido.`);
+    }
+
+    const fileName = [
+      Date.now(),
+      index + 1,
+      randomUUID().slice(0, 8),
+      sanitizeFileStem(file.name),
+    ].join("-") + `.${extension}`;
+    const targetPath = path.resolve(lotDirectory, fileName);
+
+    assertInsideDirectory(lotDirectory, targetPath);
+    await writeFile(targetPath, Buffer.from(await file.arrayBuffer()));
+
+    savedImages.push({
+      src: `/media/lotes/${safeLotKey}/${fileName}`,
+      alt: `${input.title} - imagem ${index + 1}`,
+    });
+  }
+
+  return savedImages;
 }
 
 function parseGalleryLines(value: string) {
@@ -113,6 +235,7 @@ export async function saveAdminLotAction(
   await requireAdminSession("/admin/lotes");
 
   const rawValues = collectLotFormValues(formData);
+  const imageUploads = readImageUploads(formData);
   const validated = adminLotSchema.safeParse(rawValues);
 
   if (!validated.success) {
@@ -120,6 +243,19 @@ export async function saveAdminLotAction(
       status: "error",
       message: "Revise os campos destacados antes de salvar o lote.",
       errors: validated.error.flatten().fieldErrors,
+      values: rawValues,
+    };
+  }
+
+  const imageUploadErrors = validateImageUploads(imageUploads);
+
+  if (imageUploadErrors.length) {
+    return {
+      status: "error",
+      message: "Revise os arquivos selecionados antes de salvar o lote.",
+      errors: {
+        imageUploads: imageUploadErrors,
+      },
       values: rawValues,
     };
   }
@@ -210,7 +346,9 @@ export async function saveAdminLotAction(
     };
   }
 
-  if (!details.length || !highlights.length || !parsedGallery.gallery.length) {
+  const hasGalleryImage = parsedGallery.gallery.length > 0 || imageUploads.length > 0;
+
+  if (!details.length || !highlights.length || !hasGalleryImage) {
     return {
       status: "error",
       message: "Preencha descrição detalhada, destaques e galeria antes de salvar.",
@@ -219,8 +357,8 @@ export async function saveAdminLotAction(
         ...(!highlights.length
           ? { highlights: ["Adicione ao menos um destaque para o lote."] }
           : {}),
-        ...(!parsedGallery.gallery.length
-          ? { gallery: ["Cadastre ao menos uma imagem com URL e texto alternativo."] }
+        ...(!hasGalleryImage
+          ? { gallery: ["Cadastre uma imagem por URL ou selecione um arquivo para upload."] }
           : {}),
       },
       values: rawValues,
@@ -228,8 +366,16 @@ export async function saveAdminLotAction(
   }
 
   try {
+    const targetId = readString(formData, "id") || randomUUID();
+    const uploadedGallery = await saveLocalLotImages({
+      files: imageUploads,
+      lotStorageKey: targetId,
+      title: validated.data.title,
+    });
+    const mergedGallery = [...parsedGallery.gallery, ...uploadedGallery];
+
     const result = await saveAdminLot({
-      id: readString(formData, "id") || undefined,
+      id: targetId,
       title: validated.data.title,
       slug: validated.data.slug || validated.data.title,
       lotCode: validated.data.lotCode,
@@ -242,7 +388,7 @@ export async function saveAdminLotAction(
       sourceNote: validated.data.sourceNote ?? "",
       highlights,
       facts,
-      gallery: parsedGallery.gallery,
+      gallery: mergedGallery,
       year: validated.data.year || undefined,
       mileage: validated.data.mileage || undefined,
       fuel: validated.data.fuel || undefined,

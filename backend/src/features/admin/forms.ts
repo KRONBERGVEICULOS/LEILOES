@@ -37,7 +37,7 @@ export const adminLotSchema = z.object({
   sourceNote: z.string().trim().optional(),
   highlights: z.string().trim().min(1, "Adicione pelo menos um destaque."),
   facts: z.string().trim().optional(),
-  gallery: z.string().trim().min(1, "Informe pelo menos uma imagem da galeria."),
+  gallery: z.string().trim().optional(),
   year: z.string().trim().optional(),
   mileage: z.string().trim().optional(),
   fuel: z.string().trim().optional(),

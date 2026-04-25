@@ -1,0 +1,588 @@
+{
+  "source": "https://kronbergveiculos.github.io/LEIL-O/",
+  "productsFound": 17,
+  "skipped": [
+    {
+      "lotCode": "Lote #1428",
+      "title": "Volkswagen Amarok Extreme CD 3.0",
+      "reason": "Código de lote já existe no seed atual."
+    },
+    {
+      "lotCode": "Lote #1752",
+      "title": "Honda Civic G10 2017",
+      "reason": "Código de lote já existe no seed atual."
+    },
+    {
+      "lotCode": "Lote #1910",
+      "title": "Fiat Toro 1.8",
+      "reason": "Código de lote já existe no seed atual."
+    },
+    {
+      "lotCode": "Lote #1007",
+      "title": "Toyota Hilux CD SRV",
+      "reason": "Código de lote já existe no seed atual."
+    },
+    {
+      "lotCode": "Lote #1008",
+      "title": "Trator John Deere 6300",
+      "reason": "Código de lote já existe no seed atual."
+    },
+    {
+      "lotCode": "Lote #1012",
+      "title": "Yamaha Factor 125i 2017",
+      "reason": "Código de lote já existe no seed atual."
+    }
+  ],
+  "importedLots": [
+    {
+      "id": "old-site-lote-1001",
+      "slug": "honda-biz-110i-2022-1001",
+      "title": "Honda Biz 110i 2022",
+      "lotCode": "Lote #1001",
+      "eventId": "event-motos-maquinas",
+      "categoryId": "category-motocicletas",
+      "location": "São Paulo/SP",
+      "pricing": {
+        "referenceValueCents": 110000,
+        "currentBidCents": 111000,
+        "minimumBidCents": 100000,
+        "referenceValueLabel": "R$ 1.100,00",
+        "currentBidLabel": "R$ 1.110,00",
+        "minimumBidLabel": "R$ 1.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/biz1.png",
+          "publicPath": "/media/lotes/importados/honda-biz-110i-2022-1001/01-biz1.png",
+          "filePath": "frontend/public/media/lotes/importados/honda-biz-110i-2022-1001/01-biz1.png"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1223",
+      "slug": "t-cross-highline-1-4-2021-1223",
+      "title": "T-cross Highline 1.4 2021",
+      "lotCode": "Lote #1223",
+      "eventId": "event-veiculos-premium",
+      "categoryId": "category-veiculos-leves",
+      "location": "Curitiba/PR",
+      "pricing": {
+        "referenceValueCents": 1500000,
+        "currentBidCents": 1641000,
+        "minimumBidCents": 1500000,
+        "referenceValueLabel": "R$ 15.000,00",
+        "currentBidLabel": "R$ 16.410,00",
+        "minimumBidLabel": "R$ 15.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross.webp",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/01-tcross.webp",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/01-tcross.webp"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross2.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/02-tcross2.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/02-tcross2.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross3.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/03-tcross3.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/03-tcross3.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross4.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/04-tcross4.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/04-tcross4.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross5.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/05-tcross5.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/05-tcross5.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross6.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/06-tcross6.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/06-tcross6.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross7.webp",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/07-tcross7.webp",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/07-tcross7.webp"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross8.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/08-tcross8.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/08-tcross8.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross9.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/09-tcross9.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/09-tcross9.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross10.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/10-tcross10.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/10-tcross10.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross11.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/11-tcross11.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/11-tcross11.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross12.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/12-tcross12.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/12-tcross12.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross13.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/13-tcross13.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/13-tcross13.jpg"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/tcross14.jpg",
+          "publicPath": "/media/lotes/importados/t-cross-highline-1-4-2021-1223/14-tcross14.jpg",
+          "filePath": "frontend/public/media/lotes/importados/t-cross-highline-1-4-2021-1223/14-tcross14.jpg"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1002",
+      "slug": "fiat-palio-2005-1002",
+      "title": "Fiat Palio 2005",
+      "lotCode": "Lote #1002",
+      "eventId": "event-veiculos-premium",
+      "categoryId": "category-veiculos-leves",
+      "location": "Valinhos/SP",
+      "pricing": {
+        "referenceValueCents": 300000,
+        "currentBidCents": 560000,
+        "minimumBidCents": 400000,
+        "referenceValueLabel": "R$ 3.000,00",
+        "currentBidLabel": "R$ 5.600,00",
+        "minimumBidLabel": "R$ 4.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/palio2019.png",
+          "publicPath": "/media/lotes/importados/fiat-palio-2005-1002/01-palio2019.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-palio-2005-1002/01-palio2019.png"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1003",
+      "slug": "fiat-palio-1003",
+      "title": "Fiat Palio",
+      "lotCode": "Lote #1003",
+      "eventId": "event-veiculos-premium",
+      "categoryId": "category-veiculos-leves",
+      "location": "Curitiba/PR",
+      "pricing": {
+        "referenceValueCents": 550000,
+        "currentBidCents": 475000,
+        "minimumBidCents": 200000,
+        "referenceValueLabel": "R$ 5.500,00",
+        "currentBidLabel": "R$ 4.750,00",
+        "minimumBidLabel": "R$ 2.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/palio4300.png",
+          "publicPath": "/media/lotes/importados/fiat-palio-1003/01-palio4300.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-palio-1003/01-palio4300.png"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1004",
+      "slug": "chevrolet-corsa-1004",
+      "title": "Chevrolet Corsa",
+      "lotCode": "Lote #1004",
+      "eventId": "event-veiculos-premium",
+      "categoryId": "category-veiculos-leves",
+      "location": "Porto Alegre/RS",
+      "pricing": {
+        "referenceValueCents": 400000,
+        "currentBidCents": 400000,
+        "minimumBidCents": 200000,
+        "referenceValueLabel": "R$ 4.000,00",
+        "currentBidLabel": "R$ 4.000,00",
+        "minimumBidLabel": "R$ 2.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/chovelet1.png",
+          "publicPath": "/media/lotes/importados/chevrolet-corsa-1004/01-chovelet1.png",
+          "filePath": "frontend/public/media/lotes/importados/chevrolet-corsa-1004/01-chovelet1.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/chovelet2.png",
+          "publicPath": "/media/lotes/importados/chevrolet-corsa-1004/02-chovelet2.png",
+          "filePath": "frontend/public/media/lotes/importados/chevrolet-corsa-1004/02-chovelet2.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/chevelet3.png",
+          "publicPath": "/media/lotes/importados/chevrolet-corsa-1004/03-chevelet3.png",
+          "filePath": "frontend/public/media/lotes/importados/chevrolet-corsa-1004/03-chevelet3.png"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1005",
+      "slug": "caminhonete-f350-1005",
+      "title": "Caminhonete F350",
+      "lotCode": "Lote #1005",
+      "eventId": "event-operacao-frotas",
+      "categoryId": "category-pickups-utilitarios",
+      "location": "Florianópolis/SC",
+      "pricing": {
+        "referenceValueCents": 1000000,
+        "currentBidCents": 1028000,
+        "minimumBidCents": 800000,
+        "referenceValueLabel": "R$ 10.000,00",
+        "currentBidLabel": "R$ 10.280,00",
+        "minimumBidLabel": "R$ 8.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/camionet.png",
+          "publicPath": "/media/lotes/importados/caminhonete-f350-1005/01-camionet.png",
+          "filePath": "frontend/public/media/lotes/importados/caminhonete-f350-1005/01-camionet.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/camionet3.png",
+          "publicPath": "/media/lotes/importados/caminhonete-f350-1005/02-camionet3.png",
+          "filePath": "frontend/public/media/lotes/importados/caminhonete-f350-1005/02-camionet3.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/camionet4.png",
+          "publicPath": "/media/lotes/importados/caminhonete-f350-1005/03-camionet4.png",
+          "filePath": "frontend/public/media/lotes/importados/caminhonete-f350-1005/03-camionet4.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/camionet5.png",
+          "publicPath": "/media/lotes/importados/caminhonete-f350-1005/04-camionet5.png",
+          "filePath": "frontend/public/media/lotes/importados/caminhonete-f350-1005/04-camionet5.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/camionet6.png",
+          "publicPath": "/media/lotes/importados/caminhonete-f350-1005/05-camionet6.png",
+          "filePath": "frontend/public/media/lotes/importados/caminhonete-f350-1005/05-camionet6.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/camionet7.png",
+          "publicPath": "/media/lotes/importados/caminhonete-f350-1005/06-camionet7.png",
+          "filePath": "frontend/public/media/lotes/importados/caminhonete-f350-1005/06-camionet7.png"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1006",
+      "slug": "fiat-uno-vivace-1006",
+      "title": "Fiat Uno Vivace",
+      "lotCode": "Lote #1006",
+      "eventId": "event-veiculos-premium",
+      "categoryId": "category-veiculos-leves",
+      "location": "São Paulo/SP",
+      "pricing": {
+        "referenceValueCents": 600000,
+        "currentBidCents": 1490000,
+        "minimumBidCents": 1000000,
+        "referenceValueLabel": "R$ 6.000,00",
+        "currentBidLabel": "R$ 14.900,00",
+        "minimumBidLabel": "R$ 10.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/fiat.png",
+          "publicPath": "/media/lotes/importados/fiat-uno-vivace-1006/01-fiat.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-uno-vivace-1006/01-fiat.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/fiat2.png",
+          "publicPath": "/media/lotes/importados/fiat-uno-vivace-1006/02-fiat2.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-uno-vivace-1006/02-fiat2.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/fiat3.png",
+          "publicPath": "/media/lotes/importados/fiat-uno-vivace-1006/03-fiat3.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-uno-vivace-1006/03-fiat3.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/fiat4.png",
+          "publicPath": "/media/lotes/importados/fiat-uno-vivace-1006/04-fiat4.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-uno-vivace-1006/04-fiat4.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/fiat5.png",
+          "publicPath": "/media/lotes/importados/fiat-uno-vivace-1006/05-fiat5.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-uno-vivace-1006/05-fiat5.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/fiat6.png",
+          "publicPath": "/media/lotes/importados/fiat-uno-vivace-1006/06-fiat6.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-uno-vivace-1006/06-fiat6.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/fiat7.png",
+          "publicPath": "/media/lotes/importados/fiat-uno-vivace-1006/07-fiat7.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-uno-vivace-1006/07-fiat7.png"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1009",
+      "slug": "volkswagen-gol-1-0-1009",
+      "title": "Volkswagen Gol 1.0",
+      "lotCode": "Lote #1009",
+      "eventId": "event-veiculos-premium",
+      "categoryId": "category-veiculos-leves",
+      "location": "Rio de Janeiro/RJ",
+      "pricing": {
+        "referenceValueCents": 250000,
+        "currentBidCents": 250000,
+        "minimumBidCents": 100000,
+        "referenceValueLabel": "R$ 2.500,00",
+        "currentBidLabel": "R$ 2.500,00",
+        "minimumBidLabel": "R$ 1.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/01-gol.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/01-gol.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol2.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/02-gol2.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/02-gol2.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol3.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/03-gol3.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/03-gol3.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol4.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/04-gol4.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/04-gol4.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol5.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/05-gol5.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/05-gol5.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol6.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/06-gol6.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/06-gol6.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol7.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/07-gol7.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/07-gol7.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol8.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/08-gol8.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/08-gol8.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol9.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/09-gol9.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/09-gol9.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol10.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/10-gol10.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/10-gol10.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/gol11.png",
+          "publicPath": "/media/lotes/importados/volkswagen-gol-1-0-1009/11-gol11.png",
+          "filePath": "frontend/public/media/lotes/importados/volkswagen-gol-1-0-1009/11-gol11.png"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1010",
+      "slug": "fiat-strada-working-1-4-1010",
+      "title": "Fiat Strada Working 1.4",
+      "lotCode": "Lote #1010",
+      "eventId": "event-operacao-frotas",
+      "categoryId": "category-pickups-utilitarios",
+      "location": "São Paulo/SP",
+      "pricing": {
+        "referenceValueCents": 700000,
+        "currentBidCents": 700000,
+        "minimumBidCents": 100000,
+        "referenceValueLabel": "R$ 7.000,00",
+        "currentBidLabel": "R$ 7.000,00",
+        "minimumBidLabel": "R$ 1.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/std.png",
+          "publicPath": "/media/lotes/importados/fiat-strada-working-1-4-1010/01-std.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-strada-working-1-4-1010/01-std.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/std2.png",
+          "publicPath": "/media/lotes/importados/fiat-strada-working-1-4-1010/02-std2.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-strada-working-1-4-1010/02-std2.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/std3.png",
+          "publicPath": "/media/lotes/importados/fiat-strada-working-1-4-1010/03-std3.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-strada-working-1-4-1010/03-std3.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/std4.png",
+          "publicPath": "/media/lotes/importados/fiat-strada-working-1-4-1010/04-std4.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-strada-working-1-4-1010/04-std4.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/std5.png",
+          "publicPath": "/media/lotes/importados/fiat-strada-working-1-4-1010/05-std5.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-strada-working-1-4-1010/05-std5.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/std6.png",
+          "publicPath": "/media/lotes/importados/fiat-strada-working-1-4-1010/06-std6.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-strada-working-1-4-1010/06-std6.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/std7.png",
+          "publicPath": "/media/lotes/importados/fiat-strada-working-1-4-1010/07-std7.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-strada-working-1-4-1010/07-std7.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/std8.png",
+          "publicPath": "/media/lotes/importados/fiat-strada-working-1-4-1010/08-std8.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-strada-working-1-4-1010/08-std8.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/std10.png",
+          "publicPath": "/media/lotes/importados/fiat-strada-working-1-4-1010/09-std10.png",
+          "filePath": "frontend/public/media/lotes/importados/fiat-strada-working-1-4-1010/09-std10.png"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1011",
+      "slug": "hyundai-gls-1-8-1011",
+      "title": "Hyundai GLS 1.8",
+      "lotCode": "Lote #1011",
+      "eventId": "event-veiculos-premium",
+      "categoryId": "category-veiculos-leves",
+      "location": "Belo Horizonte/MG",
+      "pricing": {
+        "referenceValueCents": 450000,
+        "currentBidCents": 450000,
+        "minimumBidCents": 100000,
+        "referenceValueLabel": "R$ 4.500,00",
+        "currentBidLabel": "R$ 4.500,00",
+        "minimumBidLabel": "R$ 1.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/hudai.png",
+          "publicPath": "/media/lotes/importados/hyundai-gls-1-8-1011/01-hudai.png",
+          "filePath": "frontend/public/media/lotes/importados/hyundai-gls-1-8-1011/01-hudai.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/hudai2.png",
+          "publicPath": "/media/lotes/importados/hyundai-gls-1-8-1011/02-hudai2.png",
+          "filePath": "frontend/public/media/lotes/importados/hyundai-gls-1-8-1011/02-hudai2.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/hudai3.png",
+          "publicPath": "/media/lotes/importados/hyundai-gls-1-8-1011/03-hudai3.png",
+          "filePath": "frontend/public/media/lotes/importados/hyundai-gls-1-8-1011/03-hudai3.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/hudai4.png",
+          "publicPath": "/media/lotes/importados/hyundai-gls-1-8-1011/04-hudai4.png",
+          "filePath": "frontend/public/media/lotes/importados/hyundai-gls-1-8-1011/04-hudai4.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/hudai5.png",
+          "publicPath": "/media/lotes/importados/hyundai-gls-1-8-1011/05-hudai5.png",
+          "filePath": "frontend/public/media/lotes/importados/hyundai-gls-1-8-1011/05-hudai5.png"
+        }
+      ],
+      "missingImages": []
+    },
+    {
+      "id": "old-site-lote-1013",
+      "slug": "honda-cg-titan-1013",
+      "title": "Honda CG Titan",
+      "lotCode": "Lote #1013",
+      "eventId": "event-motos-maquinas",
+      "categoryId": "category-motocicletas",
+      "location": "Goiânia/GO",
+      "pricing": {
+        "referenceValueCents": 150000,
+        "currentBidCents": 150000,
+        "minimumBidCents": 100000,
+        "referenceValueLabel": "R$ 1.500,00",
+        "currentBidLabel": "R$ 1.500,00",
+        "minimumBidLabel": "R$ 1.000,00"
+      },
+      "images": [
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/honda.png",
+          "publicPath": "/media/lotes/importados/honda-cg-titan-1013/01-honda.png",
+          "filePath": "frontend/public/media/lotes/importados/honda-cg-titan-1013/01-honda.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/honda2.png",
+          "publicPath": "/media/lotes/importados/honda-cg-titan-1013/02-honda2.png",
+          "filePath": "frontend/public/media/lotes/importados/honda-cg-titan-1013/02-honda2.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/honda3.png",
+          "publicPath": "/media/lotes/importados/honda-cg-titan-1013/03-honda3.png",
+          "filePath": "frontend/public/media/lotes/importados/honda-cg-titan-1013/03-honda3.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/honda4.png",
+          "publicPath": "/media/lotes/importados/honda-cg-titan-1013/04-honda4.png",
+          "filePath": "frontend/public/media/lotes/importados/honda-cg-titan-1013/04-honda4.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/honda5.png",
+          "publicPath": "/media/lotes/importados/honda-cg-titan-1013/05-honda5.png",
+          "filePath": "frontend/public/media/lotes/importados/honda-cg-titan-1013/05-honda5.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/honda6.png",
+          "publicPath": "/media/lotes/importados/honda-cg-titan-1013/06-honda6.png",
+          "filePath": "frontend/public/media/lotes/importados/honda-cg-titan-1013/06-honda6.png"
+        },
+        {
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/honda7.png",
+          "publicPath": "/media/lotes/importados/honda-cg-titan-1013/07-honda7.png",
+          "filePath": "frontend/public/media/lotes/importados/honda-cg-titan-1013/07-honda7.png"
+        }
+      ],
+      "missingImages": [
+        {
+          "error": "HTTP 404",
+          "sourceUrl": "https://kronbergveiculos.github.io/LEIL-O/images/honda8.png"
+        }
+      ]
+    }
+  ]
+}

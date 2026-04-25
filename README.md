@@ -94,6 +94,33 @@ Comportamento:
 - valida checksum para evitar alteração de migrações antigas
 - falha explicitamente se o banco não estiver configurado
 
+## Imagens Locais de Lotes
+
+Uploads feitos pelo admin e imagens importadas ficam dentro do repositório em:
+
+```bash
+frontend/public/media/lotes
+```
+
+O painel salva no banco apenas o caminho público, por exemplo
+`/media/lotes/{lote}/{arquivo}.jpg`. Imagens antigas já versionadas em
+`frontend/public/media/lots` continuam funcionando para preservar lotes existentes.
+
+Na Railway, upload local deve ser tratado como preparação simples de catálogo. O
+arquivo só entra de forma previsível no próximo build/deploy se for commitado no
+repositório. Para armazenamento permanente em produção, migrar futuramente para
+R2/S3 ou serviço equivalente.
+
+Para reimportar os lotes do site antigo:
+
+```bash
+node scripts/import-old-site-lots.mjs
+```
+
+O script baixa imagens para `frontend/public/media/lotes/importados`, gera
+`scripts/output/imported-old-lots.json` para revisão e atualiza o seed em
+`backend/src/features/content/data/imported-old-site-lots.ts`.
+
 ## Scripts
 
 ```bash

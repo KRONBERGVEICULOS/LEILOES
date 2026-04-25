@@ -32,6 +32,11 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   outputFileTracingRoot: repoRoot,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "64mb",
+    },
+  },
   turbopack: {
     root: repoRoot,
   },

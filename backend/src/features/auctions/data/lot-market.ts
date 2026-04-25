@@ -1,3 +1,5 @@
+import { importedOldSiteMarketBySlug } from "@/backend/features/content/data/imported-old-site-lots";
+
 export type LotMarketConfig = {
   referenceValueCents: number;
   minimumIncrementCents: number;
@@ -7,6 +9,7 @@ export type LotMarketConfig = {
 };
 
 export const lotMarketBySlug: Record<string, LotMarketConfig> = {
+  ...importedOldSiteMarketBySlug,
   "amarok-extreme-cd-3-0-2021": {
     referenceValueCents: 16990000,
     minimumIncrementCents: 500000,

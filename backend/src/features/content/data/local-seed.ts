@@ -1,4 +1,8 @@
 ﻿import { buildWhatsAppLink } from "@/shared/lib/contact-links";
+import {
+  importedOldSiteEventLotIds,
+  importedOldSiteLots,
+} from "@/backend/features/content/data/imported-old-site-lots";
 import type { ContentSource } from "@/backend/features/content/data/source";
 import { platformContentSeedSchema } from "@/backend/features/content/model/schemas";
 import type { PlatformContentSeed } from "@/backend/features/content/model/types";
@@ -1175,7 +1179,11 @@ const rawSeed = {
       categoryIds: ["category-veiculos-leves", "category-pickups-utilitarios"],
       documentIds: ["document-evento-premium-edital"],
       faqIds: ["faq-evento-premium-data", "faq-evento-premium-multiplos"],
-      lotIds: ["lot-amarok-2021", "lot-civic-2017"],
+      lotIds: [
+        "lot-amarok-2021",
+        "lot-civic-2017",
+        ...(importedOldSiteEventLotIds["event-veiculos-premium"] ?? []),
+      ],
       primaryCtaId: "cta-doc-evento-premium",
       schedule: {
         timezone: "America/Sao_Paulo",
@@ -1220,7 +1228,11 @@ const rawSeed = {
       categoryIds: ["category-pickups-utilitarios"],
       documentIds: ["document-evento-frotas-orientacao"],
       faqIds: ["faq-evento-frotas-edital", "faq-evento-frotas-pacote"],
-      lotIds: ["lot-toro-2019", "lot-hilux-2020"],
+      lotIds: [
+        "lot-toro-2019",
+        "lot-hilux-2020",
+        ...(importedOldSiteEventLotIds["event-operacao-frotas"] ?? []),
+      ],
       primaryCtaId: "cta-doc-evento-frotas",
       schedule: {
         timezone: "America/Sao_Paulo",
@@ -1268,7 +1280,11 @@ const rawSeed = {
         "faq-evento-tecnico-falar-com-equipe",
         "faq-evento-tecnico-instrucoes",
       ],
-      lotIds: ["lot-factor-2017", "lot-trator-2004"],
+      lotIds: [
+        "lot-factor-2017",
+        "lot-trator-2004",
+        ...(importedOldSiteEventLotIds["event-motos-maquinas"] ?? []),
+      ],
       primaryCtaId: "cta-doc-evento-tecnico",
       schedule: {
         timezone: "America/Sao_Paulo",
@@ -1754,9 +1770,15 @@ const rawSeed = {
         ogImage: "/media/lots/john-deere-6300/trator.png",
       }),
     },
+    ...importedOldSiteLots,
   ],
   siteExperience: {
-    featuredLotIds: ["lot-amarok-2021", "lot-hilux-2020", "lot-trator-2004"],
+    featuredLotIds: [
+      ...importedOldSiteLots.slice(0, 4).map((lot) => lot.id),
+      "lot-amarok-2021",
+      "lot-hilux-2020",
+      "lot-trator-2004",
+    ],
     finalCtaId: "cta-falar-whatsapp",
     contactReasonCtaIds: [
       "cta-solicitar-edital-geral",

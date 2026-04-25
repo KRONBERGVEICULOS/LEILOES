@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 
+import { MediaImage } from "@/frontend/components/site/media-image";
 import { StatusBadge } from "@/frontend/components/site/status-badge";
 import type { Lot } from "@/backend/features/auctions/types";
 
@@ -61,7 +61,7 @@ export function LotCard({ lot }: LotCardProps) {
     <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-[28px] border border-brand-line bg-white shadow-[0_24px_60px_-42px_rgba(26,36,48,0.3)] transition hover:-translate-y-1 hover:shadow-[0_34px_80px_-42px_rgba(26,36,48,0.42)] focus-within:-translate-y-1 focus-within:shadow-[0_34px_80px_-42px_rgba(26,36,48,0.42)]">
       <div className="relative overflow-hidden border-b border-brand-line/80">
         <div className="relative min-h-[300px] aspect-[5/4] overflow-hidden bg-brand-navy-deep sm:aspect-[4/3]">
-          <Image
+          <MediaImage
             alt={coverImage.alt}
             className="object-cover transition duration-700 group-hover:scale-105"
             fill

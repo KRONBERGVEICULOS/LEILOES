@@ -1,8 +1,8 @@
 ﻿"use client";
 
 import { useState } from "react";
-import Image from "next/image";
 
+import { MediaImage } from "@/frontend/components/site/media-image";
 import type { MediaAsset } from "@/backend/features/auctions/types";
 import { cn } from "@/shared/lib/utils";
 
@@ -35,7 +35,7 @@ export function LotGallery({ images, title }: LotGalleryProps) {
     <section aria-label={`Galeria de imagens de ${title}`} className="space-y-4">
       <div className="relative overflow-hidden rounded-xl border border-brand-line bg-white">
         <div className="relative aspect-[4/3]">
-          <Image
+          <MediaImage
             alt={activeImage.alt}
             className="object-cover"
             fill
@@ -73,7 +73,7 @@ export function LotGallery({ images, title }: LotGalleryProps) {
             type="button"
           >
             <div className="relative aspect-[4/3]">
-              <Image
+              <MediaImage
                 alt=""
                 className="object-cover"
                 fill

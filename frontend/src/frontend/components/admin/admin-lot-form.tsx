@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { FormSubmitButton } from "@/frontend/components/site/form-submit-button";
 import { saveAdminLotAction } from "@/backend/features/admin/actions/lots";
@@ -48,8 +48,39 @@ type AdminLotFormProps = {
   successMessage?: string;
 };
 
+const acceptedUploadTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+const maximumUploadSizeBytes = 8 * 1024 * 1024;
+
 function formatGalleryValue(items?: MediaAsset[]) {
   return items?.map((item) => `${item.src} | ${item.alt}`).join("\n") ?? "";
+}
+
+function parseGalleryPreview(value: string) {
+  return value
+    .split(/\r?\n/g)
+    .map((line) => {
+      const [src, ...altParts] = line.split("|");
+
+      return {
+        src: src?.trim() ?? "",
+        alt: altParts.join("|").trim(),
+      };
+    })
+    .filter((item) => item.src);
+}
+
+function formatFileSize(bytes: number) {
+  if (bytes >= 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)).toLocaleString("pt-BR", {
+      maximumFractionDigits: 1,
+    })} MB`;
+  }
+
+  return `${Math.max(1, Math.round(bytes / 1024)).toLocaleString("pt-BR")} KB`;
+}
+
+function toCssImageUrl(src: string) {
+  return `url("${src.replace(/"/g, '\\"')}")`;
 }
 
 function FieldError({ message }: { message?: string }) {
@@ -69,13 +100,22 @@ export function AdminLotForm({
   successMessage,
 }: AdminLotFormProps) {
   const [state, formAction] = useActionState(saveAdminLotAction, initialAdminActionState);
+  const [selectedUploads, setSelectedUploads] = useState<
+    Array<{ name: string; size: number; type: string }>
+  >([]);
   const readValue = (key: string, fallback = "") => state.values?.[key] ?? fallback;
   const readCheckboxValue = (key: string, fallback: boolean) =>
     state.values ? state.values[key] === "on" : fallback;
+  const galleryValue = readValue("gallery", formatGalleryValue(lot?.media));
+  const galleryPreviewItems = parseGalleryPreview(galleryValue);
 
   return (
     <div className="grid min-w-0 gap-8 2xl:grid-cols-[minmax(0,1fr)_minmax(280px,320px)] 2xl:items-start">
-      <form action={formAction} className="admin-lot-form grid min-w-0 gap-8">
+      <form
+        action={formAction}
+        className="admin-lot-form grid min-w-0 gap-8"
+        encType="multipart/form-data"
+      >
         <input name="id" type="hidden" value={lot?.id ?? ""} />
 
         {successMessage ? (
@@ -478,17 +518,109 @@ export function AdminLotForm({
               </label>
               <textarea
                 className="min-h-40 rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none transition focus:border-brand-brass"
-                defaultValue={readValue("gallery", formatGalleryValue(lot?.media))}
+                defaultValue={galleryValue}
                 id="lot-gallery"
                 name="gallery"
                 placeholder="/media/lotes/exemplo.jpg | Fachada do lote"
-                required
               />
               <p className="text-xs leading-5 text-brand-muted">
                 Use uma linha por imagem no formato <code>URL | texto alternativo</code>.
+                O upload abaixo adiciona novos caminhos locais ao salvar.
               </p>
               <FieldError message={state.errors?.gallery?.[0]} />
             </div>
+
+            <div className="grid gap-3 rounded-2xl border border-dashed border-brand-line bg-brand-paper px-4 py-4 sm:col-span-2">
+              <div className="grid gap-1">
+                <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-image-uploads">
+                  Upload local de imagens
+                </label>
+                <p className="text-xs leading-5 text-brand-muted">
+                  JPEG, PNG ou WebP, até 8 MB por imagem. Os arquivos são salvos
+                  em <code>/media/lotes</code> dentro do projeto.
+                </p>
+              </div>
+              <input
+                accept="image/jpeg,image/png,image/webp"
+                className="min-h-12 rounded-2xl border border-brand-line bg-white px-4 py-3 text-sm text-brand-ink file:mr-4 file:rounded-full file:border-0 file:bg-brand-navy file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                id="lot-image-uploads"
+                multiple
+                name="imageUploads"
+                onChange={(event) => {
+                  setSelectedUploads(
+                    Array.from(event.currentTarget.files ?? []).map((file) => ({
+                      name: file.name,
+                      size: file.size,
+                      type: file.type,
+                    })),
+                  );
+                }}
+                type="file"
+              />
+              <FieldError message={state.errors?.imageUploads?.[0]} />
+              {selectedUploads.length ? (
+                <ul className="grid gap-2 text-xs leading-5 text-brand-muted sm:grid-cols-2">
+                  {selectedUploads.map((file) => {
+                    const hasInvalidType = !acceptedUploadTypes.has(file.type);
+                    const hasInvalidSize = file.size > maximumUploadSizeBytes;
+
+                    return (
+                      <li
+                        className="rounded-xl border border-brand-line bg-white px-3 py-2"
+                        key={`${file.name}-${file.size}`}
+                      >
+                        <span className="block font-semibold text-brand-ink">
+                          {file.name}
+                        </span>
+                        <span
+                          className={
+                            hasInvalidType || hasInvalidSize
+                              ? "text-brand-danger"
+                              : "text-brand-muted"
+                          }
+                        >
+                          {formatFileSize(file.size)}
+                          {hasInvalidType ? " • tipo não permitido" : ""}
+                          {hasInvalidSize ? " • acima de 8 MB" : ""}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : null}
+            </div>
+
+            {galleryPreviewItems.length ? (
+              <div className="grid gap-3 sm:col-span-2">
+                <p className="text-sm font-semibold text-brand-ink">
+                  Imagens já cadastradas
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {galleryPreviewItems.map((image, index) => (
+                    <div
+                      className="overflow-hidden rounded-2xl border border-brand-line bg-white"
+                      key={`${image.src}-${index}`}
+                    >
+                      <div
+                        aria-label={image.alt || `Imagem ${index + 1} do lote`}
+                        className="aspect-[4/3] bg-brand-paper bg-cover bg-center"
+                        role="img"
+                        style={{ backgroundImage: toCssImageUrl(image.src) }}
+                      />
+                      <div className="grid gap-1 px-3 py-3">
+                        <p className="truncate text-xs font-semibold text-brand-ink">
+                          {image.alt || `Imagem ${index + 1}`}
+                        </p>
+                        <p className="truncate text-xs text-brand-muted">{image.src}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs leading-5 text-brand-muted">
+                  Para remover, reordenar ou editar o texto alternativo, ajuste as linhas da galeria.
+                </p>
+              </div>
+            ) : null}
 
             <div className="grid gap-2">
               <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-year">
