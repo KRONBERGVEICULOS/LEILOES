@@ -74,8 +74,8 @@ export function AdminLotForm({
     state.values ? state.values[key] === "on" : fallback;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <form action={formAction} className="grid gap-6">
+    <div className="grid min-w-0 gap-8 2xl:grid-cols-[minmax(0,1fr)_minmax(280px,320px)] 2xl:items-start">
+      <form action={formAction} className="admin-lot-form grid min-w-0 gap-8">
         <input name="id" type="hidden" value={lot?.id ?? ""} />
 
         {successMessage ? (
@@ -90,7 +90,7 @@ export function AdminLotForm({
           </p>
         ) : null}
 
-        <section className="rounded-[30px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)]">
+        <section className="rounded-[30px] border border-brand-line bg-white p-5 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)] sm:p-6 lg:p-7">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
               Identificação do lote
@@ -100,8 +100,8 @@ export function AdminLotForm({
             </h2>
           </div>
 
-          <div className="mt-6 grid gap-5 md:grid-cols-2">
-            <div className="grid gap-2 md:col-span-2">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:gap-6">
+            <div className="grid gap-2 sm:col-span-2">
               <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-title">
                 Título
               </label>
@@ -211,7 +211,7 @@ export function AdminLotForm({
           </div>
         </section>
 
-        <section className="rounded-[30px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)]">
+        <section className="rounded-[30px] border border-brand-line bg-white p-5 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)] sm:p-6 lg:p-7">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
               Conteúdo operacional
@@ -221,7 +221,7 @@ export function AdminLotForm({
             </h2>
           </div>
 
-          <div className="mt-6 grid gap-5">
+          <div className="mt-6 grid gap-6">
             <div className="grid gap-2">
               <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-overview">
                 Resumo curto
@@ -287,7 +287,7 @@ export function AdminLotForm({
               <FieldError message={state.errors?.sourceNote?.[0]} />
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-2 lg:gap-6">
               <div className="grid gap-2">
                 <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-highlights">
                   Destaques do lote
@@ -323,7 +323,7 @@ export function AdminLotForm({
           </div>
         </section>
 
-        <section className="rounded-[30px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)]">
+        <section className="rounded-[30px] border border-brand-line bg-white p-5 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)] sm:p-6 lg:p-7">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
               Precificação e status
@@ -333,7 +333,7 @@ export function AdminLotForm({
             </h2>
           </div>
 
-          <div className="mt-6 grid gap-5 md:grid-cols-4">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:gap-6">
             <div className="grid gap-2">
               <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-reference-price">
                 Preço de referência
@@ -415,7 +415,7 @@ export function AdminLotForm({
               <FieldError message={state.errors?.maximumPreBid?.[0]} />
             </div>
 
-            <div className="grid gap-2 md:col-span-2">
+            <div className="grid gap-2 sm:col-span-2">
               <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-status">
                 Status operacional
               </label>
@@ -438,7 +438,7 @@ export function AdminLotForm({
               <FieldError message={state.errors?.statusKey?.[0]} />
             </div>
 
-            <div className="grid gap-3 rounded-2xl border border-brand-line bg-brand-paper px-4 py-4">
+            <div className="grid gap-3 rounded-2xl border border-brand-line bg-brand-paper px-4 py-4 sm:col-span-2">
               <label className="flex items-center gap-3 text-sm font-semibold text-brand-ink">
                 <input
                   className="h-4 w-4 accent-brand-navy"
@@ -461,7 +461,7 @@ export function AdminLotForm({
           </div>
         </section>
 
-        <section className="rounded-[30px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)]">
+        <section className="rounded-[30px] border border-brand-line bg-white p-5 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)] sm:p-6 lg:p-7">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
               Galeria e metadados
@@ -471,8 +471,8 @@ export function AdminLotForm({
             </h2>
           </div>
 
-          <div className="mt-6 grid gap-5 md:grid-cols-2">
-            <div className="grid gap-2 md:col-span-2">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:gap-6">
+            <div className="grid gap-2 sm:col-span-2">
               <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-gallery">
                 Galeria
               </label>
@@ -566,8 +566,8 @@ export function AdminLotForm({
         </div>
       </form>
 
-      <aside className="grid gap-4 lg:sticky lg:top-8 lg:h-fit">
-        <div className="rounded-[28px] border border-brand-line bg-brand-navy p-6 text-white shadow-[0_28px_70px_-44px_rgba(13,32,52,0.7)]">
+      <aside className="grid min-w-0 gap-5 2xl:sticky 2xl:top-6 2xl:h-fit">
+        <div className="rounded-[28px] border border-brand-line bg-brand-navy p-5 text-white shadow-[0_28px_70px_-44px_rgba(13,32,52,0.7)] sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-sand">
             Operação do lote
           </p>
@@ -587,7 +587,7 @@ export function AdminLotForm({
           ) : null}
         </div>
 
-        <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)]">
+        <div className="rounded-[28px] border border-brand-line bg-white p-5 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)] sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
             Checklist rápido
           </p>
@@ -600,7 +600,7 @@ export function AdminLotForm({
         </div>
 
         {lot ? (
-          <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)]">
+          <div className="rounded-[28px] border border-brand-line bg-white p-5 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.28)] sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
               Histórico
             </p>

@@ -91,6 +91,15 @@ textarea:focus-visible {
   backdrop-filter: blur(16px);
 }
 
+.admin-lot-form :is(input:not([type="checkbox"]):not([type="hidden"]), select, textarea) {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-lot-form textarea {
+  resize: vertical;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

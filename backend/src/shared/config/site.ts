@@ -23,6 +23,7 @@ export const siteConfig = {
   defaultKeywords: company.seo.keywords,
   whatsappNumber: primaryContactChannel.value,
   whatsappDisplay: primaryContactChannel.displayValue,
+  whatsappHref: primaryContactChannel.href,
   phoneNumber: phoneContact?.value ?? primaryContactChannel.value,
   phoneDisplay: phoneContact?.displayValue ?? primaryContactChannel.displayValue,
   phoneHref: phoneContact?.href ?? primaryContactChannel.href,

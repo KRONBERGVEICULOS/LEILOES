@@ -80,15 +80,26 @@ const platformLayers = [
 const operationalSignals = [
   {
     label: "Praças atendidas",
-    value: siteConfig.serviceRegions.join(" • "),
+    items: [{ value: siteConfig.serviceRegions.join(" • ") }],
   },
   {
     label: "Horário institucional",
-    value: siteConfig.businessHours,
+    items: [{ value: siteConfig.businessHours }],
   },
   {
     label: "Contato oficial",
-    value: `${siteConfig.phoneDisplay} • ${siteConfig.email}`,
+    items: [
+      {
+        label: "WhatsApp oficial",
+        value: siteConfig.whatsappDisplay,
+        href: siteConfig.whatsappHref,
+      },
+      {
+        label: "E-mail",
+        value: siteConfig.email,
+        href: siteConfig.emailHref,
+      },
+    ],
   },
 ] as const;
 
@@ -255,13 +266,33 @@ export default async function Home() {
               </div>
             </div>
 
-            <div className="grid gap-3 px-2 pb-2 pt-1 sm:grid-cols-3">
+            <div className="grid gap-3 px-2 pb-2 pt-1 sm:grid-cols-2 xl:grid-cols-[1fr_0.8fr_1.3fr]">
               {operationalSignals.map((item) => (
-                <div key={item.label}>
+                <div className="min-w-0" key={item.label}>
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-brass">
                     {item.label}
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-brand-muted">{item.value}</p>
+                  <div className="mt-2 grid gap-1 text-sm leading-6 text-brand-muted">
+                    {item.items.map((detail) => (
+                      <p key={`${item.label}-${detail.value}`}>
+                        {"label" in detail ? (
+                          <span className="font-semibold text-brand-ink">
+                            {detail.label}:{" "}
+                          </span>
+                        ) : null}
+                        {"href" in detail && detail.href ? (
+                          <a
+                            className="break-words font-semibold text-brand-navy underline-offset-4 transition hover:text-brand-brass hover:underline"
+                            href={detail.href}
+                          >
+                            {detail.value}
+                          </a>
+                        ) : (
+                          detail.value
+                        )}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

@@ -21,11 +21,11 @@ export default async function AdminNewLotPage() {
 
   return (
     <>
-      <section className="rounded-[34px] border border-brand-line bg-white p-6 shadow-[0_28px_70px_-44px_rgba(26,36,48,0.28)] sm:p-8">
+      <section className="rounded-[32px] border border-brand-line bg-white p-5 shadow-[0_28px_70px_-44px_rgba(26,36,48,0.28)] sm:p-7 lg:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
           Novo lote
         </p>
-        <h1 className="mt-3 text-4xl font-semibold leading-tight text-brand-ink">
+        <h1 className="mt-3 max-w-4xl text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
           Cadastre um lote sem editar o código
         </h1>
         <p className="mt-3 max-w-3xl text-base leading-8 text-brand-muted">
