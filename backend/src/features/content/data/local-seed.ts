@@ -1,4 +1,5 @@
 ﻿import { buildWhatsAppLink } from "@/shared/lib/contact-links";
+import { getOfficialWhatsAppContact } from "@/shared/config/whatsapp";
 import {
   importedOldSiteEventLotIds,
   importedOldSiteLots,
@@ -144,7 +145,7 @@ function assertReferences(seed: PlatformContentSeed) {
   }
 }
 
-const primaryWhatsAppNumber = "5516996540954";
+const officialWhatsAppContact = getOfficialWhatsAppContact();
 
 const rawSeed = {
   company: {
@@ -195,23 +196,12 @@ const rawSeed = {
       slug: "whatsapp-atendimento",
       kind: "whatsapp",
       label: "WhatsApp de atendimento",
-      value: primaryWhatsAppNumber,
-      displayValue: "+55 16 99654-0954",
-      href: `https://wa.me/${primaryWhatsAppNumber}`,
+      value: officialWhatsAppContact.number,
+      displayValue: officialWhatsAppContact.display,
+      href: officialWhatsAppContact.url,
       description:
         "Canal principal para solicitar edital, confirmar lote, praça, visitação e falar com a equipe.",
       isPrimary: true,
-    },
-    {
-      id: "contact-phone-comercial",
-      slug: "telefone-comercial",
-      kind: "phone",
-      label: "Telefone comercial",
-      value: "551635000954",
-      displayValue: "(16) 3500-0954",
-      href: "tel:+551635000954",
-      description:
-        "Central comercial para triagem, retorno e direcionamento do atendimento.",
     },
     {
       id: "contact-email-atendimento",
@@ -235,8 +225,9 @@ const rawSeed = {
       description:
         "Fale com a equipe para pedir edital, confirmar lote, comissão, visitação, pagamento ou retirada.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero falar com a equipe da Kron Leilões para confirmar edital e condições de um lote ou evento.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -278,8 +269,9 @@ const rawSeed = {
       description:
         "Peça o edital com regras de participação, comissão, pagamento, visitação e retirada antes de avançar.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero solicitar o edital e as regras aplicáveis a um lote ou evento da Kron Leilões.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -292,8 +284,9 @@ const rawSeed = {
       description:
         "Confirme disponibilidade, praça, visitação, documentação e retirada de um lote específico.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero confirmar a situação e as condições de um lote específico.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -306,8 +299,9 @@ const rawSeed = {
       description:
         "Indicado para quem vai comparar ativos ou alinhar documentação, pagamento e retirada de mais de um lote.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero consultar mais de um lote e alinhar a análise em um único atendimento.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -320,8 +314,9 @@ const rawSeed = {
       description:
         "Receba o edital deste evento com regras de participação, comissão, pagamento, visitação e retirada.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero solicitar o edital do evento Veículos leves e utilitários.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -334,8 +329,9 @@ const rawSeed = {
       description:
         "Use o atendimento para confirmar edital, regras da praça, pagamento e retirada deste evento.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero consultar o evento Pick-ups, frotas e logística.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -348,8 +344,9 @@ const rawSeed = {
       description:
         "Indicado para validar documentação, visitação, logística e retirada antes de participar.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero pedir orientação do evento Motos e máquinas.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -362,8 +359,9 @@ const rawSeed = {
       description:
         "Confirme edital, disponibilidade, documentação, visitação e regras de retirada deste lote.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero consultar o lote Volkswagen Amarok Extreme CD 3.0 4x4 e receber o edital aplicável.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -376,8 +374,9 @@ const rawSeed = {
       description:
         "Use este canal para pedir ficha, edital, situação documental e confirmação da disponibilidade.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero pedir a ficha e o edital do lote Honda Civic Touring 1.5 Turbo.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -390,8 +389,9 @@ const rawSeed = {
       description:
         "Canal indicado para alinhar documentação, visitação, prazo de retirada e regras do evento.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero pedir o edital do lote Fiat Toro Endurance 1.8 Flex.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -404,8 +404,9 @@ const rawSeed = {
       description:
         "Receba orientação sobre edital, disponibilidade, visitação, pagamento e próximos passos deste lote.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero confirmar as condições do lote Toyota Hilux CD SRV 2.8 4x4.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -418,8 +419,9 @@ const rawSeed = {
       description:
         "Peça confirmação de disponibilidade, documentação aplicável, forma de participação e retirada antes de prosseguir.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero consultar o lote Yamaha Factor 125i ED.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -432,8 +434,9 @@ const rawSeed = {
       description:
         "O atendimento confirma disponibilidade, regras do evento, logística, documentação e retirada antes de qualquer avanço.",
       href: buildWhatsAppLink(
-        primaryWhatsAppNumber,
+        officialWhatsAppContact.number,
         "Olá, quero pedir a ficha do lote Trator John Deere 6300.",
+        officialWhatsAppContact.url,
       ),
       contactChannelId: "contact-whatsapp-institucional",
     },
@@ -901,7 +904,7 @@ const rawSeed = {
             "A Kron Leilões mantém canais oficiais, endereço, razão social e orientação documental em áreas públicas para facilitar a conferência do comprador.",
           ],
           bullets: [
-            "Atendimento por WhatsApp, telefone e e-mail em dias úteis.",
+            "Atendimento pelo WhatsApp oficial e e-mail institucional em dias úteis.",
             "Dados cadastrais e regulatórios conferidos no edital e no atendimento oficial.",
             "Solicitação de edital, ficha do lote e orientação da praça pelo canal oficial.",
             "Consulta de um lote ou de vários ativos no mesmo atendimento.",

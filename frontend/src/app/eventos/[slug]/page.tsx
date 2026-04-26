@@ -14,7 +14,7 @@ import { LotInfoPanel } from "@/frontend/components/site/lot-info-panel";
 import { PageHero } from "@/frontend/components/site/page-hero";
 import { StructuredData } from "@/frontend/components/site/structured-data";
 import { TrustPanel } from "@/frontend/components/site/trust-panel";
-import { absoluteUrl, siteConfig } from "@/shared/config/site";
+import { absoluteUrl, createWhatsAppLink, siteConfig } from "@/shared/config/site";
 import {
   getEventBySlug,
 } from "@/backend/features/auctions/data/catalog";
@@ -119,6 +119,9 @@ export default async function EventDetailPage({
     `Formato de atendimento: ${event.format}.`,
     "Documentos complementares podem variar por lote ou por praça dentro do mesmo evento.",
   ];
+  const eventWhatsAppHref = createWhatsAppLink(
+    `Olá, quero confirmar edital, regras e disponibilidade do evento ${event.title}.`,
+  );
 
   return (
     <>
@@ -144,7 +147,15 @@ export default async function EventDetailPage({
             </p>
             <p className="mt-3 text-sm leading-7 text-brand-muted">{event.note}</p>
             <p className="mt-3 text-sm leading-6 text-brand-muted">
-              {siteConfig.businessHours} • {siteConfig.phoneDisplay}
+              {siteConfig.businessHours} •{" "}
+              <a
+                className="font-semibold text-brand-navy transition hover:text-brand-ink"
+                href={eventWhatsAppHref}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {siteConfig.whatsappDisplay}
+              </a>
             </p>
             <InterestActions
               className="mt-5"

@@ -3,15 +3,14 @@ import {
   readTrimmedEnv,
   shouldEnforceProductionEnvironment,
 } from "@/shared/config/env";
+import { getOfficialWhatsAppContact } from "@/shared/config/whatsapp";
 import { buildWhatsAppLink } from "@/shared/lib/contact-links";
 
 const company = contentRepository.getCompanyInfo();
 const contactChannels = contentRepository.listContactChannels();
-const primaryContactChannel = contentRepository.getPrimaryContactChannel();
-const phoneContact =
-  contactChannels.find((channel) => channel.kind === "phone") ?? null;
 const emailContact =
   contactChannels.find((channel) => channel.kind === "email") ?? null;
+const officialWhatsAppContact = getOfficialWhatsAppContact();
 
 export const siteConfig = {
   name: company.brandName,
@@ -21,12 +20,12 @@ export const siteConfig = {
   longDescription: company.longDescription,
   defaultOgImage: company.seo.ogImage ?? "/media/lots/amarok-extreme/amarok.jpg",
   defaultKeywords: company.seo.keywords,
-  whatsappNumber: primaryContactChannel.value,
-  whatsappDisplay: primaryContactChannel.displayValue,
-  whatsappHref: primaryContactChannel.href,
-  phoneNumber: phoneContact?.value ?? primaryContactChannel.value,
-  phoneDisplay: phoneContact?.displayValue ?? primaryContactChannel.displayValue,
-  phoneHref: phoneContact?.href ?? primaryContactChannel.href,
+  whatsappNumber: officialWhatsAppContact.number,
+  whatsappDisplay: officialWhatsAppContact.display,
+  whatsappHref: officialWhatsAppContact.url,
+  phoneNumber: officialWhatsAppContact.number,
+  phoneDisplay: officialWhatsAppContact.display,
+  phoneHref: officialWhatsAppContact.url,
   email: emailContact?.displayValue ?? "",
   emailHref: emailContact?.href ?? "",
   businessHours: company.businessHours,
@@ -160,7 +159,7 @@ export function getMetadataRobots() {
 }
 
 export function createWhatsAppLink(message: string) {
-  return buildWhatsAppLink(siteConfig.whatsappNumber, message);
+  return buildWhatsAppLink(siteConfig.whatsappNumber, message, siteConfig.whatsappHref);
 }
 
 type LotContactContext = {

@@ -86,7 +86,16 @@ export function SiteFooter() {
                 "Consulte o edital ou o canal oficial.",
               )}
             </li>
-            <li>Telefone: {siteConfig.phoneDisplay}</li>
+            <li>
+              <a
+                className="transition hover:text-white"
+                href={siteConfig.whatsappHref}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                WhatsApp: {siteConfig.whatsappDisplay}
+              </a>
+            </li>
             <li>E-mail: {siteConfig.email}</li>
             <li>Horário: {siteConfig.businessHours}</li>
             <li>Praças: {siteConfig.serviceRegions.join(" • ")}</li>

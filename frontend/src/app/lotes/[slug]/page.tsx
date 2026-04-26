@@ -11,7 +11,7 @@ import { LotInfoPanel } from "@/frontend/components/site/lot-info-panel";
 import { LotCard } from "@/frontend/components/site/lot-card";
 import { OpportunityActionsPanel } from "@/frontend/components/site/opportunity-actions-panel";
 import { StructuredData } from "@/frontend/components/site/structured-data";
-import { absoluteUrl, siteConfig } from "@/shared/config/site";
+import { absoluteUrl, createLotWhatsAppLink, siteConfig } from "@/shared/config/site";
 import {
   getLotBySlug,
   getLotsByEventSlug,
@@ -134,6 +134,11 @@ export default async function LotDetailPage({ params }: LotPageProps) {
         href: `/entrar?redirect=${encodeURIComponent(`/lotes/${lot.slug}`)}`,
         label: "Já tenho conta",
       };
+  const lotWhatsAppHref = createLotWhatsAppLink({
+    title: lot.title,
+    lotCode: lot.lotCode,
+    location: lot.location,
+  });
 
   const experienceLayers = [
     "Nesta página: galeria, código, localização, referência e atividade pública.",
@@ -245,7 +250,16 @@ export default async function LotDetailPage({ params }: LotPageProps) {
                 secondaryLabel={secondaryAction.label}
               />
               <p className="mt-4 text-sm leading-6 text-white/72">
-                Canal institucional: {siteConfig.phoneDisplay} • {siteConfig.businessHours}
+                WhatsApp oficial:{" "}
+                <a
+                  className="font-semibold text-white underline-offset-4 transition hover:underline"
+                  href={lotWhatsAppHref}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {siteConfig.whatsappDisplay}
+                </a>{" "}
+                • {siteConfig.businessHours}
               </p>
             </div>
 

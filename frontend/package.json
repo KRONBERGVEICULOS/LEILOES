@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src scripts next.config.ts eslint.config.mjs",
-    "smoke:url": "node scripts/smoke-public.mjs"
+    "smoke:url": "node scripts/smoke-public.mjs",
+    "validate:upload-storage": "node scripts/validate-upload-storage.mjs"
   },
   "dependencies": {
     "next": "16.2.3",

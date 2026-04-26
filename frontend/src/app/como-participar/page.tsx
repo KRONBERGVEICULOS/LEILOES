@@ -55,7 +55,7 @@ export default function HowToParticipateRoute() {
               visitação e retirada com a equipe no canal oficial.
             </p>
             <p className="mt-3 text-sm leading-6 text-brand-muted">
-              {siteConfig.businessHours} • {siteConfig.phoneDisplay}
+              {siteConfig.businessHours} • {siteConfig.whatsappDisplay}
             </p>
             <InterestActions
               className="mt-5"
@@ -176,9 +176,16 @@ export default function HowToParticipateRoute() {
                 </dd>
               </div>
               <div className="border-t border-brand-line py-4">
-                <dt className="text-sm font-semibold text-brand-ink">Telefone</dt>
+                <dt className="text-sm font-semibold text-brand-ink">WhatsApp oficial</dt>
                 <dd className="mt-1 text-sm leading-6 text-brand-muted">
-                  {siteConfig.phoneDisplay}
+                  <a
+                    className="font-semibold text-brand-navy transition hover:text-brand-ink"
+                    href={siteConfig.whatsappHref}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {siteConfig.whatsappDisplay}
+                  </a>
                 </dd>
               </div>
               <div className="border-t border-brand-line py-4">

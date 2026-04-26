@@ -150,7 +150,7 @@ export default async function FaqPage({ searchParams }: FaqPageProps) {
               retirada ou documentação da praça, o canal oficial continua sendo o próximo passo.
             </p>
             <p className="mt-3 text-sm leading-6 text-brand-muted">
-              {siteConfig.phoneDisplay} • {siteConfig.businessHours}
+              {siteConfig.whatsappDisplay} • {siteConfig.businessHours}
             </p>
             <InterestActions
               className="mt-5"

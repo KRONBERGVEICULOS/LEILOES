@@ -22,6 +22,8 @@
 # workspace dev output
 /workspace/output/
 /output/
+/.uploads/
+/frontend/.uploads/
 
 # local/private handoff material
 /legacy/

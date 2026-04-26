@@ -202,6 +202,7 @@ export async function POST(request: Request) {
     const targetUrl = buildWhatsAppLink(
       siteConfig.whatsappNumber,
       buildPrefilledMessage(formData),
+      siteConfig.whatsappHref,
     );
 
     return NextResponse.redirect(targetUrl, 303);

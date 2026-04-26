@@ -12,6 +12,7 @@
     "start": "npm run start --workspace @kron/frontend --",
     "lint": "npm run lint --workspace @kron/frontend --",
     "migrate": "node scripts/migrate.mjs",
-    "smoke:url": "npm run smoke:url --workspace @kron/frontend --"
+    "smoke:url": "npm run smoke:url --workspace @kron/frontend --",
+    "validate:upload-storage": "npm run validate:upload-storage --workspace @kron/frontend --"
   }
 }

@@ -52,7 +52,19 @@ export function InstitutionalDataPanel({
         : undefined,
     },
     { label: "Endereço", value: siteConfig.address.join(", ") },
-    { label: "Telefone", value: siteConfig.phoneDisplay },
+    {
+      label: "WhatsApp oficial",
+      value: (
+        <a
+          className="font-semibold text-brand-navy transition hover:text-brand-ink"
+          href={siteConfig.whatsappHref}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {siteConfig.whatsappDisplay}
+        </a>
+      ),
+    },
     { label: "E-mail", value: siteConfig.email },
     { label: "Horário de atendimento", value: siteConfig.businessHours },
     {

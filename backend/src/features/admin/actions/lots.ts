@@ -20,6 +20,11 @@ import {
   type AdminLotMutationResult,
 } from "@/backend/features/admin/server/repository";
 import { parseCurrencyInput } from "@/backend/features/platform/forms";
+import {
+  assertInsideDirectory,
+  buildLotUploadPublicPath,
+  getLotUploadStorageConfig,
+} from "@/shared/lib/upload-storage";
 
 const allowedImageMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const allowedImageExtensions = new Set(["jpg", "jpeg", "png", "webp"]);
@@ -201,15 +206,7 @@ async function prepareImageUploads(files: File[]) {
   };
 }
 
-function assertInsideDirectory(parent: string, target: string) {
-  const relativePath = path.relative(parent, target);
-
-  if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
-    throw new Error("Caminho de upload inválido.");
-  }
-}
-
-async function saveLocalLotImages(input: {
+async function saveLotImages(input: {
   files: PreparedImageUpload[];
   lotStorageKey: string;
   title: string;
@@ -219,10 +216,10 @@ async function saveLocalLotImages(input: {
   }
 
   const safeLotKey = sanitizePathSegment(input.lotStorageKey) || `lote-${Date.now()}`;
-  const mediaRoot = path.resolve(process.cwd(), "public", "media", "lotes");
-  const lotDirectory = path.resolve(mediaRoot, safeLotKey);
+  const storage = getLotUploadStorageConfig();
+  const lotDirectory = path.resolve(storage.lotDirectory, safeLotKey);
 
-  assertInsideDirectory(mediaRoot, lotDirectory);
+  assertInsideDirectory(storage.lotDirectory, lotDirectory);
 
   try {
     await mkdir(lotDirectory, { recursive: true });
@@ -250,7 +247,10 @@ async function saveLocalLotImages(input: {
     }
 
     savedImages.push({
-      src: `/media/lotes/${safeLotKey}/${fileName}`,
+      src: buildLotUploadPublicPath({
+        fileName,
+        lotStorageKey: safeLotKey,
+      }),
       alt: `${input.title} - imagem ${index + 1}`,
     });
   }
@@ -469,7 +469,7 @@ export async function saveAdminLotAction(
 
   try {
     const targetId = readString(formData, "id") || randomUUID();
-    const uploadedGallery = await saveLocalLotImages({
+    const uploadedGallery = await saveLotImages({
       files: preparedImageUploads.uploads,
       lotStorageKey: targetId,
       title: validated.data.title,

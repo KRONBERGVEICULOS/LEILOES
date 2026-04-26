@@ -20,20 +20,18 @@ export const metadata: Metadata = createPageMetadata({
 
 const contactPoints = [
   {
-    title: "WhatsApp",
+    title: "WhatsApp oficial",
     value: siteConfig.whatsappDisplay,
+    href: createWhatsAppLink(
+      `Olá, quero falar com o atendimento comercial da ${siteConfig.name}.`,
+    ),
     description:
       "Canal principal para tirar dúvidas, falar sobre um lote específico e enviar proposta.",
   },
   {
-    title: "Telefone",
-    value: siteConfig.phoneDisplay,
-    description:
-      "Bom para retorno, alinhamento rápido e suporte complementar ao atendimento comercial.",
-  },
-  {
     title: "E-mail",
     value: siteConfig.email,
+    href: siteConfig.emailHref,
     description:
       "Canal complementar para contexto adicional e confirmações que precisem ficar registradas.",
   },
@@ -114,7 +112,7 @@ export default function ContactPage() {
         }
         description="Escolha o canal que preferir. O caminho mais rápido continua sendo o atendimento com sua mensagem já preparada."
         eyebrow="Contato"
-        meta={["WhatsApp", "Telefone", "E-mail", "Atendimento humano"]}
+        meta={["WhatsApp oficial", "E-mail", "Atendimento humano"]}
         title="Contato direto para dúvidas, orientação e propostas."
       />
 
@@ -128,9 +126,14 @@ export default function ContactPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
                 {item.title}
               </p>
-              <h2 className="mt-3 min-w-0 break-words text-2xl font-semibold leading-tight text-brand-ink">
+              <a
+                className="mt-3 block min-w-0 break-words text-2xl font-semibold leading-tight text-brand-ink transition hover:text-brand-navy"
+                href={item.href}
+                rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                target={item.href.startsWith("http") ? "_blank" : undefined}
+              >
                 {item.value}
-              </h2>
+              </a>
               <p className="mt-3 text-sm leading-7 text-brand-muted">
                 {item.description}
               </p>

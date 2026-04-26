@@ -39,6 +39,9 @@ Variáveis obrigatórias em produção:
 - `NEXT_PUBLIC_SITE_URL`
 - `ADMIN_USERNAME`
 - `ADMIN_PASSWORD`
+- `UPLOAD_STORAGE_MODE`
+- `UPLOAD_VOLUME_DIR`
+- `UPLOAD_PUBLIC_BASE_PATH`
 
 Regras importantes:
 
@@ -46,6 +49,7 @@ Regras importantes:
 - Em produção, o fallback para `local-seed` é bloqueado.
 - Se `KRON_DATA_MODE=postgres`, o app exige `DATABASE_URL`.
 - Em Railway, `NEXT_PUBLIC_SITE_URL` pode apontar para a URL completa (`https://kronbergveiculos.up.railway.app`) ou usar a Reference Variable `${{ RAILWAY_PUBLIC_DOMAIN }}`.
+- Uploads feitos pelo admin em produção dependem de Railway Volume para persistir entre restart e redeploy.
 
 ## Desenvolvimento Local
 
@@ -94,22 +98,40 @@ Comportamento:
 - valida checksum para evitar alteração de migrações antigas
 - falha explicitamente se o banco não estiver configurado
 
-## Imagens Locais de Lotes
+## Imagens de Lotes
 
-Uploads feitos pelo admin e imagens importadas ficam dentro do repositório em:
+Imagens versionadas e importadas do site antigo continuam dentro do repositório em:
 
 ```bash
 frontend/public/media/lotes
 ```
 
-O painel salva no banco apenas o caminho público, por exemplo
-`/media/lotes/{lote}/{arquivo}.jpg`. Imagens antigas já versionadas em
-`frontend/public/media/lots` continuam funcionando para preservar lotes existentes.
+Imagens antigas já versionadas em `frontend/public/media/lots`, banners em
+`frontend/public/media/brand` e URLs antigas em `/media/lotes/...` continuam
+funcionando normalmente.
 
-Na Railway, upload local deve ser tratado como preparação simples de catálogo. O
-arquivo só entra de forma previsível no próximo build/deploy se for commitado no
-repositório. Para armazenamento permanente em produção, migrar futuramente para
-R2/S3 ou serviço equivalente.
+Novos uploads feitos pelo admin não são gravados em `public`. Em produção, eles
+devem ser salvos em Railway Volume e servidos pela route handler:
+
+```bash
+/media/uploads/lotes/{lotId}/{fileName}
+```
+
+Configuração recomendada na Railway:
+
+- criar um Railway Volume no serviço da aplicação
+- montar o volume em `/app/uploads`
+- configurar:
+  - `UPLOAD_STORAGE_MODE=volume`
+  - `UPLOAD_VOLUME_DIR=/app/uploads/lotes`
+  - `UPLOAD_PUBLIC_BASE_PATH=/media/uploads`
+
+Com essa configuração, o admin salva arquivos em
+`/app/uploads/lotes/{lotId}/{fileName}` e grava no banco apenas a URL pública
+`/media/uploads/lotes/{lotId}/{fileName}`.
+
+Em desenvolvimento, quando essas variáveis não estiverem configuradas, o fallback
+controlado usa `frontend/.uploads/lotes` e a mesma URL pública `/media/uploads`.
 
 Para reimportar os lotes do site antigo:
 
@@ -195,11 +217,17 @@ Configurações importantes:
   Exemplo atual: `https://kronbergveiculos.up.railway.app`
   Em Railway, pode ser uma Reference Variable para `${{ RAILWAY_PUBLIC_DOMAIN }}`
 - `ADMIN_USERNAME` e `ADMIN_PASSWORD` fortes
+- Railway Volume montado em `/app/uploads`
+- `UPLOAD_STORAGE_MODE=volume`
+- `UPLOAD_VOLUME_DIR=/app/uploads/lotes`
+- `UPLOAD_PUBLIC_BASE_PATH=/media/uploads`
+- `WHATSAPP_NUMBER`, `WHATSAPP_DISPLAY` e `WHATSAPP_URL` com o WhatsApp oficial
 
 Validação recomendada após o deploy:
 
 ```bash
 npm run smoke:url -- https://kronbergveiculos.up.railway.app
+npm run validate:upload-storage -- https://kronbergveiculos.up.railway.app
 ```
 
 ## Segurança e Operação
@@ -207,5 +235,6 @@ npm run smoke:url -- https://kronbergveiculos.up.railway.app
 - login admin com rate limit
 - senha administrativa mínima de 12 caracteres
 - rota de contato persiste lead antes do redirect para WhatsApp
+- rota `/media/uploads/...` serve somente JPEG, PNG e WebP abaixo do diretório de upload configurado
 - healthcheck distingue `local-seed` de banco real
 - app falha explicitamente em produção se configuração crítica estiver ausente
