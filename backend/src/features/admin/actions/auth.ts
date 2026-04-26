@@ -27,6 +27,31 @@ function getSafeRedirectPath(value: FormDataEntryValue | null) {
   return value.startsWith("/admin") ? value : "/admin";
 }
 
+async function consumeAdminLoginRateLimits(username: string) {
+  const [globalKey, accountKey] = await Promise.all([
+    getRequestFingerprint(["admin-login"]),
+    getRequestFingerprint(["admin-login", username]),
+  ]);
+
+  const globalLimit = await consumeRateLimit({
+    scope: "admin:login:global",
+    key: globalKey,
+    maxAttempts: 20,
+    windowMs: 15 * 60 * 1000,
+  });
+
+  const accountLimit = await consumeRateLimit({
+    scope: "admin:login",
+    key: accountKey,
+    maxAttempts: 5,
+    windowMs: 15 * 60 * 1000,
+  });
+
+  return {
+    allowed: globalLimit.allowed && accountLimit.allowed,
+  };
+}
+
 export async function loginAdminAction(
   previousState: AdminActionState = initialAdminActionState,
   formData: FormData,
@@ -73,16 +98,9 @@ export async function loginAdminAction(
   }
 
   try {
-    const loginKey = await getRequestFingerprint([
-      "admin-login",
+    const loginRateLimit = await consumeAdminLoginRateLimits(
       validated.data.username,
-    ]);
-    const loginRateLimit = await consumeRateLimit({
-      scope: "admin:login",
-      key: loginKey,
-      maxAttempts: 5,
-      windowMs: 15 * 60 * 1000,
-    });
+    );
 
     if (!loginRateLimit.allowed) {
       return {

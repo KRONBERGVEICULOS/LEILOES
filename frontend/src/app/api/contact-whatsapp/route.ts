@@ -5,21 +5,75 @@ import {
   ContactLeadValidationError,
   persistContactLead,
 } from "@/backend/features/platform/server/contact-leads";
+import {
+  consumeRateLimit,
+  getRequestFingerprint,
+} from "@/backend/features/platform/server/rate-limit";
 import { siteConfig } from "@/shared/config/site";
 import { buildWhatsAppLink } from "@/shared/lib/contact-links";
 
+const allowedPayloadKeys = new Set([
+  "tipo",
+  "nome",
+  "email",
+  "telefone",
+  "cidade",
+  "referencia",
+  "titulo_lote",
+  "codigo_lote",
+  "localizacao",
+  "valor_oferta",
+  "mensagem",
+]);
+const maximumContactRequestBodyBytes = 32 * 1024;
+
+function isSupportedFormContentType(value: string | null) {
+  const contentType = value?.toLowerCase() ?? "";
+
+  return (
+    contentType.startsWith("multipart/form-data") ||
+    contentType.startsWith("application/x-www-form-urlencoded")
+  );
+}
+
+function isRequestBodyTooLarge(value: string | null) {
+  if (!value) {
+    return false;
+  }
+
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) && parsed > maximumContactRequestBodyBytes;
+}
+
 function getTrimmedField(formData: FormData, key: string) {
-  return String(formData.get(key) ?? "").trim();
+  const value = formData.get(key);
+  return typeof value === "string" ? value.trim() : "";
 }
 
 function collectFormPayload(formData: FormData) {
   const payload: Record<string, string> = {};
 
   for (const [key, value] of formData.entries()) {
-    payload[key] = String(value ?? "").trim();
+    if (!allowedPayloadKeys.has(key) || typeof value !== "string") {
+      continue;
+    }
+
+    payload[key] = value.trim();
   }
 
   return payload;
+}
+
+async function consumeContactRateLimit() {
+  const contactKey = await getRequestFingerprint(["contact-whatsapp"]);
+
+  return consumeRateLimit({
+    scope: "contact:whatsapp",
+    key: contactKey,
+    maxAttempts: 12,
+    windowMs: 10 * 60 * 1000,
+  });
 }
 
 function buildLeadOrigin(formData: FormData) {
@@ -75,9 +129,54 @@ function buildPrefilledMessage(formData: FormData) {
 }
 
 export async function POST(request: Request) {
-  const formData = await request.formData();
-
   try {
+    if (!isSupportedFormContentType(request.headers.get("content-type"))) {
+      return NextResponse.json(
+        {
+          status: "error",
+          message: "Envie os dados usando um formulário válido.",
+        },
+        { status: 415 },
+      );
+    }
+
+    if (isRequestBodyTooLarge(request.headers.get("content-length"))) {
+      return NextResponse.json(
+        {
+          status: "error",
+          message: "O formulário enviado é maior que o permitido.",
+        },
+        { status: 413 },
+      );
+    }
+
+    const contactRateLimit = await consumeContactRateLimit();
+
+    if (!contactRateLimit.allowed) {
+      return NextResponse.json(
+        {
+          status: "error",
+          message:
+            "Muitas tentativas de contato neste momento. Aguarde alguns minutos e tente novamente.",
+        },
+        { status: 429 },
+      );
+    }
+
+    let formData: FormData;
+
+    try {
+      formData = await request.formData();
+    } catch {
+      return NextResponse.json(
+        {
+          status: "error",
+          message: "Não foi possível ler o formulário enviado.",
+        },
+        { status: 400 },
+      );
+    }
+
     const payload = collectFormPayload(formData);
     const nome = getTrimmedField(formData, "nome");
     const telefone = getTrimmedField(formData, "telefone");
@@ -125,7 +224,7 @@ export async function POST(request: Request) {
         status: "error",
         message: "Não foi possível registrar seu contato agora.",
       },
-      { status: 500 },
+      { status: 503 },
     );
   }
 }

@@ -12,12 +12,22 @@ type LoginPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Entrar",
-  path: "/entrar",
-  description:
-    "Acesse a área restrita da Kron Leilões para acompanhar oportunidades e registrar pré-lances online.",
-});
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "Entrar",
+    path: "/entrar",
+    description:
+      "Acesse a área restrita da Kron Leilões para acompanhar oportunidades e registrar pré-lances online.",
+  }),
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+export const dynamic = "force-dynamic";
+
+export const revalidate = 0;
 
 function readRedirect(searchParams: Record<string, string | string[] | undefined>) {
   return normalizeInternalRedirect(searchParams.redirect, "/area", {

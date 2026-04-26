@@ -60,6 +60,36 @@ function buildAuthenticationUnavailableState(kind: "login" | "signup"): AuthActi
   };
 }
 
+async function consumeAuthRateLimits(input: {
+  scope: "auth:login" | "auth:signup";
+  identifier: string;
+  maxAccountAttempts: number;
+  maxGlobalAttempts: number;
+}) {
+  const [globalKey, accountKey] = await Promise.all([
+    getRequestFingerprint([input.scope]),
+    getRequestFingerprint([input.scope, input.identifier]),
+  ]);
+
+  const globalLimit = await consumeRateLimit({
+    scope: `${input.scope}:global`,
+    key: globalKey,
+    maxAttempts: input.maxGlobalAttempts,
+    windowMs: 15 * 60 * 1000,
+  });
+
+  const accountLimit = await consumeRateLimit({
+    scope: input.scope,
+    key: accountKey,
+    maxAttempts: input.maxAccountAttempts,
+    windowMs: 15 * 60 * 1000,
+  });
+
+  return {
+    allowed: globalLimit.allowed && accountLimit.allowed,
+  };
+}
+
 export async function registerUserAction(
   _prevState: AuthActionState,
   formData: FormData,
@@ -94,15 +124,11 @@ export async function registerUserAction(
   let existingCpfOwner: Awaited<ReturnType<typeof findUserByCpf>> = null;
 
   try {
-    const signupKey = await getRequestFingerprint([
-      "signup",
-      validated.data.email,
-    ]);
-    const signupRateLimit = await consumeRateLimit({
+    const signupRateLimit = await consumeAuthRateLimits({
       scope: "auth:signup",
-      key: signupKey,
-      maxAttempts: 5,
-      windowMs: 15 * 60 * 1000,
+      identifier: validated.data.email,
+      maxAccountAttempts: 5,
+      maxGlobalAttempts: 20,
     });
 
     if (!signupRateLimit.allowed) {
@@ -199,15 +225,11 @@ export async function loginUserAction(
   let user: Awaited<ReturnType<typeof findUserByEmail>> = null;
 
   try {
-    const loginKey = await getRequestFingerprint([
-      "login",
-      validated.data.email,
-    ]);
-    const loginRateLimit = await consumeRateLimit({
+    const loginRateLimit = await consumeAuthRateLimits({
       scope: "auth:login",
-      key: loginKey,
-      maxAttempts: 8,
-      windowMs: 15 * 60 * 1000,
+      identifier: validated.data.email,
+      maxAccountAttempts: 8,
+      maxGlobalAttempts: 40,
     });
 
     if (!loginRateLimit.allowed) {

@@ -35,12 +35,44 @@ const optionalEmailSchema = z
   ])
   .transform((value) => (value ? normalizeEmail(value) : undefined));
 
+const maximumLeadPayloadKeys = 16;
+const maximumLeadPayloadJsonLength = 8_000;
+
+const limitedOptionalTextSchema = (maximumLength: number) =>
+  z
+    .string()
+    .trim()
+    .max(maximumLength)
+    .transform((value) => normalizeOptionalText(value))
+    .optional();
+
+const contactLeadPayloadSchema = z
+  .record(z.string().trim().min(1).max(64), z.string().trim().max(600))
+  .superRefine((payload, context) => {
+    const entries = Object.entries(payload);
+
+    if (entries.length > maximumLeadPayloadKeys) {
+      context.addIssue({
+        code: "custom",
+        message: "Payload do lead excede o limite de campos.",
+      });
+    }
+
+    if (JSON.stringify(payload).length > maximumLeadPayloadJsonLength) {
+      context.addIssue({
+        code: "custom",
+        message: "Payload do lead excede o tamanho máximo.",
+      });
+    }
+  });
+
 const contactLeadSchema = z.object({
   origin: z.string().trim().min(1).max(120),
   name: z
     .string()
     .trim()
     .min(2, "Informe um nome válido.")
+    .max(100, "Informe um nome mais curto.")
     .transform(normalizeWhitespace),
   phone: z
     .string()
@@ -49,15 +81,9 @@ const contactLeadSchema = z.object({
     .transform(normalizePhone)
     .refine(isValidPhone, "Informe um telefone com DDD válido."),
   email: optionalEmailSchema.optional().default(""),
-  reference: z
-    .string()
-    .transform((value) => normalizeOptionalText(value))
-    .optional(),
-  message: z
-    .string()
-    .transform((value) => normalizeOptionalText(value))
-    .optional(),
-  payload: z.record(z.string(), z.string()),
+  reference: limitedOptionalTextSchema(180),
+  message: limitedOptionalTextSchema(800),
+  payload: contactLeadPayloadSchema,
 });
 
 export type ContactLeadInput = z.infer<typeof contactLeadSchema>;
@@ -117,10 +143,9 @@ export async function persistContactLead(input: ContactLeadInput) {
       };
     });
   } catch (error) {
+    void error;
     throw new ContactLeadPersistenceUnavailableError(
-      error instanceof Error
-        ? error.message
-        : "Persistência de leads indisponível no momento.",
+      "Persistência de leads indisponível no momento.",
     );
   }
 }

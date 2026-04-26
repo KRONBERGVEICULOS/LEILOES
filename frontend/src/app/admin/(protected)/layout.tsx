@@ -1,8 +1,21 @@
 ﻿import Link from "next/link";
 
+import type { Metadata } from "next";
+
 import { AdminShellNav } from "@/frontend/components/admin/admin-shell-nav";
 import { logoutAdminAction } from "@/backend/features/admin/actions/auth";
 import { requireAdminSession } from "@/backend/features/admin/server/auth";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+export const dynamic = "force-dynamic";
+
+export const revalidate = 0;
 
 export default async function AdminProtectedLayout({
   children,

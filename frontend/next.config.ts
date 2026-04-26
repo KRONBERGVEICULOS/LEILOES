@@ -20,6 +20,10 @@ const securityHeaders = [
     value: "SAMEORIGIN",
   },
   {
+    key: "Content-Security-Policy",
+    value: "frame-ancestors 'self'; object-src 'none'; base-uri 'self'",
+  },
+  {
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
   },

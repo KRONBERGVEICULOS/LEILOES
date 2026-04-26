@@ -10,12 +10,22 @@ import { getUserDashboard } from "@/backend/features/platform/server/repository"
 import { createPageMetadata } from "@/shared/lib/metadata";
 import { formatDateTimeBR } from "@/shared/lib/utils";
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Minha área",
-  path: "/area",
-  description:
-    "Área restrita da Kron Leilões para acompanhar interesses, pré-lances e atividade recente.",
-});
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "Minha área",
+    path: "/area",
+    description:
+      "Área restrita da Kron Leilões para acompanhar interesses, pré-lances e atividade recente.",
+  }),
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+export const dynamic = "force-dynamic";
+
+export const revalidate = 0;
 
 export default async function DashboardPage() {
   const user = await requireAuthenticatedUser("/area");

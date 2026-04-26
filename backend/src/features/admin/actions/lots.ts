@@ -22,12 +22,22 @@ import {
 import { parseCurrencyInput } from "@/backend/features/platform/forms";
 
 const allowedImageMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+const allowedImageExtensions = new Set(["jpg", "jpeg", "png", "webp"]);
 const imageExtensionByMimeType = new Map([
   ["image/jpeg", "jpg"],
   ["image/png", "png"],
   ["image/webp", "webp"],
 ]);
 const maximumImageUploadSizeBytes = 8 * 1024 * 1024;
+const maximumImageUploadCount = 8;
+const maximumImageUploadTotalSizeBytes =
+  maximumImageUploadCount * maximumImageUploadSizeBytes;
+
+type PreparedImageUpload = {
+  file: File;
+  buffer: Buffer;
+  extension: string;
+};
 
 function readString(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -69,6 +79,14 @@ function sanitizeFileStem(value: string) {
   );
 }
 
+function getSafeDisplayFileName(value: string) {
+  return value.replace(/[\r\n\t]/g, " ").trim().slice(0, 120) || "arquivo";
+}
+
+function getFileExtension(value: string) {
+  return path.extname(value).replace(".", "").toLowerCase();
+}
+
 function isUploadedFile(value: FormDataEntryValue): value is File {
   return (
     typeof value === "object" &&
@@ -87,20 +105,100 @@ function readImageUploads(formData: FormData) {
     .filter((file) => file.size > 0 && file.name.trim().length > 0);
 }
 
-function validateImageUploads(files: File[]) {
-  const errors: string[] = [];
+function detectImageMimeType(buffer: Buffer) {
+  if (
+    buffer.length >= 3 &&
+    buffer[0] === 0xff &&
+    buffer[1] === 0xd8 &&
+    buffer[2] === 0xff
+  ) {
+    return "image/jpeg";
+  }
 
-  files.forEach((file) => {
+  if (
+    buffer.length >= 8 &&
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47 &&
+    buffer[4] === 0x0d &&
+    buffer[5] === 0x0a &&
+    buffer[6] === 0x1a &&
+    buffer[7] === 0x0a
+  ) {
+    return "image/png";
+  }
+
+  if (
+    buffer.length >= 12 &&
+    buffer.subarray(0, 4).toString("ascii") === "RIFF" &&
+    buffer.subarray(8, 12).toString("ascii") === "WEBP"
+  ) {
+    return "image/webp";
+  }
+
+  return null;
+}
+
+async function prepareImageUploads(files: File[]) {
+  const errors: string[] = [];
+  const preparedUploads: PreparedImageUpload[] = [];
+
+  if (files.length > maximumImageUploadCount) {
+    errors.push(`Envie no máximo ${maximumImageUploadCount} imagens por lote.`);
+  }
+
+  const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+
+  if (totalSize > maximumImageUploadTotalSizeBytes) {
+    errors.push("O envio total de imagens ultrapassa 64 MB.");
+  }
+
+  for (const file of files) {
+    const safeName = getSafeDisplayFileName(file.name);
+    const originalExtension = getFileExtension(file.name);
+
     if (!allowedImageMimeTypes.has(file.type)) {
-      errors.push(`${file.name}: use apenas imagens JPEG, PNG ou WebP.`);
+      errors.push(`${safeName}: use apenas imagens JPEG, PNG ou WebP.`);
+      continue;
+    }
+
+    if (!allowedImageExtensions.has(originalExtension)) {
+      errors.push(`${safeName}: extensão de arquivo não permitida.`);
+      continue;
     }
 
     if (file.size > maximumImageUploadSizeBytes) {
-      errors.push(`${file.name}: limite de 8 MB por imagem.`);
+      errors.push(`${safeName}: limite de 8 MB por imagem.`);
+      continue;
     }
-  });
 
-  return errors;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const detectedMimeType = detectImageMimeType(buffer);
+
+    if (!detectedMimeType || detectedMimeType !== file.type) {
+      errors.push(`${safeName}: o conteúdo não corresponde a JPEG, PNG ou WebP válido.`);
+      continue;
+    }
+
+    const extension = imageExtensionByMimeType.get(detectedMimeType);
+
+    if (!extension) {
+      errors.push(`${safeName}: formato de imagem não permitido.`);
+      continue;
+    }
+
+    preparedUploads.push({
+      file,
+      buffer,
+      extension,
+    });
+  }
+
+  return {
+    errors,
+    uploads: errors.length ? [] : preparedUploads,
+  };
 }
 
 function assertInsideDirectory(parent: string, target: string) {
@@ -112,7 +210,7 @@ function assertInsideDirectory(parent: string, target: string) {
 }
 
 async function saveLocalLotImages(input: {
-  files: File[];
+  files: PreparedImageUpload[];
   lotStorageKey: string;
   title: string;
 }) {
@@ -125,27 +223,31 @@ async function saveLocalLotImages(input: {
   const lotDirectory = path.resolve(mediaRoot, safeLotKey);
 
   assertInsideDirectory(mediaRoot, lotDirectory);
-  await mkdir(lotDirectory, { recursive: true });
+
+  try {
+    await mkdir(lotDirectory, { recursive: true });
+  } catch {
+    throw new Error("Não foi possível preparar a pasta de imagens do lote.");
+  }
 
   const savedImages: MediaAsset[] = [];
 
-  for (const [index, file] of input.files.entries()) {
-    const extension = imageExtensionByMimeType.get(file.type);
-
-    if (!extension) {
-      throw new Error(`${file.name}: formato de imagem não permitido.`);
-    }
-
+  for (const [index, upload] of input.files.entries()) {
     const fileName = [
       Date.now(),
       index + 1,
       randomUUID().slice(0, 8),
-      sanitizeFileStem(file.name),
-    ].join("-") + `.${extension}`;
+      sanitizeFileStem(upload.file.name),
+    ].join("-") + `.${upload.extension}`;
     const targetPath = path.resolve(lotDirectory, fileName);
 
     assertInsideDirectory(lotDirectory, targetPath);
-    await writeFile(targetPath, Buffer.from(await file.arrayBuffer()));
+
+    try {
+      await writeFile(targetPath, upload.buffer, { flag: "wx" });
+    } catch {
+      throw new Error("Não foi possível salvar uma das imagens enviadas.");
+    }
 
     savedImages.push({
       src: `/media/lotes/${safeLotKey}/${fileName}`,
@@ -247,14 +349,14 @@ export async function saveAdminLotAction(
     };
   }
 
-  const imageUploadErrors = validateImageUploads(imageUploads);
+  const preparedImageUploads = await prepareImageUploads(imageUploads);
 
-  if (imageUploadErrors.length) {
+  if (preparedImageUploads.errors.length) {
     return {
       status: "error",
       message: "Revise os arquivos selecionados antes de salvar o lote.",
       errors: {
-        imageUploads: imageUploadErrors,
+        imageUploads: preparedImageUploads.errors,
       },
       values: rawValues,
     };
@@ -368,7 +470,7 @@ export async function saveAdminLotAction(
   try {
     const targetId = readString(formData, "id") || randomUUID();
     const uploadedGallery = await saveLocalLotImages({
-      files: imageUploads,
+      files: preparedImageUploads.uploads,
       lotStorageKey: targetId,
       title: validated.data.title,
     });

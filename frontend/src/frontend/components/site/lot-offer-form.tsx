@@ -15,6 +15,7 @@ export function LotOfferForm({
       className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.3)]"
       id="enviar-proposta"
       method="post"
+      rel="noopener noreferrer"
       target="_blank"
     >
       <input name="tipo" type="hidden" value="oferta" />

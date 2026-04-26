@@ -50,7 +50,7 @@ export async function GET() {
         },
       },
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: "error",
@@ -65,10 +65,7 @@ export async function GET() {
           connected: false,
           migrated: false,
         },
-        message:
-          error instanceof Error
-            ? error.message
-            : "Não foi possível validar a conexão com o banco.",
+        message: "Não foi possível validar a conexão com o banco.",
       },
       {
         status: 503,

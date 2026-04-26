@@ -12,12 +12,22 @@ type SignupPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Cadastro",
-  path: "/cadastro",
-  description:
-    "Crie seu cadastro na Kron Leilões para acompanhar oportunidades, registrar interesse e enviar pré-lances na área restrita.",
-});
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "Cadastro",
+    path: "/cadastro",
+    description:
+      "Crie seu cadastro na Kron Leilões para acompanhar oportunidades, registrar interesse e enviar pré-lances na área restrita.",
+  }),
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+export const dynamic = "force-dynamic";
+
+export const revalidate = 0;
 
 function readRedirect(searchParams: Record<string, string | string[] | undefined>) {
   return normalizeInternalRedirect(searchParams.redirect, "/area", {
