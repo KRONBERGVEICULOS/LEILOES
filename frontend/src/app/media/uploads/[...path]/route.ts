@@ -3,7 +3,7 @@ import path from "node:path";
 
 import {
   assertInsideDirectory,
-  getLotUploadStorageConfig,
+  getFileSystemLotUploadStorageConfig,
   lotUploadPublicSegment,
 } from "@/shared/lib/upload-storage";
 
@@ -60,7 +60,7 @@ function resolveUploadPath(segments: string[]) {
     return null;
   }
 
-  const config = getLotUploadStorageConfig();
+  const config = getFileSystemLotUploadStorageConfig();
   const targetPath = path.join(
     /* turbopackIgnore: true */ config.lotDirectory,
     segments[1],

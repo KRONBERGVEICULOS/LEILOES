@@ -1,7 +1,6 @@
 ﻿"use server";
 
 import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { revalidatePath } from "next/cache";
@@ -20,11 +19,11 @@ import {
   type AdminLotMutationResult,
 } from "@/backend/features/admin/server/repository";
 import { parseCurrencyInput } from "@/backend/features/platform/forms";
+import { getLotImageMaxMegabytes } from "@/shared/lib/upload-storage";
 import {
-  assertInsideDirectory,
-  buildLotUploadPublicPath,
-  getLotUploadStorageConfig,
-} from "@/shared/lib/upload-storage";
+  saveLotImagesToStorage,
+  type PreparedLotImageUpload,
+} from "@/shared/storage/lot-images";
 
 const allowedImageMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const allowedImageExtensions = new Set(["jpg", "jpeg", "png", "webp"]);
@@ -33,16 +32,7 @@ const imageExtensionByMimeType = new Map([
   ["image/png", "png"],
   ["image/webp", "webp"],
 ]);
-const maximumImageUploadSizeBytes = 8 * 1024 * 1024;
 const maximumImageUploadCount = 8;
-const maximumImageUploadTotalSizeBytes =
-  maximumImageUploadCount * maximumImageUploadSizeBytes;
-
-type PreparedImageUpload = {
-  file: File;
-  buffer: Buffer;
-  extension: string;
-};
 
 function readString(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -59,29 +49,6 @@ function splitLines(value: string) {
     .split(/\r?\n/g)
     .map((item) => item.trim())
     .filter(Boolean);
-}
-
-function sanitizePathSegment(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 96);
-}
-
-function sanitizeFileStem(value: string) {
-  return (
-    value
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .toLowerCase()
-      .replace(/\.[^.]+$/g, "")
-      .replace(/[^a-z0-9-]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 80) || "imagem"
-  );
 }
 
 function getSafeDisplayFileName(value: string) {
@@ -145,9 +112,35 @@ function detectImageMimeType(buffer: Buffer) {
   return null;
 }
 
+function formatMegabyteLimit(value: number) {
+  return `${value.toLocaleString("pt-BR", {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 1,
+  })} MB`;
+}
+
 async function prepareImageUploads(files: File[]) {
   const errors: string[] = [];
-  const preparedUploads: PreparedImageUpload[] = [];
+  const preparedUploads: PreparedLotImageUpload[] = [];
+  let maximumImageUploadSizeMegabytes: number;
+
+  try {
+    maximumImageUploadSizeMegabytes = getLotImageMaxMegabytes();
+  } catch (error) {
+    return {
+      errors: [
+        error instanceof Error
+          ? error.message
+          : "Configuração de limite de upload inválida.",
+      ],
+      uploads: [],
+    };
+  }
+
+  const maximumImageUploadSizeBytes =
+    Math.floor(maximumImageUploadSizeMegabytes * 1024 * 1024);
+  const maximumImageUploadTotalSizeBytes =
+    maximumImageUploadCount * maximumImageUploadSizeBytes;
 
   if (files.length > maximumImageUploadCount) {
     errors.push(`Envie no máximo ${maximumImageUploadCount} imagens por lote.`);
@@ -156,7 +149,11 @@ async function prepareImageUploads(files: File[]) {
   const totalSize = files.reduce((sum, file) => sum + file.size, 0);
 
   if (totalSize > maximumImageUploadTotalSizeBytes) {
-    errors.push("O envio total de imagens ultrapassa 64 MB.");
+    errors.push(
+      `O envio total de imagens ultrapassa ${formatMegabyteLimit(
+        maximumImageUploadCount * maximumImageUploadSizeMegabytes,
+      )}.`,
+    );
   }
 
   for (const file of files) {
@@ -174,7 +171,11 @@ async function prepareImageUploads(files: File[]) {
     }
 
     if (file.size > maximumImageUploadSizeBytes) {
-      errors.push(`${safeName}: limite de 8 MB por imagem.`);
+      errors.push(
+        `${safeName}: limite de ${formatMegabyteLimit(
+          maximumImageUploadSizeMegabytes,
+        )} por imagem.`,
+      );
       continue;
     }
 
@@ -194,9 +195,11 @@ async function prepareImageUploads(files: File[]) {
     }
 
     preparedUploads.push({
-      file,
       buffer,
+      contentType: detectedMimeType,
       extension,
+      originalFileName: file.name,
+      size: file.size,
     });
   }
 
@@ -204,58 +207,6 @@ async function prepareImageUploads(files: File[]) {
     errors,
     uploads: errors.length ? [] : preparedUploads,
   };
-}
-
-async function saveLotImages(input: {
-  files: PreparedImageUpload[];
-  lotStorageKey: string;
-  title: string;
-}) {
-  if (!input.files.length) {
-    return [];
-  }
-
-  const safeLotKey = sanitizePathSegment(input.lotStorageKey) || `lote-${Date.now()}`;
-  const storage = getLotUploadStorageConfig();
-  const lotDirectory = path.resolve(storage.lotDirectory, safeLotKey);
-
-  assertInsideDirectory(storage.lotDirectory, lotDirectory);
-
-  try {
-    await mkdir(lotDirectory, { recursive: true });
-  } catch {
-    throw new Error("Não foi possível preparar a pasta de imagens do lote.");
-  }
-
-  const savedImages: MediaAsset[] = [];
-
-  for (const [index, upload] of input.files.entries()) {
-    const fileName = [
-      Date.now(),
-      index + 1,
-      randomUUID().slice(0, 8),
-      sanitizeFileStem(upload.file.name),
-    ].join("-") + `.${upload.extension}`;
-    const targetPath = path.resolve(lotDirectory, fileName);
-
-    assertInsideDirectory(lotDirectory, targetPath);
-
-    try {
-      await writeFile(targetPath, upload.buffer, { flag: "wx" });
-    } catch {
-      throw new Error("Não foi possível salvar uma das imagens enviadas.");
-    }
-
-    savedImages.push({
-      src: buildLotUploadPublicPath({
-        fileName,
-        lotStorageKey: safeLotKey,
-      }),
-      alt: `${input.title} - imagem ${index + 1}`,
-    });
-  }
-
-  return savedImages;
 }
 
 function parseGalleryLines(value: string) {
@@ -469,7 +420,7 @@ export async function saveAdminLotAction(
 
   try {
     const targetId = readString(formData, "id") || randomUUID();
-    const uploadedGallery = await saveLotImages({
+    const uploadedGallery = await saveLotImagesToStorage({
       files: preparedImageUploads.uploads,
       lotStorageKey: targetId,
       title: validated.data.title,

@@ -3,19 +3,33 @@ import "server-only";
 import path from "node:path";
 
 import { readTrimmedEnv, shouldEnforceProductionEnvironment } from "@/shared/config/env";
+import {
+  getR2StorageConfig,
+  getR2StorageConfigurationIssue,
+} from "@/shared/storage/r2";
 
 export const lotUploadPublicSegment = "lotes";
 
 const defaultPublicBasePath = "/media/uploads";
-const allowedUploadStorageModes = new Set(["local", "volume"]);
+const defaultLotImageMaxMb = 8;
+const allowedUploadStorageModes = new Set(["local", "volume", "r2"]);
 
-export type UploadStorageMode = "local" | "volume";
+export type UploadStorageMode = "local" | "volume" | "r2";
 
-export type LotUploadStorageConfig = {
+export type FileSystemLotUploadStorageConfig = {
   lotDirectory: string;
-  mode: UploadStorageMode;
+  mode: "local" | "volume";
   publicBasePath: string;
 };
+
+export type R2LotUploadStorageConfig = {
+  mode: "r2";
+  publicBaseUrl: string;
+};
+
+export type LotUploadStorageConfig =
+  | FileSystemLotUploadStorageConfig
+  | R2LotUploadStorageConfig;
 
 function normalizePublicBasePath(value: string) {
   const trimmed = value.trim();
@@ -39,7 +53,7 @@ function getConfiguredUploadMode(): UploadStorageMode | undefined {
   }
 
   if (!allowedUploadStorageModes.has(rawMode)) {
-    throw new Error("UPLOAD_STORAGE_MODE deve ser local ou volume.");
+    throw new Error("UPLOAD_STORAGE_MODE deve ser local, volume ou r2.");
   }
 
   return rawMode as UploadStorageMode;
@@ -56,8 +70,12 @@ function normalizeUploadDirectory(value: string) {
 }
 
 function getUploadConfigurationIssue(mode: UploadStorageMode | undefined) {
-  if (shouldEnforceProductionEnvironment() && mode !== "volume") {
-    return "Defina UPLOAD_STORAGE_MODE=volume para salvar uploads em produção.";
+  if (shouldEnforceProductionEnvironment() && mode !== "r2") {
+    return "Defina UPLOAD_STORAGE_MODE=r2 para salvar uploads em produção com Cloudflare R2.";
+  }
+
+  if (mode === "r2") {
+    return getR2StorageConfigurationIssue();
   }
 
   if (mode === "volume" && !readTrimmedEnv("UPLOAD_VOLUME_DIR")) {
@@ -71,6 +89,22 @@ function getUploadConfigurationIssue(mode: UploadStorageMode | undefined) {
   return null;
 }
 
+export function getLotImageMaxMegabytes() {
+  const rawValue = readTrimmedEnv("LOT_IMAGE_MAX_MB");
+
+  if (!rawValue) {
+    return defaultLotImageMaxMb;
+  }
+
+  const value = Number(rawValue);
+
+  if (!Number.isFinite(value) || value <= 0 || value > defaultLotImageMaxMb) {
+    throw new Error(`LOT_IMAGE_MAX_MB deve ser um número entre 1 e ${defaultLotImageMaxMb}.`);
+  }
+
+  return value;
+}
+
 export function getLotUploadStorageConfig(): LotUploadStorageConfig {
   const configuredMode = getConfiguredUploadMode();
   const issue = getUploadConfigurationIssue(configuredMode);
@@ -80,6 +114,14 @@ export function getLotUploadStorageConfig(): LotUploadStorageConfig {
   }
 
   const mode = configuredMode ?? "local";
+
+  if (mode === "r2") {
+    return {
+      mode,
+      publicBaseUrl: getR2StorageConfig().publicBaseUrl,
+    };
+  }
+
   const configuredDirectory = readTrimmedEnv("UPLOAD_VOLUME_DIR");
 
   if (mode === "volume" && configuredDirectory && !path.isAbsolute(configuredDirectory)) {
@@ -100,11 +142,21 @@ export function getLotUploadStorageConfig(): LotUploadStorageConfig {
   };
 }
 
+export function getFileSystemLotUploadStorageConfig() {
+  const config = getLotUploadStorageConfig();
+
+  if (config.mode === "r2") {
+    throw new Error("Storage local de uploads está desabilitado quando UPLOAD_STORAGE_MODE=r2.");
+  }
+
+  return config;
+}
+
 export function buildLotUploadPublicPath(input: {
   fileName: string;
   lotStorageKey: string;
 }) {
-  const config = getLotUploadStorageConfig();
+  const config = getFileSystemLotUploadStorageConfig();
 
   return [
     config.publicBasePath,

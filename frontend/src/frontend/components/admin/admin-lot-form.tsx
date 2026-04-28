@@ -525,7 +525,7 @@ export function AdminLotForm({
               />
               <p className="text-xs leading-5 text-brand-muted">
                 Use uma linha por imagem no formato <code>URL | texto alternativo</code>.
-                O upload abaixo adiciona novos caminhos locais ao salvar.
+                O upload abaixo adiciona novas URLs públicas ao salvar.
               </p>
               <FieldError message={state.errors?.gallery?.[0]} />
             </div>
@@ -533,11 +533,11 @@ export function AdminLotForm({
             <div className="grid gap-3 rounded-2xl border border-dashed border-brand-line bg-brand-paper px-4 py-4 sm:col-span-2">
               <div className="grid gap-1">
                 <label className="text-sm font-semibold text-brand-ink" htmlFor="lot-image-uploads">
-                  Upload local de imagens
+                  Upload de imagens
                 </label>
                 <p className="text-xs leading-5 text-brand-muted">
-                  JPEG, PNG ou WebP, até 8 MB por imagem. Os arquivos são salvos
-                  em <code>/media/lotes</code> dentro do projeto.
+                  JPEG, PNG ou WebP, até 8 MB por imagem. Em produção, os
+                  arquivos são publicados no storage configurado.
                 </p>
               </div>
               <input

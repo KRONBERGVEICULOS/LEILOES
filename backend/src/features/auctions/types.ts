@@ -11,6 +11,10 @@ export type Category = {
 export type MediaAsset = {
   src: string;
   alt: string;
+  storage?: "manual" | "local" | "volume" | "r2";
+  objectKey?: string;
+  contentType?: string;
+  size?: number;
 };
 
 export type AuctionDocument = {

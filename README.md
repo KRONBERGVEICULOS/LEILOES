@@ -40,8 +40,13 @@ Variáveis obrigatórias em produção:
 - `ADMIN_USERNAME`
 - `ADMIN_PASSWORD`
 - `UPLOAD_STORAGE_MODE`
-- `UPLOAD_VOLUME_DIR`
-- `UPLOAD_PUBLIC_BASE_PATH`
+- `CLOUDFLARE_R2_ENABLED`
+- `CLOUDFLARE_R2_ACCOUNT_ID`
+- `CLOUDFLARE_R2_ACCESS_KEY_ID`
+- `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
+- `CLOUDFLARE_R2_BUCKET`
+- `CLOUDFLARE_R2_PUBLIC_BASE_URL`
+- `LOT_IMAGE_MAX_MB`
 
 Regras importantes:
 
@@ -49,7 +54,7 @@ Regras importantes:
 - Em produção, o fallback para `local-seed` é bloqueado.
 - Se `KRON_DATA_MODE=postgres`, o app exige `DATABASE_URL`.
 - Em Railway, `NEXT_PUBLIC_SITE_URL` pode apontar para a URL completa (`https://kronbergveiculos.up.railway.app`) ou usar a Reference Variable `${{ RAILWAY_PUBLIC_DOMAIN }}`.
-- Uploads feitos pelo admin em produção dependem de Railway Volume para persistir entre restart e redeploy.
+- Uploads feitos pelo admin em produção usam Cloudflare R2. A Secret Key nunca deve ser exposta em variável `NEXT_PUBLIC_*`.
 
 ## Desenvolvimento Local
 
@@ -110,28 +115,41 @@ Imagens antigas já versionadas em `frontend/public/media/lots`, banners em
 `frontend/public/media/brand` e URLs antigas em `/media/lotes/...` continuam
 funcionando normalmente.
 
-Novos uploads feitos pelo admin não são gravados em `public`. Em produção, eles
-devem ser salvos em Railway Volume e servidos pela route handler:
+Novos uploads feitos pelo admin não são gravados em `public` nem dependem de
+volume do container. Em produção, eles são enviados para Cloudflare R2 pela API
+S3-compatible e o banco salva a URL pública com metadados básicos da imagem.
 
 ```bash
-/media/uploads/lotes/{lotId}/{fileName}
+https://pub-xxxx.r2.dev/lotes/{lotId}/{timestamp}-{slug-seguro}.webp
 ```
 
 Configuração recomendada na Railway:
 
-- criar um Railway Volume no serviço da aplicação
-- montar o volume em `/app/uploads`
+- criar um bucket no Cloudflare R2
+- criar Access Key com permissão de escrita/leitura no bucket
+- habilitar acesso público do bucket
 - configurar:
-  - `UPLOAD_STORAGE_MODE=volume`
-  - `UPLOAD_VOLUME_DIR=/app/uploads/lotes`
-  - `UPLOAD_PUBLIC_BASE_PATH=/media/uploads`
+  - `UPLOAD_STORAGE_MODE=r2`
+  - `CLOUDFLARE_R2_ENABLED=true`
+  - `CLOUDFLARE_R2_ACCOUNT_ID`
+  - `CLOUDFLARE_R2_ACCESS_KEY_ID`
+  - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
+  - `CLOUDFLARE_R2_BUCKET`
+  - `CLOUDFLARE_R2_PUBLIC_BASE_URL`
+  - `LOT_IMAGE_MAX_MB=8`
 
-Com essa configuração, o admin salva arquivos em
-`/app/uploads/lotes/{lotId}/{fileName}` e grava no banco apenas a URL pública
-`/media/uploads/lotes/{lotId}/{fileName}`.
+O endpoint S3 usado pela aplicação é:
 
-Em desenvolvimento, quando essas variáveis não estiverem configuradas, o fallback
-controlado usa `frontend/.uploads/lotes` e a mesma URL pública `/media/uploads`.
+```bash
+https://${CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com
+```
+
+Use `region=auto`. `CLOUDFLARE_R2_PUBLIC_BASE_URL` pode apontar para `r2.dev`
+no início, mas o ideal em produção final é usar um custom domain do bucket.
+
+Em desenvolvimento, `UPLOAD_STORAGE_MODE=local` continua disponível e usa
+`frontend/.uploads/lotes` com URL pública `/media/uploads`. `volume` fica apenas
+como fallback controlado, não como storage principal em produção.
 
 Para reimportar os lotes do site antigo:
 
@@ -152,6 +170,7 @@ npm run start
 npm run lint
 npm run migrate
 npm run smoke:url
+npm run validate:upload-storage
 ```
 
 ## Healthcheck
@@ -217,10 +236,14 @@ Configurações importantes:
   Exemplo atual: `https://kronbergveiculos.up.railway.app`
   Em Railway, pode ser uma Reference Variable para `${{ RAILWAY_PUBLIC_DOMAIN }}`
 - `ADMIN_USERNAME` e `ADMIN_PASSWORD` fortes
-- Railway Volume montado em `/app/uploads`
-- `UPLOAD_STORAGE_MODE=volume`
-- `UPLOAD_VOLUME_DIR=/app/uploads/lotes`
-- `UPLOAD_PUBLIC_BASE_PATH=/media/uploads`
+- `UPLOAD_STORAGE_MODE=r2`
+- `CLOUDFLARE_R2_ENABLED=true`
+- `CLOUDFLARE_R2_ACCOUNT_ID`
+- `CLOUDFLARE_R2_ACCESS_KEY_ID`
+- `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
+- `CLOUDFLARE_R2_BUCKET`
+- `CLOUDFLARE_R2_PUBLIC_BASE_URL`
+- `LOT_IMAGE_MAX_MB=8`
 - `WHATSAPP_NUMBER`, `WHATSAPP_DISPLAY` e `WHATSAPP_URL` com o WhatsApp oficial
 
 Validação recomendada após o deploy:
@@ -235,6 +258,9 @@ npm run validate:upload-storage -- https://kronbergveiculos.up.railway.app
 - login admin com rate limit
 - senha administrativa mínima de 12 caracteres
 - rota de contato persiste lead antes do redirect para WhatsApp
-- rota `/media/uploads/...` serve somente JPEG, PNG e WebP abaixo do diretório de upload configurado
+- upload admin aceita somente JPEG, PNG e WebP, validando extensão, MIME, magic bytes, tamanho e quantidade
+- SVG, HTML, JS, PHP, EXE e formatos fora da lista são bloqueados antes do upload
+- Redis é usado apenas como cache de dados, nunca como storage binário de imagem
+- rota `/media/uploads/...` continua apenas para fallback local/volume e serve somente JPEG, PNG e WebP abaixo do diretório configurado
 - healthcheck distingue `local-seed` de banco real
 - app falha explicitamente em produção se configuração crítica estiver ausente
