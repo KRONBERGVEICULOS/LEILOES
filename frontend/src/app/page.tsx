@@ -195,7 +195,7 @@ export default async function Home() {
             </div>
 
             <InterestActions
-              primaryHref="/eventos"
+              primaryHref="/oportunidades"
               primaryLabel="Explorar oportunidades"
               secondaryHref={dashboardHref}
               secondaryLabel={dashboardLabel}

@@ -15,6 +15,18 @@ export function LotGallery({ images, title }: LotGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeImage = images[activeIndex];
 
+  if (!activeImage) {
+    return (
+      <section aria-label={`Galeria de imagens de ${title}`} className="space-y-4">
+        <div className="relative overflow-hidden rounded-xl border border-brand-line bg-white">
+          <div className="grid aspect-[4/3] place-items-center bg-brand-paper px-6 text-center text-sm font-semibold text-brand-muted">
+            Imagem indisponível para este lote.
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   function showRelativeImage(offset: number) {
     setActiveIndex((currentIndex) => {
       const nextIndex = currentIndex + offset;

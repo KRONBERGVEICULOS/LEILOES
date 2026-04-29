@@ -98,7 +98,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
           "@type": "ListItem",
           position: 2,
           name: "Oportunidades",
-          item: absoluteUrl("/eventos"),
+          item: absoluteUrl("/oportunidades"),
         },
         {
           "@type": "ListItem",
@@ -174,7 +174,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
           <Breadcrumbs
             items={[
               { label: "Início", href: "/" },
-              { label: "Oportunidades", href: "/eventos" },
+              { label: "Oportunidades", href: "/oportunidades" },
               { label: lot.title },
             ]}
           />

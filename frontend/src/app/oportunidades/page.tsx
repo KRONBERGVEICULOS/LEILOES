@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Oportunidades",
-  path: "/eventos",
+  path: "/oportunidades",
   description:
     "Catálogo de oportunidades de leilão com lotes, referência de valor, cadastro e atendimento oficial.",
   keywords: [
@@ -28,7 +28,7 @@ export default async function OpportunitiesPage({
 }: OpportunitiesPageProps) {
   return (
     <OpportunitiesPageContent
-      routePath="/eventos"
+      routePath="/oportunidades"
       searchParams={await searchParams}
     />
   );

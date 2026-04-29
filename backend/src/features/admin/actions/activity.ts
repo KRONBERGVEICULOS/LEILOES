@@ -68,6 +68,7 @@ export async function createManualActivityAction(
     if (validated.data.audience === "public") {
       revalidatePath("/");
       revalidatePath("/eventos");
+      revalidatePath("/oportunidades");
     }
 
     redirect(`${readSafeAdminPath(formData, "returnTo", "/admin/atividade")}?saved=activity`);

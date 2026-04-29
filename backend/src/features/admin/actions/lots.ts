@@ -27,6 +27,16 @@ import {
 
 const allowedImageMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const allowedImageExtensions = new Set(["jpg", "jpeg", "png", "webp"]);
+const blockedImageFileNameExtensions = new Set([
+  "svg",
+  "txt",
+  "html",
+  "htm",
+  "js",
+  "mjs",
+  "php",
+  "exe",
+]);
 const imageExtensionByMimeType = new Map([
   ["image/jpeg", "jpg"],
   ["image/png", "png"],
@@ -57,6 +67,14 @@ function getSafeDisplayFileName(value: string) {
 
 function getFileExtension(value: string) {
   return path.extname(value).replace(".", "").toLowerCase();
+}
+
+function getFileNameExtensions(value: string) {
+  return value
+    .split(".")
+    .slice(1)
+    .map((extension) => extension.trim().toLowerCase())
+    .filter(Boolean);
 }
 
 function isUploadedFile(value: FormDataEntryValue): value is File {
@@ -159,9 +177,19 @@ async function prepareImageUploads(files: File[]) {
   for (const file of files) {
     const safeName = getSafeDisplayFileName(file.name);
     const originalExtension = getFileExtension(file.name);
+    const fileNameExtensions = getFileNameExtensions(file.name);
 
     if (!allowedImageMimeTypes.has(file.type)) {
       errors.push(`${safeName}: use apenas imagens JPEG, PNG ou WebP.`);
+      continue;
+    }
+
+    if (
+      fileNameExtensions.some((extension) =>
+        blockedImageFileNameExtensions.has(extension),
+      )
+    ) {
+      errors.push(`${safeName}: nome de arquivo com extensão bloqueada.`);
       continue;
     }
 
@@ -272,6 +300,7 @@ function revalidateLotPaths(result: AdminLotMutationResult) {
   revalidatePath(`/admin/lotes/${result.id}/editar`);
   revalidatePath("/");
   revalidatePath("/eventos");
+  revalidatePath("/oportunidades");
   revalidatePath(`/eventos/${result.eventSlug}`);
   revalidatePath(`/lotes/${result.slug}`);
 

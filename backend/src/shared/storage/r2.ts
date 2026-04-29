@@ -141,15 +141,22 @@ export async function uploadObjectToR2(input: R2UploadInput): Promise<R2UploadRe
   const config = getR2StorageConfig();
   const client = getR2Client(config);
 
-  await client.send(
-    new PutObjectCommand({
-      Body: input.body,
-      Bucket: config.bucket,
-      CacheControl: "public, max-age=31536000, immutable",
-      ContentType: input.contentType,
-      Key: input.objectKey,
-    }),
-  );
+  try {
+    await client.send(
+      new PutObjectCommand({
+        Body: input.body,
+        Bucket: config.bucket,
+        CacheControl: "public, max-age=31536000, immutable",
+        ContentType: input.contentType,
+        IfNoneMatch: "*",
+        Key: input.objectKey,
+      }),
+    );
+  } catch {
+    throw new Error(
+      "Não foi possível salvar a imagem no storage R2. Verifique a configuração do bucket e da URL pública.",
+    );
+  }
 
   return {
     contentType: input.contentType,

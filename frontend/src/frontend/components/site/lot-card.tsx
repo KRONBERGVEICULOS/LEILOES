@@ -50,7 +50,10 @@ function getLotSecondaryAction(lot: Lot) {
 }
 
 export function LotCard({ lot }: LotCardProps) {
-  const coverImage = lot.media[0];
+  const coverImage = lot.media[0] ?? {
+    alt: `Imagem indisponível para ${lot.title}`,
+    src: "/media/brand/banner-kronberg.png",
+  };
   const lotMeta = [lot.lotCode, lot.category, lot.location].join(" • ");
   const lotCardSummaryLabel = getLotCardSummaryLabel(lot.statusKey);
   const secondaryAction = getLotSecondaryAction(lot);

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -36,23 +37,16 @@ function sanitizePathSegment(value: string) {
     .slice(0, 96);
 }
 
-function sanitizeFileStem(value: string) {
-  return (
-    value
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .toLowerCase()
-      .replace(/\.[^.]+$/g, "")
-      .replace(/[^a-z0-9-]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 80) || "imagem"
-  );
-}
+function buildSafeImageFileName(input: {
+  extension: string;
+  index: number;
+  title: string;
+}) {
+  const timestamp = Date.now() + input.index;
+  const uniqueSuffix = randomUUID().replace(/-/g, "").slice(0, 10);
+  const safeSlug = sanitizePathSegment(input.title) || "imagem";
 
-function buildSafeImageFileName(upload: PreparedLotImageUpload, index: number) {
-  const timestamp = Date.now() + index;
-
-  return `${timestamp}-${sanitizeFileStem(upload.originalFileName)}.${upload.extension}`;
+  return `${timestamp}-${safeSlug}-${uniqueSuffix}.${input.extension}`;
 }
 
 function buildAltText(title: string, index: number) {
@@ -80,7 +74,11 @@ async function saveLotImagesToFileSystem(input: SaveLotImagesInput) {
   const savedImages: MediaAsset[] = [];
 
   for (const [index, upload] of input.files.entries()) {
-    const fileName = buildSafeImageFileName(upload, index);
+    const fileName = buildSafeImageFileName({
+      extension: upload.extension,
+      index,
+      title: input.title,
+    });
     const targetPath = path.resolve(lotDirectory, fileName);
 
     assertInsideDirectory(lotDirectory, targetPath);
@@ -112,7 +110,11 @@ async function saveLotImagesToR2(input: SaveLotImagesInput) {
   const savedImages: MediaAsset[] = [];
 
   for (const [index, upload] of input.files.entries()) {
-    const fileName = buildSafeImageFileName(upload, index);
+    const fileName = buildSafeImageFileName({
+      extension: upload.extension,
+      index,
+      title: input.title,
+    });
     const objectKey = `${lotUploadPublicSegment}/${safeLotKey}/${fileName}`;
     const result = await uploadObjectToR2({
       body: upload.buffer,
