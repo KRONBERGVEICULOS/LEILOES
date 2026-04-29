@@ -53,8 +53,8 @@ export default async function DashboardPage() {
               `Olá, sou ${dashboard.user.name} (${dashboard.user.publicAlias}) e quero seguir com a equipe a partir da minha área.`,
             )}
             primaryLabel="Falar com especialista"
-            secondaryHref="/oportunidades"
-            secondaryLabel="Ver oportunidades"
+            secondaryHref="/eventos"
+            secondaryLabel="Ver eventos"
           />
         </div>
 

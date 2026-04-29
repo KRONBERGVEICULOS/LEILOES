@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 
-import { OpportunitiesPageContent } from "@/frontend/components/site/opportunities-page-content";
+import { EventsPageContent } from "@/frontend/components/site/events-page-content";
 import { createPageMetadata } from "@/shared/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Oportunidades",
+  title: "Eventos",
   path: "/eventos",
   description:
-    "Catálogo de oportunidades de leilão com lotes, referência de valor, cadastro e atendimento oficial.",
+    "Catálogo de eventos e lotes de leilão com referência de valor, cadastro e atendimento oficial.",
   keywords: [
-    "oportunidades",
+    "eventos",
     "lotes",
     "veículos",
     "leilões de veículos",
@@ -19,15 +19,15 @@ export const metadata: Metadata = createPageMetadata({
   ],
 });
 
-type OpportunitiesPageProps = {
+type EventsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function OpportunitiesPage({
+export default async function EventsPage({
   searchParams,
-}: OpportunitiesPageProps) {
+}: EventsPageProps) {
   return (
-    <OpportunitiesPageContent
+    <EventsPageContent
       routePath="/eventos"
       searchParams={await searchParams}
     />

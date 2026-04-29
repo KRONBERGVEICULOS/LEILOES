@@ -17,7 +17,7 @@ export default function NotFound() {
       description="O endereço informado não corresponde a uma página disponível neste momento. Use os atalhos abaixo para voltar ao catálogo principal ou retomar a navegação."
       primaryHref="/"
       primaryLabel="Voltar ao início"
-      secondaryHref="/oportunidades"
+      secondaryHref="/eventos"
       secondaryLabel="Ver eventos"
       title="A página procurada não está disponível neste site."
     />

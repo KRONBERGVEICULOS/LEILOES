@@ -31,7 +31,7 @@ export const revalidate = 0;
 
 function readRedirect(searchParams: Record<string, string | string[] | undefined>) {
   return normalizeInternalRedirect(searchParams.redirect, "/area", {
-    allowedPrefixes: ["/area", "/eventos", "/lotes", "/oportunidades"],
+    allowedPrefixes: ["/area", "/eventos", "/lotes"],
   });
 }
 

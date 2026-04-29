@@ -300,7 +300,6 @@ function revalidateLotPaths(result: AdminLotMutationResult) {
   revalidatePath(`/admin/lotes/${result.id}/editar`);
   revalidatePath("/");
   revalidatePath("/eventos");
-  revalidatePath("/oportunidades");
   revalidatePath(`/eventos/${result.eventSlug}`);
   revalidatePath(`/lotes/${result.slug}`);
 

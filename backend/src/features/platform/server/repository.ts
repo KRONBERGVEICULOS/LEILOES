@@ -845,6 +845,7 @@ export async function registerInterest(userId: string, lotSlug: string) {
       if (!insertedRows[0]) {
         return {
           created: false,
+          eventSlug: lot.eventSlug,
           whatsappHref: createWhatsAppLink(
             `Olá, já acompanho o ${lot.lotCode} e quero falar com o atendimento sobre essa oportunidade.`,
           ),
@@ -872,6 +873,7 @@ export async function registerInterest(userId: string, lotSlug: string) {
 
       return {
         created: true,
+        eventSlug: lot.eventSlug,
         whatsappHref: createWhatsAppLink(
           `Olá, acabei de marcar interesse no ${lot.lotCode} e quero alinhar os próximos passos.`,
         ),
@@ -1031,6 +1033,7 @@ export async function submitPreBid(
       `;
 
       return {
+        eventSlug: lot.eventSlug,
         preBid: {
           id: preBidRow?.id ?? randomUUID(),
         },

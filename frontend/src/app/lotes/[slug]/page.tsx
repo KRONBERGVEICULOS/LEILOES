@@ -97,8 +97,8 @@ export default async function LotDetailPage({ params }: LotPageProps) {
         {
           "@type": "ListItem",
           position: 2,
-          name: "Oportunidades",
-          item: absoluteUrl("/oportunidades"),
+          name: "Eventos",
+          item: absoluteUrl("/eventos"),
         },
         {
           "@type": "ListItem",
@@ -174,7 +174,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
           <Breadcrumbs
             items={[
               { label: "Início", href: "/" },
-              { label: "Oportunidades", href: "/oportunidades" },
+              { label: "Eventos", href: "/eventos" },
               { label: lot.title },
             ]}
           />
@@ -186,7 +186,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
           <div className="space-y-6">
             <div className="space-y-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-                Oportunidade em destaque
+                Lote em destaque
               </p>
               <h1 className="max-w-4xl text-4xl font-semibold leading-tight text-brand-ink sm:text-5xl">
                 {lot.title}
@@ -221,7 +221,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
           <aside className="space-y-5 lg:sticky lg:top-24 lg:h-fit">
             <div className="rounded-[28px] bg-brand-navy p-6 text-white shadow-[0_28px_70px_-44px_rgba(13,32,52,0.85)]">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-sand">
-                Fluxo desta oportunidade
+                Fluxo deste lote
               </p>
               <h2 className="mt-3 text-2xl font-semibold leading-tight">
                 Analise o lote e registre seu interesse antes da confirmação oficial.
@@ -368,7 +368,7 @@ export default async function LotDetailPage({ params }: LotPageProps) {
         <Container className="grid gap-8 border-t border-brand-line/80 py-14">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Mais oportunidades
+              Mais lotes
             </p>
             <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
               Outros lotes para continuar a análise.

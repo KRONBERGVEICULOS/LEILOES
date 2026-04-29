@@ -13,15 +13,15 @@ import {
   normalizeLotCatalogFilters,
 } from "@/backend/features/auctions/lib/catalog-queries";
 
-type OpportunitiesPageContentProps = {
-  routePath: "/eventos" | "/oportunidades";
+type EventsPageContentProps = {
+  routePath: "/eventos";
   searchParams: Record<string, string | string[] | undefined>;
 };
 
-export async function OpportunitiesPageContent({
+export async function EventsPageContent({
   routePath,
   searchParams,
-}: OpportunitiesPageContentProps) {
+}: EventsPageContentProps) {
   const filters = normalizeLotCatalogFilters(searchParams);
   const lots = await listLots();
   const filteredLots = filterLots(lots, filters);
@@ -36,10 +36,10 @@ export async function OpportunitiesPageContent({
         data={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          name: "Oportunidades",
+          name: "Eventos",
           url: absoluteUrl(routePath),
           description:
-            "Catálogo de oportunidades para consulta, comparação e solicitação de atendimento.",
+            "Catálogo de eventos e lotes para consulta, comparação e solicitação de atendimento.",
           numberOfItems: filteredLots.length,
         }}
       />
@@ -48,7 +48,7 @@ export async function OpportunitiesPageContent({
         aside={
           <div className="rounded-[28px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.35)]">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-brass">
-              Catálogo de oportunidades
+              Catálogo de eventos
             </p>
             <p className="mt-3 text-sm leading-7 text-brand-muted">
               Procure por nome, código ou cidade. Quando encontrar o lote certo,
@@ -64,10 +64,10 @@ export async function OpportunitiesPageContent({
             />
           </div>
         }
-        description="Compare lotes publicados, confira referências de valor e avance para cadastro ou atendimento quando uma oportunidade fizer sentido."
-        eyebrow="Oportunidades"
+        description="Compare lotes publicados, confira referências de valor e avance para cadastro ou atendimento quando um lote fizer sentido."
+        eyebrow="Eventos"
         meta={["Lotes", "Referência online", "Área do comprador", "Atendimento oficial"]}
-        title="Escolha uma oportunidade e avance com clareza."
+        title="Escolha um lote e avance com clareza."
       />
 
       <Container className="grid gap-8 py-16">
@@ -96,12 +96,12 @@ export async function OpportunitiesPageContent({
           </div>
         ) : (
           <EmptyState
-            description="A busca atual não encontrou nenhuma oportunidade. Limpe os filtros ou ajuste a consulta para continuar sua análise."
+            description="A busca atual não encontrou nenhum lote. Limpe os filtros ou ajuste a consulta para continuar sua análise."
             primaryHref={routePath}
             primaryLabel="Limpar busca"
             secondaryHref="/como-participar"
             secondaryLabel="Entender o processo"
-            title="Nenhuma oportunidade corresponde aos filtros atuais."
+            title="Nenhum lote corresponde aos filtros atuais."
           />
         )}
 
@@ -110,7 +110,7 @@ export async function OpportunitiesPageContent({
             Próximo passo
           </p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-ink sm:text-4xl">
-            Quando uma oportunidade fizer sentido, avance com cadastro ou atendimento.
+            Quando um lote fizer sentido, avance com cadastro ou atendimento.
           </h2>
           <p className="mt-4 max-w-3xl text-base leading-8 text-brand-muted">
             O cadastro libera acompanhamento e pré-lance online. O atendimento

@@ -63,7 +63,7 @@ export async function registerInterestAction(
 
     revalidatePath("/");
     revalidatePath("/eventos");
-    revalidatePath("/oportunidades");
+    revalidatePath(`/eventos/${result.eventSlug}`);
     revalidatePath("/area");
     revalidatePath("/admin");
     revalidatePath("/admin/interesses");
@@ -152,7 +152,7 @@ export async function submitPreBidAction(
 
     revalidatePath("/");
     revalidatePath("/eventos");
-    revalidatePath("/oportunidades");
+    revalidatePath(`/eventos/${result.eventSlug}`);
     revalidatePath("/area");
     revalidatePath("/admin");
     revalidatePath("/admin/lotes");

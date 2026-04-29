@@ -159,7 +159,7 @@ export default function HowToParticipateRoute() {
             eyebrow="Próximo passo"
             primaryHref={finalCta.primaryHref}
             primaryLabel="Falar com a equipe"
-            secondaryHref="/oportunidades"
+            secondaryHref="/eventos"
             secondaryLabel="Ver eventos"
             title="Ainda precisa validar edital, habilitação ou retirada?"
           />

@@ -195,8 +195,8 @@ export default async function Home() {
             </div>
 
             <InterestActions
-              primaryHref="/oportunidades"
-              primaryLabel="Explorar oportunidades"
+              primaryHref="/eventos"
+              primaryLabel="Ver eventos"
               secondaryHref={dashboardHref}
               secondaryLabel={dashboardLabel}
             />
@@ -331,7 +331,7 @@ export default async function Home() {
         <section className="grid gap-8">
           <SectionHeading
             description="Veja lotes com fotos, referência de valor, status e caminho claro para acompanhar ou solicitar atendimento."
-            eyebrow="Oportunidades em destaque"
+            eyebrow="Lotes em destaque"
             title="Lotes em destaque para começar sua análise."
           />
 

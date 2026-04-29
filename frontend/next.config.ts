@@ -52,6 +52,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/oportunidades",
+        destination: "/eventos",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

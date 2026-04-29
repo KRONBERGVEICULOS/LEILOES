@@ -33,7 +33,7 @@ import {
 
 function getSafeRedirectPath(value: FormDataEntryValue | null) {
   return normalizeInternalRedirect(value, "/area", {
-    allowedPrefixes: ["/area", "/eventos", "/lotes", "/oportunidades"],
+    allowedPrefixes: ["/area", "/eventos", "/lotes"],
   });
 }
 

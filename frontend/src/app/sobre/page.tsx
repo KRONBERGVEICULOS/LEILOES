@@ -119,8 +119,8 @@ export default function AboutPageRoute() {
         <CtaBox
           description="Explore as oportunidades, acompanhe os lotes de interesse e confirme as condições oficiais antes de avançar."
           eyebrow="Próximo passo"
-          primaryHref="/oportunidades"
-          primaryLabel="Explorar oportunidades"
+          primaryHref="/eventos"
+          primaryLabel="Ver eventos"
           secondaryHref="/cadastro"
           secondaryLabel="Criar cadastro"
           title="Comece pelo catálogo e siga com o atendimento quando precisar confirmar regras."

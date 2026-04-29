@@ -46,7 +46,7 @@ export default async function AdminProtectedLayout({
           <div className="grid gap-3 rounded-[28px] border border-brand-line bg-white p-4 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.24)] xl:p-5">
             <Link
               className="inline-flex items-center justify-center rounded-full border border-brand-line px-4 py-3 text-sm font-semibold text-brand-navy transition hover:border-brand-navy"
-              href="/"
+              href="/eventos"
             >
               Abrir site público
             </Link>

@@ -1,35 +1,34 @@
-import type { Metadata } from "next";
+import { permanentRedirect } from "next/navigation";
 
-import { OpportunitiesPageContent } from "@/frontend/components/site/opportunities-page-content";
-import { createPageMetadata } from "@/shared/lib/metadata";
-
-export const dynamic = "force-dynamic";
-
-export const metadata: Metadata = createPageMetadata({
-  title: "Oportunidades",
-  path: "/oportunidades",
-  description:
-    "Catálogo de oportunidades de leilão com lotes, referência de valor, cadastro e atendimento oficial.",
-  keywords: [
-    "oportunidades",
-    "lotes",
-    "veículos",
-    "leilões de veículos",
-    "pré-lance",
-  ],
-});
-
-type OpportunitiesPageProps = {
+type OpportunitiesRedirectPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function OpportunitiesPage({
+function buildEventsRedirectPath(
+  searchParams: Record<string, string | string[] | undefined>,
+) {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        params.append(key, item);
+      }
+
+      continue;
+    }
+
+    if (value !== undefined) {
+      params.set(key, value);
+    }
+  }
+
+  const queryString = params.toString();
+  return queryString ? `/eventos?${queryString}` : "/eventos";
+}
+
+export default async function OpportunitiesRedirectPage({
   searchParams,
-}: OpportunitiesPageProps) {
-  return (
-    <OpportunitiesPageContent
-      routePath="/oportunidades"
-      searchParams={await searchParams}
-    />
-  );
+}: OpportunitiesRedirectPageProps) {
+  permanentRedirect(buildEventsRedirectPath(await searchParams));
 }
