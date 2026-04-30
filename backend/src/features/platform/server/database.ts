@@ -16,6 +16,7 @@ const requiredPlatformMigrationVersions = [
   "003_contact_leads",
   "004_pre_bid_guardrails",
   "005_separate_lot_reference_from_pre_bids",
+  "006_lot_archive_and_prebid_cancellation",
 ] as const;
 
 const requiredPlatformTables = [

@@ -85,11 +85,25 @@ export const lotStatusDefinitions: LotStatusDefinition[] = [
 
 const lotStatusMap = new Map(lotStatusDefinitions.map((item) => [item.key, item]));
 
+const legacyLotStatusMap = new Map<string, LotStatusKey>([
+  ["em-catalogo", "available"],
+  ["sob-consulta", "in_review"],
+  ["em-validacao", "in_review"],
+  ["encerrado", "closed"],
+]);
+
+export function normalizeLotStatusKey(statusKey: string): LotStatusKey {
+  if (lotStatusMap.has(statusKey as LotStatusKey)) {
+    return statusKey as LotStatusKey;
+  }
+
+  return legacyLotStatusMap.get(statusKey) ?? "available";
+}
+
 export function getLotStatusDefinition(statusKey: string): LotStatusDefinition {
-  return lotStatusMap.get(statusKey as LotStatusKey) ?? lotStatusMap.get("available")!;
+  return lotStatusMap.get(normalizeLotStatusKey(statusKey))!;
 }
 
 export function isLotPubliclyVisible(statusKey: string, isVisible: boolean) {
-  return isVisible && statusKey !== "hidden";
+  return isVisible && normalizeLotStatusKey(statusKey) !== "hidden";
 }
-

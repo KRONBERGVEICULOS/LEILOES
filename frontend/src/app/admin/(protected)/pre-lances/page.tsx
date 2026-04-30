@@ -1,4 +1,5 @@
 ﻿import { AdminDataUnavailable } from "@/frontend/components/admin/admin-data-unavailable";
+import { cancelAdminPreBidAction } from "@/backend/features/admin/actions/pre-bids";
 import { loadAdminPageData } from "@/backend/features/admin/server/page-load";
 import {
   getAdminReferenceData,
@@ -15,6 +16,15 @@ function readSearchParam(
 ) {
   const value = searchParams[key];
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+function getFlashMessage(saved: string) {
+  switch (saved) {
+    case "cancelled":
+      return "Pré-lance cancelado e removido do fluxo público.";
+    default:
+      return "";
+  }
 }
 
 async function loadPreBidsPage(filters: {
@@ -50,6 +60,7 @@ export default async function AdminPreBidsPage({
     from: readSearchParam(params, "from"),
     to: readSearchParam(params, "to"),
   };
+  const flashMessage = getFlashMessage(readSearchParam(params, "saved"));
   const result = await loadPreBidsPage(filters);
 
   if (!result.ok) {
@@ -71,6 +82,12 @@ export default async function AdminPreBidsPage({
           Veja lote, valor, data e dados de contato do usuário para acompanhamento comercial.
         </p>
       </section>
+
+      {flashMessage ? (
+        <p className="rounded-2xl border border-brand-success/20 bg-brand-success/8 px-4 py-3 text-sm text-brand-success">
+          {flashMessage}
+        </p>
+      ) : null}
 
       <section className="rounded-[30px] border border-brand-line bg-white p-6 shadow-[0_24px_60px_-42px_rgba(26,36,48,0.24)]">
         <form action="/admin/pre-lances" className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -183,6 +200,11 @@ export default async function AdminPreBidsPage({
                     Acima do teto
                   </span>
                 ) : null}
+                {item.isCancelled ? (
+                  <span className="rounded-full bg-brand-danger/10 px-2 py-1 text-brand-danger">
+                    Cancelado
+                  </span>
+                ) : null}
               </div>
               <h2 className="mt-3 text-xl font-semibold text-brand-ink">{item.lotTitle}</h2>
               <div className="mt-4 grid gap-3 text-sm text-brand-muted md:grid-cols-2 xl:grid-cols-4">
@@ -212,6 +234,24 @@ export default async function AdminPreBidsPage({
                 <p className="mt-4 rounded-2xl border border-brand-line bg-brand-paper px-4 py-3 text-sm leading-7 text-brand-muted">
                   Observação: {item.note}
                 </p>
+              ) : null}
+              {item.cancelledAtLabel ? (
+                <p className="mt-4 rounded-2xl border border-brand-line bg-brand-paper px-4 py-3 text-sm leading-7 text-brand-muted">
+                  Cancelado em {item.cancelledAtLabel}
+                  {item.cancelledReason ? ` • ${item.cancelledReason}` : ""}
+                </p>
+              ) : null}
+              {!item.isCancelled ? (
+                <form action={cancelAdminPreBidAction} className="mt-4">
+                  <input name="id" type="hidden" value={item.id} />
+                  <input name="returnTo" type="hidden" value="/admin/pre-lances" />
+                  <button
+                    className="inline-flex items-center justify-center rounded-full border border-brand-line px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-brand-navy hover:text-brand-navy"
+                    type="submit"
+                  >
+                    Cancelar pré-lance
+                  </button>
+                </form>
               ) : null}
             </article>
           ))

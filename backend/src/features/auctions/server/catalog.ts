@@ -1,7 +1,11 @@
 ﻿import "server-only";
 
 import type { FaqItem, Lot, MediaAsset } from "@/backend/features/auctions/types";
-import { getLotStatusDefinition, isLotPubliclyVisible } from "@/backend/features/auctions/lib/lot-status";
+import {
+  getLotStatusDefinition,
+  isLotPubliclyVisible,
+  normalizeLotStatusKey,
+} from "@/backend/features/auctions/lib/lot-status";
 import { ensurePlatformCatalogSeed } from "@/backend/features/platform/server/catalog-seed";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
 import { readPublicCache, writePublicCache } from "@/backend/features/platform/server/public-cache";
@@ -88,15 +92,17 @@ function getSanitizedCurrentValueCents(row: LotRow) {
 }
 
 function mapRowToLot(row: LotRow): Lot {
-  const status = getLotStatusDefinition(row.status_key);
+  const statusKey = normalizeLotStatusKey(row.status_key);
+  const status = getLotStatusDefinition(statusKey);
   const currentValueCents = getSanitizedCurrentValueCents(row);
 
   return {
     id: row.id,
+    ...(row.source_slug ? { sourceSlug: row.source_slug } : {}),
     slug: row.slug,
     title: row.title,
     lotCode: row.lot_code,
-    statusKey: row.status_key,
+    statusKey,
     status: status.label,
     isFeatured: row.is_featured,
     isVisible: row.is_visible,
@@ -257,6 +263,18 @@ export async function getLotBySlug(slug: string, options: { includeHidden?: bool
 export async function getLotById(id: string) {
   const allLots = await listLots({ includeHidden: true });
   return allLots.find((candidate) => candidate.id === id) ?? null;
+}
+
+export async function getLotByAdminIdentifier(identifier: string) {
+  const allLots = await listLots({ includeHidden: true });
+  return (
+    allLots.find(
+      (candidate) =>
+        candidate.id === identifier ||
+        candidate.slug === identifier ||
+        candidate.sourceSlug === identifier,
+    ) ?? null
+  );
 }
 
 export async function listFeaturedLots(limit = 3) {

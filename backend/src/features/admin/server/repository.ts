@@ -10,7 +10,11 @@ import {
   type LotStatusKey,
 } from "@/backend/features/auctions/lib/lot-status";
 import { auctionEvents, categories } from "@/backend/features/auctions/data/catalog";
-import { getLotById, listLots } from "@/backend/features/auctions/server/catalog";
+import {
+  getLotByAdminIdentifier,
+  getLotById,
+  listLots,
+} from "@/backend/features/auctions/server/catalog";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
 import { invalidatePublicExperienceCache } from "@/backend/features/platform/server/public-cache";
 import {
@@ -41,7 +45,24 @@ type PreBidRow = {
   amount_cents: number;
   note: string | null;
   lot_pre_bid_count: number;
+  is_cancelled: boolean;
+  cancelled_at: string | Date | null;
+  cancelled_reason: string | null;
   created_at: string | Date;
+};
+
+type PreBidCancellationRow = {
+  id: string;
+  lot_slug: string;
+  user_id: string;
+  public_alias: string;
+  amount_cents: number;
+  created_at: string | Date;
+  is_cancelled: boolean;
+  reference_value_cents: number;
+  maximum_pre_bid_amount_cents: number | null;
+  event_slug: string | null;
+  lot_code: string | null;
 };
 
 type AdminUserRow = {
@@ -251,6 +272,9 @@ export type AdminPreBidItem = {
   amountLabel: string;
   maximumAllowedAmountLabel: string;
   isAboveOperationalLimit: boolean;
+  isCancelled: boolean;
+  cancelledAtLabel?: string;
+  cancelledReason?: string;
   note?: string;
   lotPreBidCount: number;
   createdAt: string;
@@ -756,6 +780,7 @@ export async function getAdminDashboardSummary(periodInput?: string) {
       sql<{ count: number }[]>`
         select count(*)::int as count
         from platform_pre_bids
+        where is_cancelled = false
       `,
       sql<{ count: number }[]>`
         select count(*)::int as count
@@ -771,6 +796,7 @@ export async function getAdminDashboardSummary(periodInput?: string) {
         from platform_pre_bids
         where created_at >= ${periodConfig.start.toISOString()}
           and created_at < ${periodConfig.end.toISOString()}
+          and is_cancelled = false
         union all
         select 'user' as kind, created_at
         from platform_users
@@ -806,6 +832,7 @@ export async function getAdminDashboardSummary(periodInput?: string) {
         from platform_pre_bids as pre_bids
         inner join platform_users as users
           on users.id = pre_bids.user_id
+        where pre_bids.is_cancelled = false
         order by pre_bids.created_at desc
         limit 8
       `,
@@ -853,6 +880,7 @@ export async function getAdminDashboardSummary(periodInput?: string) {
           max(amount_cents)::int as top_amount_cents,
           max(created_at) as last_pre_bid_at
         from platform_pre_bids
+        where is_cancelled = false
         group by lot_slug
       `,
       sql<LotInterestMovementRow[]>`
@@ -1062,6 +1090,7 @@ export async function listAdminLots(filters: AdminLotFilters) {
     sql<{ lot_slug: string; count: number }[]>`
       select lot_slug, count(*)::int as count
       from platform_pre_bids
+      where is_cancelled = false
       group by lot_slug
     `,
   );
@@ -1091,7 +1120,15 @@ export async function listAdminLots(filters: AdminLotFilters) {
 
 export async function getAdminLotById(id: string) {
   assertDatabaseConfigured();
-  return getLotById(id);
+  const lot = await getLotByAdminIdentifier(id);
+
+  if (!lot) {
+    console.warn("[admin-lot] edit lookup returned no lot", {
+      identifier: id,
+    });
+  }
+
+  return lot;
 }
 
 export async function saveAdminLot(input: StoredLotUpdatePayload) {
@@ -1408,6 +1445,55 @@ export async function setAdminLotFeatured(id: string, isFeatured: boolean) {
   return result;
 }
 
+export async function archiveAdminLot(id: string) {
+  assertDatabaseConfigured();
+  const lot = await getLotByAdminIdentifier(id);
+
+  if (!lot) {
+    console.warn("[admin-lot] archive lookup returned no lot", {
+      identifier: id,
+    });
+    throw new Error("Lote não encontrado para exclusão.");
+  }
+
+  const result = await withPlatformDatabase((sql) =>
+    sql.begin(async (transaction) => {
+      await transaction`
+        update platform_lots
+        set
+          status_key = 'hidden',
+          is_visible = false,
+          is_featured = false,
+          updated_at = ${new Date().toISOString()}
+        where id = ${lot.id}
+      `;
+
+      await insertActivity(transaction, {
+        kind: "lot_status_changed",
+        lotSlug: lot.slug,
+        title: `${lot.lotCode} arquivado pelo admin`,
+        description:
+          "O lote foi excluído da operação pública sem remover o histórico do banco.",
+        audience: "admin",
+      });
+
+      return {
+        id: lot.id,
+        slug: lot.slug,
+        eventSlug: lot.eventSlug,
+        isVisible: false,
+      } satisfies AdminLotMutationResult;
+    }),
+  );
+
+  await invalidatePublicExperienceCache({
+    activity: true,
+    catalog: true,
+  });
+
+  return result;
+}
+
 export async function listAdminInterests(filters: AdminRecordFilters) {
   assertDatabaseConfigured();
 
@@ -1479,7 +1565,12 @@ export async function listAdminPreBids(filters: AdminRecordFilters) {
         users.phone as user_phone,
         pre_bids.amount_cents,
         pre_bids.note,
-        count(*) over (partition by pre_bids.lot_slug)::int as lot_pre_bid_count,
+        count(*) filter (
+          where pre_bids.is_cancelled = false
+        ) over (partition by pre_bids.lot_slug)::int as lot_pre_bid_count,
+        pre_bids.is_cancelled,
+        pre_bids.cancelled_at,
+        pre_bids.cancelled_reason,
         pre_bids.created_at
       from platform_pre_bids as pre_bids
       inner join platform_users as users
@@ -1515,6 +1606,13 @@ export async function listAdminPreBids(filters: AdminRecordFilters) {
           amountLabel: formatCurrencyBRL(row.amount_cents),
           maximumAllowedAmountLabel: formatCurrencyBRL(maximumAllowedAmountCents),
           isAboveOperationalLimit: row.amount_cents > maximumAllowedAmountCents,
+          isCancelled: row.is_cancelled,
+          ...(row.cancelled_at
+            ? { cancelledAtLabel: formatDateTimeBR(row.cancelled_at) }
+            : {}),
+          ...(row.cancelled_reason
+            ? { cancelledReason: row.cancelled_reason }
+            : {}),
           ...(row.note ? { note: row.note } : {}),
           lotPreBidCount: row.lot_pre_bid_count,
           createdAt: toIsoString(row.created_at),
@@ -1534,6 +1632,129 @@ export async function listAdminPreBids(filters: AdminRecordFilters) {
         return parseDateWithinRange(item.createdAt, filters.from, filters.to);
       });
   });
+}
+
+export async function cancelAdminPreBid(id: string) {
+  assertDatabaseConfigured();
+
+  const result = await withPlatformDatabase((sql) =>
+    sql.begin(async (transaction) => {
+      const [preBid] = await transaction<PreBidCancellationRow[]>`
+        select
+          pre_bids.id,
+          pre_bids.lot_slug,
+          pre_bids.user_id,
+          users.public_alias,
+          pre_bids.amount_cents,
+          pre_bids.created_at,
+          pre_bids.is_cancelled,
+          lots.reference_value_cents,
+          lots.maximum_pre_bid_amount_cents,
+          lots.event_slug,
+          lots.lot_code
+        from platform_pre_bids as pre_bids
+        inner join platform_users as users
+          on users.id = pre_bids.user_id
+        left join platform_lots as lots
+          on lots.slug = pre_bids.lot_slug
+        where pre_bids.id = ${id}
+        limit 1
+      `;
+
+      if (!preBid) {
+        console.warn("[admin-prebid] cancellation lookup returned no pre-bid", {
+          id,
+        });
+        throw new Error("Pré-lance não encontrado para cancelamento.");
+      }
+
+      if (preBid.is_cancelled) {
+        throw new Error("Este pré-lance já foi cancelado.");
+      }
+
+      if (!preBid.event_slug) {
+        console.warn("[admin-prebid] cancellation found pre-bid without lot row", {
+          id,
+          lotSlug: preBid.lot_slug,
+        });
+      }
+
+      const now = new Date().toISOString();
+      const reason = "Cancelado pelo administrador.";
+
+      await transaction`
+        update platform_pre_bids
+        set
+          is_cancelled = true,
+          cancelled_at = ${now},
+          cancelled_reason = ${reason},
+          cancelled_by = 'admin'
+        where id = ${preBid.id}
+      `;
+
+      await transaction`
+        update platform_activities
+        set
+          audience = 'admin',
+          title = coalesce(title, 'Pré-lance cancelado'),
+          description = ${`${preBid.public_alias} teve o pré-lance de ${formatCurrencyBRL(preBid.amount_cents)} cancelado pelo admin.`}
+        where kind = 'prebid_registered'
+          and lot_slug = ${preBid.lot_slug}
+          and actor_user_id = ${preBid.user_id}
+          and amount_cents = ${preBid.amount_cents}
+          and created_at = ${toIsoString(preBid.created_at)}
+      `;
+
+      if (preBid.event_slug) {
+        const maximumAllowedAmountCents = resolveMaximumPreBidAmountCents({
+          referenceValueCents: preBid.reference_value_cents,
+          maximumPreBidAmountCents: preBid.maximum_pre_bid_amount_cents,
+        });
+        const [topPreBid] = await transaction<{ amount_cents: number | null }[]>`
+          select max(amount_cents)::int as amount_cents
+          from platform_pre_bids
+          where lot_slug = ${preBid.lot_slug}
+            and is_cancelled = false
+            and amount_cents <= ${maximumAllowedAmountCents}
+        `;
+        const nextCurrentValueCents = Math.max(
+          preBid.reference_value_cents,
+          topPreBid?.amount_cents ?? 0,
+        );
+
+        await transaction`
+          update platform_lots
+          set
+            current_value_cents = ${nextCurrentValueCents},
+            updated_at = ${now}
+          where slug = ${preBid.lot_slug}
+        `;
+      }
+
+      await insertActivity(transaction, {
+        kind: "operational_note",
+        lotSlug: preBid.lot_slug,
+        title: preBid.lot_code
+          ? `${preBid.lot_code} teve pré-lance cancelado`
+          : "Pré-lance cancelado",
+        description:
+          "Registro cancelado pelo admin para corrigir uma inconsistência operacional.",
+        audience: "admin",
+      });
+
+      return {
+        lotSlug: preBid.lot_slug,
+        eventSlug: preBid.event_slug ?? undefined,
+      };
+    }),
+  );
+
+  await invalidatePublicExperienceCache({
+    activity: true,
+    catalog: true,
+  });
+
+  return result;
 }
 
 export async function listAdminUsers(filters: AdminUserFilters) {
@@ -1563,6 +1784,7 @@ export async function listAdminUsers(filters: AdminUserFilters) {
       left join (
         select user_id, count(*)::int as count
         from platform_pre_bids
+        where is_cancelled = false
         group by user_id
       ) as pre_bids on pre_bids.user_id = users.id
       order by users.created_at desc

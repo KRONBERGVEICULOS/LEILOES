@@ -1,6 +1,7 @@
 import "server-only";
 
 import { lots } from "@/backend/features/auctions/data/catalog";
+import { normalizeLotStatusKey } from "@/backend/features/auctions/lib/lot-status";
 import { withPlatformDatabase } from "@/backend/features/platform/server/database";
 import { shouldUseLocalSeedData } from "@/backend/features/platform/server/mode";
 
@@ -96,7 +97,7 @@ async function seedPlatformLots(sql: PlatformQuery) {
         ${lot.mileage},
         ${lot.fuel},
         ${lot.transmission ?? null},
-        ${lot.statusKey},
+        ${normalizeLotStatusKey(lot.statusKey)},
         ${lot.pricing.referenceValueCents},
         ${lot.pricing.currentValueCents},
         ${lot.pricing.minimumIncrementCents},

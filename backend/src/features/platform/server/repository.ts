@@ -312,6 +312,7 @@ async function getTopLotBidAmount(lotSlug: string) {
       select amount_cents
       from platform_pre_bids
       where lot_slug = ${lotSlug}
+        and is_cancelled = false
         and amount_cents <= ${maximumAllowedAmountCents}
       order by amount_cents desc, created_at desc
       limit 1
@@ -671,6 +672,7 @@ export async function getLotPlatformSnapshot(
         select amount_cents
         from platform_pre_bids
         where lot_slug = ${lotSlug}
+          and is_cancelled = false
           and amount_cents <= ${publicPreBidMaximumAmountCents}
         order by amount_cents desc, created_at desc
         limit 1
@@ -712,6 +714,7 @@ export async function getLotPlatformSnapshot(
         inner join platform_users as users
           on users.id = pre_bids.user_id
         where pre_bids.lot_slug = ${lotSlug}
+          and pre_bids.is_cancelled = false
           and pre_bids.amount_cents <= ${publicPreBidMaximumAmountCents}
         order by pre_bids.amount_cents desc, pre_bids.created_at desc
         limit 8
@@ -731,6 +734,7 @@ export async function getLotPlatformSnapshot(
             from platform_pre_bids
             where user_id = ${viewerUserId}
               and lot_slug = ${lotSlug}
+              and is_cancelled = false
               and amount_cents <= ${publicPreBidMaximumAmountCents}
             order by amount_cents desc, created_at desc
             limit 1
@@ -931,6 +935,7 @@ export async function submitPreBid(
         from platform_pre_bids
         where user_id = ${userId}
           and lot_slug = ${lotSlug}
+          and is_cancelled = false
         order by created_at desc
         limit 1
       `;
@@ -950,6 +955,7 @@ export async function submitPreBid(
         select amount_cents
         from platform_pre_bids
         where lot_slug = ${lotSlug}
+          and is_cancelled = false
           and amount_cents <= ${maximumAllowedQueryAmountCents}
         order by amount_cents desc, created_at desc
         limit 1
@@ -962,12 +968,22 @@ export async function submitPreBid(
       } = getLotCurrentState(topBidRow?.amount_cents ?? null, lot);
 
       if (amountCents < nextAllowedAmountCents) {
+        console.warn("[prebid] rejected below minimum", {
+          lotSlug,
+          amountCents,
+          nextAllowedAmountCents,
+        });
         throw new Error(
           `O próximo pré-lance precisa ser a partir de ${formatCurrencyBRL(nextAllowedAmountCents)}.`,
         );
       }
 
       if (amountCents > maximumAllowedAmountCents) {
+        console.warn("[prebid] rejected above operational maximum", {
+          lotSlug,
+          amountCents,
+          maximumAllowedAmountCents,
+        });
         throw new Error(
           `O valor informado está acima do limite operacional deste lote. Envie um pré-lance de até ${formatCurrencyBRL(maximumAllowedAmountCents)} ou fale com a equipe para análise.`,
         );
@@ -1009,6 +1025,14 @@ export async function submitPreBid(
           ${createdAt}
         )
         returning id
+      `;
+
+      await transaction`
+        update platform_lots
+        set
+          current_value_cents = ${amountCents},
+          updated_at = ${createdAt}
+        where slug = ${lotSlug}
       `;
 
       await transaction`
@@ -1087,6 +1111,7 @@ export async function getUserDashboard(userId: string): Promise<UserDashboard> {
         select id, lot_slug, amount_cents, created_at
         from platform_pre_bids
         where user_id = ${userId}
+          and is_cancelled = false
         order by created_at desc
       `,
       sql<DatabaseActivityRow[]>`

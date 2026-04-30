@@ -49,6 +49,7 @@ export type LotPricing = {
 
 export type Lot = {
   id: string;
+  sourceSlug?: string;
   slug: string;
   title: string;
   lotCode: string;

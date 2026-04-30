@@ -2,6 +2,7 @@
 
 import { AdminDataUnavailable } from "@/frontend/components/admin/admin-data-unavailable";
 import {
+  archiveAdminLotAction,
   duplicateAdminLotAction,
   toggleAdminLotFeaturedAction,
   toggleAdminLotVisibilityAction,
@@ -41,6 +42,8 @@ function getFlashMessage(saved: string) {
       return "Lote marcado como destaque.";
     case "unfeatured":
       return "Lote removido dos destaques.";
+    case "archived":
+      return "Lote excluído da operação pública e mantido no histórico.";
     default:
       return "";
   }
@@ -270,6 +273,19 @@ export default async function AdminLotsPage({
                       {lot.isVisible ? "Ocultar lote" : "Reexibir lote"}
                     </button>
                   </form>
+
+                  {lot.statusKey !== "hidden" ? (
+                    <form action={archiveAdminLotAction} className="sm:col-span-2">
+                      <input name="id" type="hidden" value={lot.id} />
+                      <input name="returnTo" type="hidden" value="/admin/lotes" />
+                      <button
+                        className="inline-flex w-full items-center justify-center rounded-full border border-brand-line px-4 py-3 text-sm font-semibold text-brand-ink transition hover:border-brand-navy hover:text-brand-navy"
+                        type="submit"
+                      >
+                        Excluir/arquivar lote
+                      </button>
+                    </form>
+                  ) : null}
                 </div>
               </div>
             </article>

@@ -13,12 +13,14 @@ import { requireAdminSession } from "@/backend/features/admin/server/auth";
 import {
   duplicateAdminLot,
   getAdminReferenceData,
+  archiveAdminLot,
   saveAdminLot,
   setAdminLotFeatured,
   setAdminLotVisibility,
   type AdminLotMutationResult,
 } from "@/backend/features/admin/server/repository";
 import { parseCurrencyInput } from "@/backend/features/platform/forms";
+import { resolveMaximumPreBidAmountCents } from "@/shared/lib/pre-bid-policy";
 import { getLotImageMaxMegabytes } from "@/shared/lib/upload-storage";
 import {
   saveLotImagesToStorage,
@@ -408,6 +410,24 @@ export async function saveAdminLotAction(
     };
   }
 
+  const effectiveMaximumPreBidAmountCents = resolveMaximumPreBidAmountCents({
+    referenceValueCents,
+    maximumPreBidAmountCents,
+  });
+
+  if (currentValueCents > effectiveMaximumPreBidAmountCents) {
+    return {
+      status: "error",
+      message: "O valor separado não pode ficar acima do teto operacional do lote.",
+      errors: {
+        currentPrice: [
+          "Ajuste o valor separado para ficar dentro do teto de pré-lance.",
+        ],
+      },
+      values: rawValues,
+    };
+  }
+
   if (parsedGallery.invalidLineNumbers.length) {
     const invalidLinesLabel = parsedGallery.invalidLineNumbers.join(", ");
     const lineLabel =
@@ -547,4 +567,18 @@ export async function toggleAdminLotFeaturedAction(formData: FormData) {
   redirect(
     `${readSafeAdminPath(formData, "returnTo", "/admin/lotes")}?saved=${mode === "feature" ? "featured" : "unfeatured"}`,
   );
+}
+
+export async function archiveAdminLotAction(formData: FormData) {
+  await requireAdminSession("/admin/lotes");
+
+  const id = readString(formData, "id");
+
+  if (!id) {
+    redirect(readSafeAdminPath(formData, "returnTo", "/admin/lotes"));
+  }
+
+  const result = await archiveAdminLot(id);
+  revalidateLotPaths(result);
+  redirect(`${readSafeAdminPath(formData, "returnTo", "/admin/lotes")}?saved=archived`);
 }
