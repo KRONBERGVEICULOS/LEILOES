@@ -4,8 +4,8 @@ import {
   normalizeWhatsAppNumber,
 } from "@/shared/lib/contact-links";
 
-const defaultWhatsAppNumber = "5516996540954";
-const defaultWhatsAppDisplay = "+55 16 99654-0954";
+const defaultWhatsAppNumber = "5511947270227";
+const defaultWhatsAppDisplay = "+55 11 994727-0227";
 
 function normalizeWhatsAppUrl(value: string | undefined, phoneNumber: string) {
   if (!value) {
